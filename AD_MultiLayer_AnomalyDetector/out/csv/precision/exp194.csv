@@ -1,0 +1,67 @@
+timestamp,anomaly_alerts,CENTOS@ALG,CENTOS@HIST,UNIX_NETWORK@ALG,UNIX_NETWORK@HIST,JVM@ALG,JVM@HIST,remote_call_checker,details
+0.0,0,0,0,0,0,0,0,0,
+1.0,1,0,0,1,0,0,0,0,SPSDetector@Tcp_Listen|
+2.0,1,0,0,1,0,0,0,0,SPSDetector@Tcp_Listen|
+3.0,1,0,0,0,0,0,0,1,RemoteCallChecker|
+4.0,1,0,0,1,0,0,0,0,SPSDetector@Tcp_Listen|
+5.0,1,0,0,1,0,0,0,0,SPSDetector@Tcp_Listen|
+6.0,1,0,0,1,0,0,0,0,SPSDetector@Tcp_Listen|
+7.0,0,0,0,0,0,0,0,0,
+8.0,0,0,0,0,0,0,0,0,
+9.0,0,0,0,0,0,0,0,0,
+10.0,0,0,0,0,0,0,0,0,
+11.0,0,0,0,0,0,0,0,0,
+12.0,0,0,0,0,0,0,0,0,
+13.0,1,0,0,1,0,0,0,0,SPSDetector@Tcp_Listen|
+14.0,1,0,0,1,0,0,0,0,SPSDetector@Tcp_Listen|
+15.0,1,0,0,1,0,0,0,0,SPSDetector@Tcp_Listen|
+16.0,1,0,0,1,0,0,0,0,SPSDetector@Tcp_Listen|
+17.0,0,0,0,0,0,0,0,0,
+18.0,0,0,0,0,0,0,0,0,
+19.0,0,0,0,0,0,0,0,0,
+20.0,0,0,0,0,0,0,0,0,
+21.0,1,0,0,0,0,0,0,1,RemoteCallChecker|
+22.0,1,1,0,0,0,0,0,0,SPSDetector@Buffers|
+23.0,0,0,0,0,0,0,0,0,
+24.0,1,0,0,0,0,0,0,1,RemoteCallChecker|
+25.0,0,0,0,0,0,0,0,0,
+26.0,2,0,0,0,0,0,2,0,HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|
+27.0,1,0,0,0,0,0,0,1,RemoteCallChecker|
+28.0,1,1,0,0,0,0,0,0,SPSDetector@Active Files|
+29.0,2,0,0,0,0,0,2,0,HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|
+30.0,3,1,0,0,0,0,2,0,HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|SPSDetector@Activated Virtual Pages|
+31.0,4,1,0,1,0,0,2,0,SPSDetector@Active Files|HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|SPSDetector@Tcp_Listen|
+32.0,5,2,0,1,0,0,2,0,SPSDetector@Active Files|HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|SPSDetector@Activated Virtual Pages|SPSDetector@Tcp_Listen|
+33.0,4,1,0,0,0,0,3,0,SPSDetector@Active Files|HistoricalIndicatorChecker@CommittedVirtualMemorySize|HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|
+34.0,0,0,0,0,0,0,0,0,
+35.0,2,0,0,0,0,0,2,0,HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|
+36.0,1,0,0,0,0,0,1,0,HistoricalIndicatorChecker@SystemCpuLoad|
+37.0,1,0,0,0,0,0,1,0,HistoricalIndicatorChecker@SystemCpuLoad|
+38.0,3,2,0,0,0,0,0,1,SPSDetector@Buffers|SPSDetector@Activated Virtual Pages|RemoteCallChecker|
+39.0,0,0,0,0,0,0,0,0,
+40.0,2,0,0,0,0,0,2,0,HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|
+41.0,0,0,0,0,0,0,0,0,
+42.0,1,0,0,0,0,0,0,1,RemoteCallChecker|
+43.0,2,0,0,0,0,0,2,0,HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|
+44.0,1,1,0,0,0,0,0,0,SPSDetector@Active Files|
+45.0,2,2,0,0,0,0,0,0,SPSDetector@Active Files|SPSDetector@Activated Virtual Pages|
+46.0,2,2,0,0,0,0,0,0,SPSDetector@Active Files|SPSDetector@Activated Virtual Pages|
+47.0,2,2,0,0,0,0,0,0,SPSDetector@Active Files|SPSDetector@Activated Virtual Pages|
+48.0,2,2,0,0,0,0,0,0,SPSDetector@Active Files|SPSDetector@Activated Virtual Pages|
+49.0,0,0,0,0,0,0,0,0,
+50.0,2,2,0,0,0,0,0,0,SPSDetector@Active Files|SPSDetector@Activated Virtual Pages|
+51.0,0,0,0,0,0,0,0,0,
+52.0,0,0,0,0,0,0,0,0,
+53.0,0,0,0,0,0,0,0,0,
+54.0,0,0,0,0,0,0,0,0,
+55.0,0,0,0,0,0,0,0,0,
+56.0,0,0,0,0,0,0,0,0,
+57.0,0,0,0,0,0,0,0,0,
+58.0,0,0,0,0,0,0,0,0,
+59.0,0,0,0,0,0,0,0,0,
+60.0,0,0,0,0,0,0,0,0,
+61.0,0,0,0,0,0,0,0,0,
+62.0,1,0,0,0,0,0,0,1,RemoteCallChecker|
+63.0,0,0,0,0,0,0,0,0,
+64.0,0,0,0,0,0,0,0,0,
+65.0,0,0,0,0,0,0,0,0,

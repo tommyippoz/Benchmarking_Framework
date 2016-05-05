@@ -1,0 +1,73 @@
+timestamp,anomaly_alerts,CENTOS@ALG,CENTOS@HIST,UNIX_NETWORK@ALG,UNIX_NETWORK@HIST,JVM@ALG,JVM@HIST,remote_call_checker,details
+0.0,0,0,0,0,0,0,0,0,
+1.0,3,0,0,3,0,0,0,0,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Listen|SPSDetector@Tcp_Syn|
+2.0,3,0,0,3,0,0,0,0,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Listen|SPSDetector@Tcp_Syn|
+3.0,0,0,0,0,0,0,0,0,
+4.0,3,0,0,3,0,0,0,0,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Listen|SPSDetector@Tcp_Syn|
+5.0,5,0,0,2,0,0,2,1,RemoteCallChecker|SPSDetector@Tcp_Listen|HistoricalIndicatorChecker@ProcessCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@Tcp_Syn|
+6.0,5,0,0,3,0,0,2,0,SPSDetector@Tcp_Listen|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@Tcp_Listen|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@Tcp_Syn|
+7.0,3,0,0,2,0,1,0,0,SPSDetector@Tcp_Listen|SPSDetector@SystemCpuLoad|SPSDetector@Tcp_Syn|
+8.0,1,0,0,1,0,0,0,0,SPSDetector@Tcp_Syn|
+9.0,2,0,0,2,0,0,0,0,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Listen|
+10.0,0,0,0,0,0,0,0,0,
+11.0,0,0,0,0,0,0,0,0,
+12.0,0,0,0,0,0,0,0,0,
+13.0,0,0,0,0,0,0,0,0,
+14.0,3,0,0,1,0,2,0,0,SPSDetector@Tcp_Listen|SPSDetector@TotalLoadedClassCount|SPSDetector@LoadedClassCount|
+15.0,1,0,0,0,0,1,0,0,SPSDetector@NonHeapMemoryUsage.used|
+16.0,2,0,0,1,0,1,0,0,SPSDetector@Tcp_Listen|SPSDetector@SystemCpuLoad|
+17.0,3,0,0,3,0,0,0,0,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Listen|SPSDetector@Tcp_Syn|
+18.0,3,0,0,3,0,0,0,0,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Listen|SPSDetector@Tcp_Syn|
+19.0,2,0,0,2,0,0,0,0,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Listen|
+20.0,3,0,0,2,0,1,0,0,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Listen|SPSDetector@SystemCpuLoad|
+21.0,0,0,0,0,0,0,0,0,
+22.0,2,0,0,0,0,0,2,0,HistoricalIndicatorChecker@ProcessCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|
+23.0,0,0,0,0,0,0,0,0,
+24.0,1,1,0,0,0,0,0,0,SPSDetector@Cached Memory|
+25.0,5,2,0,0,0,0,2,1,RemoteCallChecker|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@Active Files|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@Cached Memory|
+26.0,1,0,0,0,0,1,0,0,SPSDetector@NonHeapMemoryUsage.used|
+27.0,3,0,0,0,0,3,0,0,SPSDetector@NonHeapMemoryUsage.used|SPSDetector@TotalLoadedClassCount|SPSDetector@LoadedClassCount|
+28.0,5,3,0,0,0,1,0,1,RemoteCallChecker|SPSDetector@NonHeapMemoryUsage.used|SPSDetector@Activated Virtual Pages|SPSDetector@Active Files|SPSDetector@Cached Memory|
+29.0,0,0,0,0,0,0,0,0,
+30.0,2,0,0,0,0,0,2,0,HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|
+31.0,6,3,0,0,0,0,2,1,RemoteCallChecker|SPSDetector@Activated Virtual Pages|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@Active Files|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@Cached Memory|
+32.0,3,1,0,0,0,2,0,0,SPSDetector@FreePhysicalMemorySize|SPSDetector@NonHeapMemoryUsage.used|SPSDetector@Active Memory|
+33.0,3,0,0,0,0,0,3,0,HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|
+34.0,8,2,0,1,0,1,4,0,HistoricalIndicatorChecker@SystemCpuLoad|SPSDetector@Activated Virtual Pages|HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@Active Files|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@SystemCpuLoad|SPSDetector@Tcp_Syn|
+35.0,10,1,0,3,0,2,4,0,HistoricalIndicatorChecker@SystemCpuLoad|SPSDetector@Tcp_Listen|HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@Tcp_Listen|SPSDetector@TotalLoadedClassCount|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@LoadedClassCount|SPSDetector@Tcp_Syn|SPSDetector@Cached Memory|
+36.0,9,4,0,2,0,0,3,0,HistoricalIndicatorChecker@CommittedVirtualMemorySize|HistoricalIndicatorChecker@SystemCpuLoad|SPSDetector@Activated Virtual Pages|SPSDetector@Tcp_Listen|HistoricalIndicatorChecker@SystemCpuLoad|SPSDetector@Tcp_Listen|SPSDetector@Buffers|SPSDetector@Active Files|SPSDetector@Cached Memory|
+37.0,2,1,0,1,0,0,0,0,SPSDetector@Tcp_Listen|SPSDetector@Active Files|
+38.0,2,0,0,0,0,0,2,0,HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|
+39.0,1,0,0,0,0,0,1,0,HistoricalIndicatorChecker@SystemCpuLoad|
+40.0,5,2,0,0,0,1,2,0,SPSDetector@FreePhysicalMemorySize|HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|SPSDetector@Cached Memory|SPSDetector@Active Memory|
+41.0,2,0,0,0,0,0,1,1,RemoteCallChecker|HistoricalIndicatorChecker@SystemCpuLoad|
+42.0,5,1,0,0,0,1,2,1,HistoricalIndicatorChecker@SystemCpuLoad|RemoteCallChecker|HistoricalIndicatorChecker@SystemCpuLoad|SPSDetector@Buffers|SPSDetector@SystemCpuLoad|
+43.0,4,0,0,0,0,1,2,1,RemoteCallChecker|HistoricalIndicatorChecker@ProcessCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@SystemCpuLoad|
+44.0,0,0,0,0,0,0,0,0,
+45.0,2,0,0,0,0,0,2,0,HistoricalIndicatorChecker@ProcessCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|
+46.0,7,2,0,1,0,1,2,1,RemoteCallChecker|SPSDetector@NonHeapMemoryUsage.used|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@Active Files|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@Tcp_Syn|SPSDetector@Cached Memory|
+47.0,5,0,0,1,0,0,4,0,HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@Tcp_Syn|
+48.0,3,1,0,1,0,1,0,0,SPSDetector@Active Files|SPSDetector@SystemCpuLoad|SPSDetector@Tcp_Syn|
+49.0,5,3,0,1,0,1,0,0,SPSDetector@FreePhysicalMemorySize|SPSDetector@Activated Virtual Pages|SPSDetector@Active Files|SPSDetector@Tcp_Syn|SPSDetector@Cached Memory|
+50.0,4,3,0,0,0,1,0,0,SPSDetector@FreePhysicalMemorySize|SPSDetector@Activated Virtual Pages|SPSDetector@Active Files|SPSDetector@Cached Memory|
+51.0,4,4,0,0,0,0,0,0,SPSDetector@Activated Virtual Pages|SPSDetector@Active Files|SPSDetector@Cached Memory|SPSDetector@Active Memory|
+52.0,4,3,0,0,0,1,0,0,SPSDetector@FreePhysicalMemorySize|SPSDetector@Activated Virtual Pages|SPSDetector@Active Files|SPSDetector@Cached Memory|
+53.0,4,4,0,0,0,0,0,0,SPSDetector@Activated Virtual Pages|SPSDetector@Active Files|SPSDetector@Cached Memory|SPSDetector@Active Memory|
+54.0,1,0,0,0,0,1,0,0,SPSDetector@FreePhysicalMemorySize|
+55.0,3,3,0,0,0,0,0,0,SPSDetector@Activated Virtual Pages|SPSDetector@Active Files|SPSDetector@Cached Memory|
+56.0,4,3,0,0,0,1,0,0,SPSDetector@NonHeapMemoryUsage.used|SPSDetector@Activated Virtual Pages|SPSDetector@Active Files|SPSDetector@Cached Memory|
+57.0,1,0,0,0,0,1,0,0,SPSDetector@NonHeapMemoryUsage.used|
+58.0,1,0,0,0,0,1,0,0,SPSDetector@NonHeapMemoryUsage.used|
+59.0,0,0,0,0,0,0,0,0,
+60.0,0,0,0,0,0,0,0,0,
+61.0,2,1,0,0,0,1,0,0,SPSDetector@NonHeapMemoryUsage.used|SPSDetector@Active Memory|
+62.0,3,0,0,2,0,1,0,0,SPSDetector@Tcp_Listen|SPSDetector@SystemCpuLoad|SPSDetector@Tcp_Syn|
+63.0,3,0,0,3,0,0,0,0,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Listen|SPSDetector@Tcp_Syn|
+64.0,0,0,0,0,0,0,0,0,
+65.0,1,0,0,0,0,0,1,0,HistoricalIndicatorChecker@ProcessCpuLoad|
+66.0,0,0,0,0,0,0,0,0,
+67.0,2,0,0,0,0,0,2,0,HistoricalIndicatorChecker@ProcessCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|
+68.0,4,3,0,0,0,1,0,0,SPSDetector@Activated Virtual Pages|SPSDetector@Active Files|SPSDetector@SystemCpuLoad|SPSDetector@Cached Memory|
+69.0,3,1,0,0,0,1,0,1,RemoteCallChecker|SPSDetector@Activated Virtual Pages|SPSDetector@SystemCpuLoad|
+70.0,1,1,0,0,0,0,0,0,SPSDetector@Active Files|
+71.0,0,0,0,0,0,0,0,0,
