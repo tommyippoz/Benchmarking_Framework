@@ -19,30 +19,30 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class DatabaseManager.
+ * Instantiates a MYSQL Database manager
  *
  * @author Tommy
  */
 public class DatabaseManager {
 	
-	/** The connector. */
+	/** The database connector. */
 	private DatabaseConnector connector;
 	
-	/** The run id. */
+	/** The runID. */
 	private String runId;
 	
-	/** The layers. */
+	/** The map of the layers. */
 	private HashMap<String, LayerType> layers;
 	
 	/**
 	 * Instantiates a new database manager.
 	 *
-	 * @param dbName the db name
-	 * @param username the username
-	 * @param password the password
-	 * @param runId the run id
+	 * @param dbName the database name
+	 * @param username the database username
+	 * @param password the database password
+	 * @param runId the runID
 	 */
 	public DatabaseManager(String dbName, String username, String password, String runId){
 		try {
@@ -65,7 +65,7 @@ public class DatabaseManager {
 	}
 
 	/**
-	 * Flush.
+	 * Flushes database manager.
 	 *
 	 * @throws SQLException the SQL exception
 	 */
@@ -75,7 +75,7 @@ public class DatabaseManager {
 	}
 	
 	/**
-	 * Gets the run observations.
+	 * Gets the observations for the specific runID.
 	 *
 	 * @return the run observations
 	 */
@@ -98,7 +98,7 @@ public class DatabaseManager {
 	}
 
 	/**
-	 * Gets the service calls.
+	 * Gets the service calls for the specific runID.
 	 *
 	 * @return the service calls
 	 */
@@ -111,7 +111,7 @@ public class DatabaseManager {
 	}
 	
 	/**
-	 * Gets the service stats.
+	 * Gets the service stats for the specific runID.
 	 *
 	 * @return the service stats
 	 */
@@ -129,7 +129,7 @@ public class DatabaseManager {
 	}
 
 	/**
-	 * Gets the injections.
+	 * Gets the injections for the specific runID.
 	 *
 	 * @return the injections
 	 */
@@ -142,16 +142,16 @@ public class DatabaseManager {
 	}
 
 	/**
-	 * Gets the run id.
+	 * Gets the runID.
 	 *
-	 * @return the run id
+	 * @return the runID
 	 */
 	public String getRunID() {
 		return runId;
 	}
 
 	/**
-	 * Gets the performance timings.
+	 * Gets the performance timings for the specific runID.
 	 *
 	 * @return the performance timings
 	 */
