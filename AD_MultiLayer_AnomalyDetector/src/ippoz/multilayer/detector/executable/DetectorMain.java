@@ -8,13 +8,17 @@ import ippoz.multilayer.detector.support.AppLogger;
 import ippoz.multilayer.detector.support.PreferencesManager;
 
 /**
- * @author Tommy
+ * The Class DetectorMain.
+ * This is the main class of the project that calls the main manager (DetectionManager). After reading the preferences, starts the training and then the validation phase.
  *
+ * @author Tommy
  */
 public class DetectorMain {
 
 	/**
-	 * @param args
+	 * The main method.
+	 *
+	 * @param args the default console arguments
 	 */
 	public static void main(String[] args) {
 		PreferencesManager prefManager;

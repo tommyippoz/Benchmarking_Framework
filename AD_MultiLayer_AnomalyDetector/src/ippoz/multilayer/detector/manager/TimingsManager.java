@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 /**
- * The Class PerformanceManager.
+ * The Class TimingsManager.
  * Used to store performance parameters regarding the setup and/or the execution of the anomaly detector.
  *
  * @author Tommy

@@ -19,16 +19,31 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author Tommy
+ * The Class DatabaseManager.
  *
+ * @author Tommy
  */
 public class DatabaseManager {
 	
+	/** The connector. */
 	private DatabaseConnector connector;
+	
+	/** The run id. */
 	private String runId;
+	
+	/** The layers. */
 	private HashMap<String, LayerType> layers;
 	
+	/**
+	 * Instantiates a new database manager.
+	 *
+	 * @param dbName the db name
+	 * @param username the username
+	 * @param password the password
+	 * @param runId the run id
+	 */
 	public DatabaseManager(String dbName, String username, String password, String runId){
 		try {
 			this.runId = runId;
@@ -39,6 +54,9 @@ public class DatabaseManager {
 		}
 	}
 
+	/**
+	 * Load system layers.
+	 */
 	private void loadSystemLayers() {
 		layers = new HashMap<String, LayerType>();
 		for(HashMap<String, String> ptMap : connector.executeCustomQuery(null, "select * from probe_type")){
@@ -46,11 +64,21 @@ public class DatabaseManager {
 		}
 	}
 
+	/**
+	 * Flush.
+	 *
+	 * @throws SQLException the SQL exception
+	 */
 	public void flush() throws SQLException {
 		connector.closeConnection();
 		connector = null;
 	}
 	
+	/**
+	 * Gets the run observations.
+	 *
+	 * @return the run observations
+	 */
 	public LinkedList<Observation> getRunObservations() {
 		Observation obs;
 		LinkedList<Observation> obsList = new LinkedList<Observation>();
@@ -69,6 +97,11 @@ public class DatabaseManager {
 		return obsList;
 	}
 
+	/**
+	 * Gets the service calls.
+	 *
+	 * @return the service calls
+	 */
 	public LinkedList<ServiceCall> getServiceCalls() {
 		LinkedList<ServiceCall> callList = new LinkedList<ServiceCall>();
 		for(HashMap<String, String> callMap : connector.executeCustomQuery(null, "select se_name, min(start_time) as st_time, max(end_time) as en_time, response from service_method_invocation natural join service_method natural join service where run_id = " + runId + " group by se_name order by st_time")){
@@ -77,6 +110,11 @@ public class DatabaseManager {
 		return callList;
 	}
 	
+	/**
+	 * Gets the service stats.
+	 *
+	 * @return the service stats
+	 */
 	public HashMap<String, ServiceStat> getServiceStats() {
 		ServiceStat current;
 		HashMap<String, ServiceStat> ssList = new HashMap<String, ServiceStat>();
@@ -90,6 +128,11 @@ public class DatabaseManager {
 		return ssList;
 	}
 
+	/**
+	 * Gets the injections.
+	 *
+	 * @return the injections
+	 */
 	public LinkedList<InjectedElement> getInjections() {
 		LinkedList<InjectedElement> injList = new LinkedList<InjectedElement>();
 		for(HashMap<String, String> injInfo : connector.executeCustomQuery(null, "select * from failure natural join failure_type where run_id = " + runId + " order by fa_time")){
@@ -98,10 +141,20 @@ public class DatabaseManager {
 		return injList;
 	}
 
+	/**
+	 * Gets the run id.
+	 *
+	 * @return the run id
+	 */
 	public String getRunID() {
 		return runId;
 	}
 
+	/**
+	 * Gets the performance timings.
+	 *
+	 * @return the performance timings
+	 */
 	public HashMap<String, HashMap<LayerType, LinkedList<Integer>>> getPerformanceTimings() {
 		String perfType;
 		HashMap<String, HashMap<LayerType, LinkedList<Integer>>> timings = new HashMap<String, HashMap<LayerType, LinkedList<Integer>>>();

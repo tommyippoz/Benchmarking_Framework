@@ -28,20 +28,48 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
- * @author Tommy
+ * The Class EvaluatorManager.
+ * The manager of the evaluation-scoring phase. Called after the training or when train scores are already available.
  *
+ * @author Tommy
  */
 public class EvaluatorManager extends ThreadScheduler {
 	
+	/** The preference manager. */
 	private PreferencesManager prefManager;
+	
+	/** The timings manager. */
 	private TimingsManager pManager;
+	
+	/** The experiments list. */
 	private LinkedList<ExperimentData> expList;
+	
+	/** The validation metrics. */
 	private Metric[] validationMetrics;
+	
+	/** The anomaly threshold. Votings over that threshold raise alarms. */
 	private double anomalyTreshold;
+	
+	/** The algorithm convergence time. */
 	private double algConvergence;
+	
+	/** The detector score threshold. Used to filter the available anomaly checkers by score. */
 	private double detectorScoreTreshold;
+	
+	/** The indicator list. */
 	private HashMap<String, Indicator> indicatorList;
 	
+	/**
+	 * Instantiates a new evaluator manager.
+	 *
+	 * @param prefManager the preference manager
+	 * @param pManager the timings manager
+	 * @param expList the experiment list
+	 * @param validationMetrics the validation metrics
+	 * @param anTresholdString the an threshold string
+	 * @param algConvergence the algorithm convergence
+	 * @param detectorScoreTreshold the detector score threshold
+	 */
 	public EvaluatorManager(PreferencesManager prefManager, TimingsManager pManager, LinkedList<ExperimentData> expList, Metric[] validationMetrics, String anTresholdString, double algConvergence, double detectorScoreTreshold) {
 		this.prefManager = prefManager;
 		this.pManager = pManager;
@@ -53,6 +81,9 @@ public class EvaluatorManager extends ThreadScheduler {
 		anomalyTreshold = getAnomalyVoterTreshold(anTresholdString, loadTrainScores().size());
 	}
 
+	/**
+	 * Builds the indicator list.
+	 */
 	private void buildIndicatorList(){
 		indicatorList = new HashMap<String, Indicator>();
 		for(Indicator ind : expList.getFirst().getNumericIndicators()){
@@ -60,6 +91,10 @@ public class EvaluatorManager extends ThreadScheduler {
 		}
 	}
 	
+	/**
+	 * Detects anomalies.
+	 * This is the core of the evaluation, which ends in the anomaly evaluation of each snapshot of each experiment.
+	 */
 	public void detectAnomalies(){
 		long start = System.currentTimeMillis();
 		try {
@@ -74,6 +109,13 @@ public class EvaluatorManager extends ThreadScheduler {
 		}
 	}
 	
+	/**
+	 * Gets the anomaly voter threshold.
+	 *
+	 * @param anTresholdString the anomaly threshold string read from preferences
+	 * @param checkers the number of selected checkers
+	 * @return the anomaly voter threshold
+	 */
 	private double getAnomalyVoterTreshold(String anTresholdString, int checkers){
 		switch(anTresholdString){
 			case "HALF":
@@ -83,6 +125,9 @@ public class EvaluatorManager extends ThreadScheduler {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.support.ThreadScheduler#initRun()
+	 */
 	@Override
 	protected void initRun() {
 		LinkedList<AlgorithmVoter> algVoters = loadTrainScores();
@@ -95,16 +140,28 @@ public class EvaluatorManager extends ThreadScheduler {
 		pManager.addTiming(TimingsManager.SELECTED_ANOMALY_CHECKERS, Double.valueOf(voterList.size()));
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.support.ThreadScheduler#threadStart(java.lang.Thread, int)
+	 */
 	@Override
 	protected void threadStart(Thread t, int tIndex) {
 		AppLogger.logInfo(getClass(), "Evaluating experiment " + tIndex + "/" + threadNumber());
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.support.ThreadScheduler#threadComplete(java.lang.Thread, int)
+	 */
 	@Override
 	protected void threadComplete(Thread t, int tIndex) {
 		((ExperimentVoter)t).printVoting(prefManager.getPreference(DetectionManager.OUTPUT_FORMAT), prefManager.getPreference(DetectionManager.OUTPUT_FOLDER), validationMetrics, anomalyTreshold, algConvergence);
 	}
 	
+	/**
+	 * Loads train scores.
+	 * This is the outcome of some previous training phases.
+	 *
+	 * @return the list of AlgorithmVoters resulting from the read scores
+	 */
 	private LinkedList<AlgorithmVoter> loadTrainScores() {
 		File asFile = new File(prefManager.getPreference(DetectionManager.SCORES_FILE_FOLDER) + "scores.csv");
 		BufferedReader reader;
@@ -166,6 +223,9 @@ public class EvaluatorManager extends ThreadScheduler {
 		return voterList;
 	}
 	
+	/**
+	 * Setup results file.
+	 */
 	private void setupResultsFile() {
 		File resultsFile;
 		PrintWriter pw;

@@ -12,18 +12,40 @@ import ippoz.multilayer.detector.support.ThreadScheduler;
 import java.util.LinkedList;
 
 /**
- * @author Tommy
+ * The Class LoaderManager.
+ * The manager responsible of the loading of experimental data. Uses implemented DataFetchers
  *
+ * @author Tommy
  */
 public class LoaderManager extends ThreadScheduler {
 	
+	/** The experiment tag. */
 	private String tag;
+	
+	/** The database username. */
 	private String dbUsername;
+	
+	/** The database password. */
 	private String dbPassword;
+	
+	/** The timings manager. */
 	private TimingsManager pManager;
+	
+	/** The list of experiment IDs. */
 	private LinkedList<String> expIDs;
+	
+	/** The data read by the loader. */
 	private LinkedList<ExperimentData> readData;
 	
+	/**
+	 * Instantiates a new loader manager.
+	 *
+	 * @param expIDs the experiments IDs
+	 * @param tag the loader tag
+	 * @param pManager the timings manager
+	 * @param dbUsername the database username
+	 * @param dbPassword the database password
+	 */
 	public LoaderManager(LinkedList<String> expIDs, String tag, TimingsManager pManager, String dbUsername, String dbPassword) {
 		super();
 		this.tag = tag;
@@ -34,6 +56,12 @@ public class LoaderManager extends ThreadScheduler {
 		readData = new LinkedList<ExperimentData>();
 	}
 	
+	/**
+	 * Starts fetching data.
+	 * For all the experiment IDs, launch a fetching on the specified DataFetcher.
+	 *
+	 * @return the linked list
+	 */
 	public LinkedList<ExperimentData> fetch(){
 		long start = System.currentTimeMillis();
 		try {
@@ -54,6 +82,9 @@ public class LoaderManager extends ThreadScheduler {
 		return readData;
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.support.ThreadScheduler#initRun()
+	 */
 	@Override
 	protected void initRun() {
 		LinkedList<DataFetcher> fetchList = new LinkedList<DataFetcher>();
@@ -63,11 +94,17 @@ public class LoaderManager extends ThreadScheduler {
 		setThreadList(fetchList);
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.support.ThreadScheduler#threadStart(java.lang.Thread, int)
+	 */
 	@Override
 	protected void threadStart(Thread t, int tIndex) {
 		// TODO Auto-generated method stub
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.support.ThreadScheduler#threadComplete(java.lang.Thread, int)
+	 */
 	@Override
 	protected void threadComplete(Thread t, int tIndex) {
 		ExperimentData data = ((DataFetcher)t).getFetchedData();

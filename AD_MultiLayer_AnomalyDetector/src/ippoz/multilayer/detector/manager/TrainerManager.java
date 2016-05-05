@@ -22,21 +22,52 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
- * @author Tommy
+ * The Class TrainerManager.
+ * The manager responsible of the training process of the anomaly detector.
  *
+ * @author Tommy
  */
 public class TrainerManager extends ThreadScheduler {
 	
+	/** The preference manager. */
 	private PreferencesManager prefManager;
+	
+	/** The timing manager. */
 	private TimingsManager pManager;
+	
+	/** The experiments list. */
 	private LinkedList<ExperimentData> expList;
+	
+	/** The possible configurations. */
 	private HashMap<String, LinkedList<AlgorithmConfiguration>> confList;
+	
+	/** The chosen metric. */
 	private Metric metric;
+	
+	/** The chosen reputation metric. */
 	private Reputation reputation;
+	
+	/** The list of indicators. */
 	private LinkedList<Indicator> indList;
+	
+	/** The data types. */
 	private String[] dataTypes;
+	
+	/** The algorithm types. */
 	private String[] algTypes;
 	
+	/**
+	 * Instantiates a new trainer manager.
+	 *
+	 * @param prefManager the preference manager
+	 * @param pManager the timing manager
+	 * @param expList the experiment list
+	 * @param confList the configuration list
+	 * @param metric the chosen metric
+	 * @param reputation the chosen reputation metric
+	 * @param dataTypes the data types
+	 * @param algTypes the algorithm types
+	 */
 	public TrainerManager(PreferencesManager prefManager, TimingsManager pManager, LinkedList<ExperimentData> expList, HashMap<String, LinkedList<AlgorithmConfiguration>> confList, Metric metric, Reputation reputation, String[] dataTypes, String[] algTypes) {
 		super();
 		this.prefManager = prefManager;
@@ -50,6 +81,10 @@ public class TrainerManager extends ThreadScheduler {
 		this.algTypes = algTypes;
 	}
 
+	/**
+	 * Starts the train process. 
+	 * The scores are saved in a file specified in the preferences.
+	 */
 	public void train(){
 		long start = System.currentTimeMillis();
 		try {
@@ -65,6 +100,9 @@ public class TrainerManager extends ThreadScheduler {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.support.ThreadScheduler#initRun()
+	 */
 	@Override
 	protected void initRun(){
 		AppLogger.logInfo(getClass(), "Train Started");
@@ -84,16 +122,27 @@ public class TrainerManager extends ThreadScheduler {
 		pManager.addTiming(TimingsManager.ANOMALY_CHECKERS, Double.valueOf(trainerList.size()));
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.support.ThreadScheduler#threadStart(java.lang.Thread, int)
+	 */
 	@Override
 	protected void threadStart(Thread t, int tIndex) {
 		// TODO
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.support.ThreadScheduler#threadComplete(java.lang.Thread, int)
+	 */
 	@Override
 	protected void threadComplete(Thread t, int tIndex) {
 		AppLogger.logInfo(getClass(), "[" + tIndex + "/" + threadNumber() + "] Found: " + ((AlgorithmTrainer)t).getBestConfiguration().toString());						
 	}
 	
+	/**
+	 * Saves scores related to the executed AlgorithmTrainers.
+	 *
+	 * @param list the list of algorithm trainers
+	 */
 	@SuppressWarnings("unchecked")
 	private void saveScores(LinkedList<? extends Thread> list) {
 		BufferedWriter writer;

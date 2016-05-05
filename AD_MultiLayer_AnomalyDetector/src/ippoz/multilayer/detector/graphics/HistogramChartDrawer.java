@@ -27,14 +27,28 @@ import org.jfree.ui.RectangleInsets;
 import org.jfree.ui.TextAnchor;
 
 /**
- * @author Tommy
+ * The Class HistogramChartDrawer.
  *
+ * @author Tommy
  */
 public class HistogramChartDrawer extends ChartDrawer {
 	
+	/** The anomaly threshold. */
 	private double anomalyTreshold;
+	
+	/** The algorithm convergence time. */
 	private double algConvTime;
 
+	/**
+	 * Instantiates a new histogram chart drawer.
+	 *
+	 * @param chartTitle the chart title
+	 * @param xLabel the x-axis label
+	 * @param yLabel the y-axis label
+	 * @param data the series data
+	 * @param anomalyTreshold the anomaly threshold
+	 * @param algConvTime the algorithm convergence time
+	 */
 	public HistogramChartDrawer(String chartTitle, String xLabel, String yLabel, HashMap<String, TreeMap<Double, Double>> data, double anomalyTreshold, double algConvTime) {
 		super(chartTitle, xLabel, yLabel, data);
 		this.anomalyTreshold = anomalyTreshold;
@@ -43,6 +57,9 @@ public class HistogramChartDrawer extends ChartDrawer {
 		addConvergenceTreshold();
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.graphics.ChartDrawer#setupChart(java.util.HashMap)
+	 */
 	@Override
 	protected void setupChart(HashMap<String, TreeMap<Double, Double>> data) {
 		XYBarRenderer renderer = new CustomRenderer(new Paint[] {Color.BLUE, Color.RED}, data.get(ExperimentVoter.FAILURE_LABEL));
@@ -51,6 +68,9 @@ public class HistogramChartDrawer extends ChartDrawer {
         ((XYPlot) chart.getPlot()).setRenderer(renderer);
 	}
 	
+	/**
+	 * Adds the anomaly threshold.
+	 */
 	private void addAnomalyTreshold(){
 		ValueMarker rangeMarker = new ValueMarker(anomalyTreshold);
 		rangeMarker.setPaint(Color.black);
@@ -63,6 +83,9 @@ public class HistogramChartDrawer extends ChartDrawer {
 		((XYPlot)chart.getPlot()).addRangeMarker(rangeMarker);
 	}
 	
+	/**
+	 * Adds the convergence threshold.
+	 */
 	private void addConvergenceTreshold(){
 		ValueMarker domainMarker = new ValueMarker(algConvTime);
 		domainMarker.setPaint(Color.black);
@@ -75,11 +98,17 @@ public class HistogramChartDrawer extends ChartDrawer {
 		((XYPlot)chart.getPlot()).addDomainMarker(domainMarker);
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.graphics.ChartDrawer#createChart(java.lang.String, java.lang.String, java.lang.String, org.jfree.data.general.Dataset, boolean, boolean)
+	 */
 	@Override
 	protected JFreeChart createChart(String chartTitle, String xLabel, String yLabel, Dataset dataset, boolean showLegend, boolean createTooltip) {
 		return ChartFactory.createXYBarChart(chartTitle, xLabel, false, yLabel, (IntervalXYDataset) dataset, PlotOrientation.VERTICAL, showLegend, createTooltip, false);	
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.graphics.ChartDrawer#createDataset(java.util.HashMap)
+	 */
 	@Override
 	protected Dataset createDataset(HashMap<String, TreeMap<Double, Double>> data) {
 		XYSeries current;
@@ -96,23 +125,43 @@ public class HistogramChartDrawer extends ChartDrawer {
 		return dataset;
 	}
 	
+	/**
+	 * The Class CustomRenderer.
+	 * This is used to paint columns of the bar chart depending on custom options.
+	 */
 	@SuppressWarnings("serial")
 	private class CustomRenderer extends XYBarRenderer {
 
+		/** The failure map. */
 		private TreeMap<Double, Double> failureMap;
+        
+        /** The colours. */
         private Paint[] colors;
 
+        /**
+         * Instantiates a new custom renderer.
+         *
+         * @param colors the colours
+         * @param failureMap the failure map
+         */
         public CustomRenderer(final Paint[] colors, TreeMap<Double, Double> failureMap) {
             this.colors = colors;
             this.failureMap = failureMap;
         }
 
+        /* (non-Javadoc)
+         * @see org.jfree.chart.renderer.AbstractRenderer#getItemPaint(int, int)
+         */
         public Paint getItemPaint(final int row, final int column) {
-        	if(isInMap(column))
-        		return colors[1];
-        	else return colors[0];
+        	return isInMap(column) ? colors[1] : colors[0];
         }
 
+		/**
+		 * Checks if this column indicates an anomaly.
+		 *
+		 * @param column the column
+		 * @return true, if is in map
+		 */
 		private boolean isInMap(int column) {
 			if(failureMap != null){
 				for(Double val : failureMap.keySet()){

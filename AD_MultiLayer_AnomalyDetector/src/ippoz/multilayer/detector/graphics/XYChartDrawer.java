@@ -22,15 +22,28 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.util.ShapeUtilities;
 
 /**
- * @author Tommy
+ * The Class XYChartDrawer.
+ * Draws a chart on a file depending on data sent trough a map of TreeMap series.
  *
+ * @author Tommy
  */
 public class XYChartDrawer extends ChartDrawer {
 
+	/**
+	 * Instantiates a new XY chart drawer.
+	 *
+	 * @param chartTitle the chart title
+	 * @param xLabel the x-axis label
+	 * @param yLabel the y-axis label
+	 * @param data the series data
+	 */
 	public XYChartDrawer(String chartTitle, String xLabel, String yLabel, HashMap<String, TreeMap<Double, Double>> data) {
 		super(chartTitle, xLabel, yLabel, data);
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.graphics.ChartDrawer#setupChart(java.util.HashMap)
+	 */
 	@Override
 	protected void setupChart(HashMap<String, TreeMap<Double, Double>> data) {
 		XYPlot plot = chart.getXYPlot( );
@@ -74,11 +87,17 @@ public class XYChartDrawer extends ChartDrawer {
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.graphics.ChartDrawer#createChart(java.lang.String, java.lang.String, java.lang.String, org.jfree.data.general.Dataset, boolean, boolean)
+	 */
 	@Override
 	protected JFreeChart createChart(String chartTitle, String xLabel, String yLabel, Dataset dataset, boolean showLegend, boolean createTooltip) {
 		return ChartFactory.createXYLineChart(chartTitle, xLabel, yLabel, (XYDataset) dataset, PlotOrientation.VERTICAL, showLegend, createTooltip, false);	
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.graphics.ChartDrawer#createDataset(java.util.HashMap)
+	 */
 	@Override
 	protected Dataset createDataset(HashMap<String, TreeMap<Double, Double>> data) {
 		XYSeries current;
