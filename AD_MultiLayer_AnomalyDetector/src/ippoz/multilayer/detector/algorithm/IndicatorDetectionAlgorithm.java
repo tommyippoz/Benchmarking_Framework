@@ -7,42 +7,64 @@ import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.data.Indicator;
 import ippoz.multilayer.detector.data.LayerType;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author Tommy
+ * The Class IndicatorDetectionAlgorithm.
  *
+ * @author Tommy
  */
 public abstract class IndicatorDetectionAlgorithm extends DetectionAlgorithm {
 	
+	/** The indicator. */
 	protected Indicator indicator; 
+	
+	/** The data category tag. */
 	protected String categoryTag;
 
+	/**
+	 * Instantiates a new indicator detection algorithm.
+	 *
+	 * @param indicator the indicator
+	 * @param categoryTag the data category tag
+	 * @param conf the configuration
+	 */
 	public IndicatorDetectionAlgorithm(Indicator indicator, String categoryTag, AlgorithmConfiguration conf) {
 		super(conf);
 		this.categoryTag = categoryTag;
 		this.indicator = indicator;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "@" + indicator.getName();
 	}
 
+	/**
+	 * Gets the indicator layer.
+	 *
+	 * @return the indicator layer
+	 */
 	public LayerType getIndicatorLayer() {
 		return indicator.getLayer();
 	}
 	
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.algorithm.DetectionAlgorithm#getDataType()
+	 */
 	@Override
 	public String getDataType() {
 		return categoryTag;
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.algorithm.DetectionAlgorithm#getIndicator()
+	 */
 	@Override
 	public Indicator getIndicator() {
 		return indicator;
-	}
-
-	public abstract String getIndicatorFullName();
-	
-	
+	}	
 
 }

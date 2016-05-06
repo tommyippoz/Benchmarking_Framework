@@ -15,15 +15,27 @@ import ippoz.multilayer.detector.support.AppLogger;
 import java.util.HashMap;
 
 /**
- * @author Tommy
+ * The Class HistoricalIndicatorChecker.
+ * Defines a Checker that is able to evaluate if the observation is in the range of (avg,std)
  *
+ * @author Tommy
  */
 public class HistoricalIndicatorChecker extends IndicatorDetectionAlgorithm {
 	
+	/**
+	 * Instantiates a new historical indicator checker.
+	 *
+	 * @param indicator the indicator
+	 * @param categoryTag the data category tag
+	 * @param conf the configuration
+	 */
 	public HistoricalIndicatorChecker(Indicator indicator, String categoryTag, AlgorithmConfiguration conf) {
 		super(indicator, categoryTag, conf);
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.algorithm.DetectionAlgorithm#evaluateSnapshot(ippoz.multilayer.detector.data.Snapshot)
+	 */
 	@Override
 	public double evaluateSnapshot(Snapshot sysSnapshot) {
 		double anomalyRate = 0.0;
@@ -40,6 +52,14 @@ public class HistoricalIndicatorChecker extends IndicatorDetectionAlgorithm {
 		} else return 0;
 	}
 
+	/**
+	 * Analyse call during running.
+	 *
+	 * @param strValue the string value
+	 * @param sCall the service call
+	 * @param ssList the service stat list
+	 * @return the result of the evaluation
+	 */
 	private double analyzeCallRun(String strValue, ServiceCall sCall, HashMap<String, ServiceStat> ssList) {
 		IndicatorStat obs = ssList.get(sCall.getServiceName()).getIndStat(indicator.getName());
 		if(obs != null)
@@ -48,6 +68,14 @@ public class HistoricalIndicatorChecker extends IndicatorDetectionAlgorithm {
 		return 0.0;
 	}
 
+	/**
+	 * Analyse the last observation of the service call.
+	 *
+	 * @param strValue the string value
+	 * @param sCall the service call
+	 * @param ssList the service stat list
+	 * @return the result of the evaluation
+	 */
 	private double analyzeCallEnd(String strValue, ServiceCall sCall, HashMap<String, ServiceStat> ssList) {
 		IndicatorStat obs = ssList.get(sCall.getServiceName()).getIndStat(indicator.getName());
 		if(obs != null)
@@ -56,6 +84,14 @@ public class HistoricalIndicatorChecker extends IndicatorDetectionAlgorithm {
 		return 0.0;
 	}
 
+	/**
+	 * Analyse the first call observation.
+	 *
+	 * @param strValue the string value
+	 * @param sCall the service call
+	 * @param ssList the service stat list
+	 * @return the result of the evaluation
+	 */
 	private double analyzeCallStart(String strValue, ServiceCall sCall, HashMap<String, ServiceStat> ssList) {
 		IndicatorStat obs = ssList.get(sCall.getServiceName()).getIndStat(indicator.getName());
 		if(obs != null)
@@ -64,21 +100,22 @@ public class HistoricalIndicatorChecker extends IndicatorDetectionAlgorithm {
 			return 0.0;
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.algorithm.DetectionAlgorithm#printImageResults(java.lang.String, java.lang.String)
+	 */
 	@Override
 	protected void printImageResults(String outFolderName, String expTag) {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.algorithm.DetectionAlgorithm#printTextResults(java.lang.String, java.lang.String)
+	 */
 	@Override
 	protected void printTextResults(String outFolderName, String expTag) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public String getIndicatorFullName() {
-		return indicator.getName() + "#" + categoryTag + "_HIST";
 	}
 
 }

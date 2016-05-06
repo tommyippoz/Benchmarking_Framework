@@ -21,28 +21,62 @@ import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.commons.math3.special.Erf;
 
 /**
- * @author Tommy
+ * The Class SPSDetector.
+ * Instantiates SPS on a given indicator and executes the prediction for the specific experiment.
  *
+ * @author Tommy
  */
 public class SPSDetector extends IndicatorDetectionAlgorithm {
 	
+	/** The Constant SPS_UPPER_BOUND. */
 	public static final String SPS_UPPER_BOUND = "UpperBound";
+	
+	/** The Constant SPS_LOWER_BOUND. */
 	public static final String SPS_LOWER_BOUND = "LowerBound";
+	
+	/** The Constant SPS_OBSERVATION. */
 	public static final String SPS_OBSERVATION = "Observation";
+	
+	/** The Constant SPS_ANOMALY. */
 	public static final String SPS_ANOMALY = "Anomaly";
+	
+	/** The Constant SPS_FAILURE. */
 	public static final String SPS_FAILURE = "Failure";
 	
+	/** The Constant IMG_WIDTH. */
 	private static final int IMG_WIDTH = 1000;
+	
+	/** The Constant IMG_HEIGHT. */
 	private static final int IMG_HEIGHT = 1000;
 	
+	/** The SPS calculator. */
 	private SPSCalculator calculator;
+	
+	/** The map of anomaly scores. */
 	private TreeMap<Date, Double> anomalies;
+	
+	/** The map of the failures. */
 	private TreeMap<Date, Double> failures;
+	
+	/** The map of the observations. */
 	private TreeMap<Date, Double> observations;
+	
+	/** The upper threshold. */
 	private TreeMap<Date, Double> upperTreshold;
+	
+	/** The lower threshold. */
 	private TreeMap<Date, Double> lowerTreshold;
+	
+	/** The new thresholds. */
 	private double[] newTresholds;
 
+	/**
+	 * Instantiates a new SPS detector.
+	 *
+	 * @param indicator the indicator
+	 * @param categoryTag the data category tag
+	 * @param conf the configuration
+	 */
 	public SPSDetector(Indicator indicator, String categoryTag, AlgorithmConfiguration conf) {
 		super(indicator, categoryTag, conf);
 		calculator = new SPSCalculator();
@@ -54,6 +88,9 @@ public class SPSDetector extends IndicatorDetectionAlgorithm {
 		newTresholds = null;
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.algorithm.DetectionAlgorithm#evaluateSnapshot(ippoz.multilayer.detector.data.Snapshot)
+	 */
 	@Override
 	public double evaluateSnapshot(Snapshot sysSnapshot) {
 		double anomalyScore;
@@ -74,6 +111,12 @@ public class SPSDetector extends IndicatorDetectionAlgorithm {
 		return anomalyScore;
 	}
 	
+	/**
+	 * Calculates anomaly score following SPS rules.
+	 *
+	 * @param sysSnapshot the system snapshot
+	 * @return the anomaly score
+	 */
 	private double calculateAnomalyScore(Snapshot sysSnapshot){
 		double value = Double.valueOf(sysSnapshot.getObservation().getValue(indicator.getName(), categoryTag));
 		if(lowerTreshold.size() > 0 && upperTreshold.size() > 0) {
@@ -83,6 +126,9 @@ public class SPSDetector extends IndicatorDetectionAlgorithm {
 		} else return 0;
 	}
 	
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.algorithm.DetectionAlgorithm#printImageResults(java.lang.String, java.lang.String)
+	 */
 	@Override
 	protected void printImageResults(String outFolderName, String expTag) {
 		ChartDrawer chart;
@@ -93,6 +139,11 @@ public class SPSDetector extends IndicatorDetectionAlgorithm {
 		chart.saveToFile(outFolder.getPath() + "/" + indicator.getName() + "#" + categoryTag + ".png", IMG_WIDTH, IMG_HEIGHT);
 	}
 
+	/**
+	 * Builds the dataset for the graphical output.
+	 *
+	 * @return the dataset
+	 */
 	private HashMap<String, TreeMap<Double, Double>> getDataset() {
 		Date refDate = observations.firstKey();
 		HashMap<String, TreeMap<Double, Double>> dataset = new HashMap<String, TreeMap<Double, Double>>();
@@ -104,28 +155,48 @@ public class SPSDetector extends IndicatorDetectionAlgorithm {
 		return dataset;
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.algorithm.DetectionAlgorithm#printTextResults(java.lang.String, java.lang.String)
+	 */
 	@Override
 	protected void printTextResults(String outFolderName, String expTag) {
 		// TODO Auto-generated method stub	
 	}
 	
-	@Override
-	public String getIndicatorFullName() {
-		return indicator.getName() + "#" + categoryTag + "_SPS";
-	}
-	
+	/**
+	 * The Class SPSCalculator.
+	 * The Core of the SPS elaboration.
+	 */
 	private class SPSCalculator {
 		
+		/** The observed values. */
 		private LinkedList<SPSBlock> observedValues;
+		
+		/** The pdv. */
 		private double pdv;
+		
+		/** The pov. */
 		private double pov;
+		
+		/** The pds. */
 		private double pds;
+		
+		/** The pos. */
 		private double pos;
+		
+		/** The m. */
 		private double m;
+		
+		/** The n. */
 		@SuppressWarnings("unused")
 		private double n;
+		
+		/** The dynamic weights. */
 		private boolean dynamicWeights;
 		
+		/**
+		 * Instantiates a new SPS calculator.
+		 */
 		public SPSCalculator(){
 			observedValues = new LinkedList<SPSBlock>();
 			pdv = Double.parseDouble(conf.getItem(SPSConfiguration.PDV));
@@ -137,6 +208,12 @@ public class SPSDetector extends IndicatorDetectionAlgorithm {
 			dynamicWeights = (Double.parseDouble(conf.getItem(SPSConfiguration.DYN_WEIGHT)) == 1.0);		
 		}
 		
+		/**
+		 * Calculates the new thresholds.
+		 *
+		 * @param sysSnapshot the current snapshot
+		 * @return the new thresholds
+		 */
 		public double[] calculateTreshold(Snapshot sysSnapshot){
 			double calcTreshold = 0;
 			addSPSBlock(Double.parseDouble(sysSnapshot.getObservation().getValue(indicator.getName(), categoryTag)), sysSnapshot.getTimestamp());
@@ -146,6 +223,11 @@ public class SPSDetector extends IndicatorDetectionAlgorithm {
 			return new double[]{observedValues.getLast().getObs() - calcTreshold, observedValues.getLast().getObs() + calcTreshold};
 		}
 		
+		/**
+		 * Computes thresholds.
+		 *
+		 * @return the computed threshold
+		 */
 		private double computeThreshold() {
 			double driftBound = driftUpperBound();
 			double offsetBound = offsetUpperBound();
@@ -154,18 +236,33 @@ public class SPSDetector extends IndicatorDetectionAlgorithm {
 			return pred + sm;
 		}
 		
+		/**
+		 * Calculates the drift upper bound.
+		 *
+		 * @return the double
+		 */
 		private double driftUpperBound(){
 			int dof = observedValues.size() - 1;
 			ChiSquaredDistribution chiSq = new ChiSquaredDistribution(dof);
 			return weightedDriftVariance()*(dof/chiSq.inverseCumulativeProbability(pds));
 		}
 		
+		/**
+		 * Calculates the offset upper bound.
+		 *
+		 * @return the double
+		 */
 		private double offsetUpperBound(){
 			int dof = observedValues.size() - 1;
 			ChiSquaredDistribution chiSq = new ChiSquaredDistribution(dof);
 			return weightedOffsetVariance()*(dof/chiSq.inverseCumulativeProbability(pos));
 		}
 		
+		/**
+		 * Calculates the weighted drift variance.
+		 *
+		 * @return the double
+		 */
 		private double weightedDriftVariance(){
 			double wdf = 0;
 			double weigthSum = getWeightSum();
@@ -182,6 +279,11 @@ public class SPSDetector extends IndicatorDetectionAlgorithm {
 			return wdf/(1-nWeightSum);
 		}
 		
+		/**
+		 * Calculates the weighted offset variance.
+		 *
+		 * @return the double
+		 */
 		private double weightedOffsetVariance(){
 			double wof = 0;
 			double weigthSum = getWeightSum();
@@ -198,18 +300,35 @@ public class SPSDetector extends IndicatorDetectionAlgorithm {
 			return wof/(1-nWeightSum);
 		}
 
+		/**
+		 * Adds an SPS block.
+		 *
+		 * @param newValue the new value
+		 * @param timestamp the new timestamp
+		 */
 		private void addSPSBlock(double newValue, Date timestamp){
 			observedValues.add(new SPSBlock(newValue, timestamp));
 			if(observedValues.size() > m)
 				observedValues.removeFirst();
 		}
 		
+		/**
+		 * Gets the weight of each observation in the sliding window.
+		 *
+		 * @param obsIndex the observation index
+		 * @return the weight
+		 */
 		private double getWeigth(int obsIndex){
 			if(dynamicWeights){
 				return ((obsIndex+1.0)/observedValues.size());
 			} else return 1.0;
 		}
 		
+		/**
+		 * Gets the weight sum.
+		 *
+		 * @return the weight sum
+		 */
 		private double getWeightSum(){
 			double tot = 0.0;
 			if(dynamicWeights){
@@ -220,14 +339,32 @@ public class SPSDetector extends IndicatorDetectionAlgorithm {
 			} else return 1.0*observedValues.size();
 		}
 		
+		/**
+		 * The Class SPSBlock.
+		 */
 		private class SPSBlock {
 			
+			/** The observation value. */
 			private double obs;
+			
+			/** The timestamp. */
 			private Date timestamp;
+			
+			/** The drift. */
 			private double drift;
+			
+			/** The offset. */
 			private double offset;
+			
+			/** The time difference. */
 			private int timeDiff;
 			
+			/**
+			 * Instantiates a new SPS block.
+			 *
+			 * @param obs the observation
+			 * @param timestamp the timestamp
+			 */
 			public SPSBlock(double obs, Date timestamp) {
 				this.obs = obs;
 				this.timestamp = timestamp;
@@ -242,22 +379,47 @@ public class SPSDetector extends IndicatorDetectionAlgorithm {
 				}
 			}
 
+			/**
+			 * Gets the observation value.
+			 *
+			 * @return the observation
+			 */
 			public double getObs() {
 				return obs;
 			}
 			
+			/**
+			 * Gets the drift.
+			 *
+			 * @return the drift
+			 */
 			public double getDrift() {
 				return drift;
 			}
 			
+			/**
+			 * Gets the offset.
+			 *
+			 * @return the offset
+			 */
 			public double getOffset() {
 				return offset;
 			}
 			
+			/**
+			 * Gets the time difference.
+			 *
+			 * @return the time difference
+			 */
 			public int getTimeDiff(){
 				return timeDiff;
 			}
 			
+			/**
+			 * Gets the timestamp.
+			 *
+			 * @return the timestamp
+			 */
 			public Date getTimestamp(){
 				return timestamp;
 			}
