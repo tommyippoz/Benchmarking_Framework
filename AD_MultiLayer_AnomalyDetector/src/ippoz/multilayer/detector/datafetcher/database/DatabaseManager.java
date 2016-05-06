@@ -84,7 +84,7 @@ public class DatabaseManager {
 		LinkedList<Observation> obsList = new LinkedList<Observation>();
 		HashMap<String, String> indData;
 		for(HashMap<String, String> obsMap : connector.executeCustomQuery(null, "select observation_id, ob_time from observation where run_id = " + runId)){
-			obs = new Observation("", obsMap.get("ob_time"));
+			obs = new Observation(obsMap.get("ob_time"));
 			for(HashMap<String, String> indObs : connector.executeCustomQuery(null, "select indicator_observation_id, probe_type_id, in_tag from indicator natural join indicator_observation where observation_id = " + obsMap.get("observation_id"))) {
 				indData = new HashMap<String, String>();
 				for(HashMap<String, String> indValues : connector.executeCustomQuery(null, "select vc_description, ioc_value from indicator_observation_category natural join value_category where indicator_observation_id = " + indObs.get("indicator_observation_id"))) {

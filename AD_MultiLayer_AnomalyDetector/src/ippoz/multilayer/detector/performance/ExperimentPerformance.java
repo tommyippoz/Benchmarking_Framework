@@ -54,7 +54,7 @@ public class ExperimentPerformance {
 	 */
 	public ExperimentPerformance(ExperimentData expData, HashMap<String, Integer> algCategories, HashMap<String, LinkedList<Integer>> timeSeries) {
 		expName = expData.getName();
-		expObs = expData.obsNumber();
+		expObs = expData.getSnapshotNumber();
 		layerIndicators = expData.getLayerIndicators();
 		monitorTimeSeries = expData.getMonitorPerformanceIndexes();
 		detCategories = algCategories;

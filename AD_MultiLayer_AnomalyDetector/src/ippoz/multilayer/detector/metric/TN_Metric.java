@@ -45,7 +45,7 @@ public class TN_Metric extends BetterMaxMetric {
 			} 
 		}
 		if(!absolute)
-			return 1.0*detectionHits/expData.obsNumber();
+			return 1.0*detectionHits/expData.getSnapshotNumber();
 		else return detectionHits;
 	}
 	

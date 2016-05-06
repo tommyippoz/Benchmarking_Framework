@@ -45,7 +45,7 @@ public class FN_Metric extends BetterMinMetric {
 			} 
 		}
 		if(!absolute)
-			return 1.0*detectionHits/expData.obsNumber();
+			return 1.0*detectionHits/expData.getSnapshotNumber();
 		else return detectionHits;
 	}
 

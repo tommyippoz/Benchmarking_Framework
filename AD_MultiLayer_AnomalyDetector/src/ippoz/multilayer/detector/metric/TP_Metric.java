@@ -44,9 +44,9 @@ public class TP_Metric extends BetterMaxMetric {
 					detectionHits++;
 			} 
 		}
-		if(expData.obsNumber() > 0){
+		if(expData.getSnapshotNumber() > 0){
 			if(!absolute)
-				return 1.0*detectionHits/expData.obsNumber();
+				return 1.0*detectionHits/expData.getSnapshotNumber();
 			else return detectionHits;
 		} else return 0.0;
 	}

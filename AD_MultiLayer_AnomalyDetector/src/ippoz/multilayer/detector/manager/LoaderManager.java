@@ -108,7 +108,7 @@ public class LoaderManager extends ThreadScheduler {
 	@Override
 	protected void threadComplete(Thread t, int tIndex) {
 		ExperimentData data = ((DataFetcher)t).getFetchedData();
-		if(data.obsNumber() > 5)
+		if(data.getSnapshotNumber() > 5)
 			readData.add(data);
 	}
 

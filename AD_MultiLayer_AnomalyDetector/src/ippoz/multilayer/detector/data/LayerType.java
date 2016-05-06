@@ -4,14 +4,46 @@
 package ippoz.multilayer.detector.data;
 
 /**
- * @author Tommy
+ * The Enum LayerType.
+ * Defines all the types of probes that exist in the testbed.
  *
+ * @author Tommy
  */
 public enum LayerType {
-	CENTOS, UBUNTU, WINDOWS, 
+	
+	/** The CentOS OS layer. */
+	CENTOS, 
+	
+	/** The Ubuntu OS layer. */
+	UBUNTU, 
+	
+	/** The Windows OS layer. */
+	WINDOWS, 
+	
+	/** The JVM AS layer. */
 	JVM, 
+	
+	/** The Unix network layer. */
 	UNIX_NETWORK,
-	MYSQL, SQLSERVER, ORACLE, MONGODB, 
-	TOMCAT, JBOSS,
+	
+	/** The MySQL database layer. */
+	MYSQL, 
+	
+	/** The SQLserver database layer. */
+	SQLSERVER, 
+	
+	/** The Oracle database layer. */
+	ORACLE, 
+	
+	/** The MongoDB database layer. */
+	MONGODB, 
+		
+	/** The Tomcat AS layer. */
+	TOMCAT, 
+	
+	/** The JBoss AS layer. */
+	JBOSS,
+	
+	/** The no layer placeholder. */
 	NO_LAYER
 }

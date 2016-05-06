@@ -4,23 +4,35 @@
 package ippoz.multilayer.detector.configuration;
 
 /**
- * @author Tommy
+ * The Class ConfidenceConfiguration.
+ * Configuration for the ConfidenceIntervalChecker Algorithm.
  *
+ * @author Tommy
  */
 public class ConfidenceConfiguration extends AlgorithmConfiguration {
 	
+	/** The Constant ALPHA. */
 	public static final String ALPHA = "alpha";
 	
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.configuration.AlgorithmConfiguration#toString()
+	 */
 	@Override
 	public String toString() {
 		return "CIntConf:{alpha=" + getItem(ALPHA) + "}";
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.configuration.AlgorithmConfiguration#getFileHeader()
+	 */
 	@Override
 	public String getFileHeader() {
 		return "weigth,score,alpha";
 	}
 
+	/* (non-Javadoc)
+	 * @see ippoz.multilayer.detector.configuration.AlgorithmConfiguration#toFileRow(boolean)
+	 */
 	@Override
 	public String toFileRow(boolean complete) {
 		if(complete)
@@ -28,6 +40,11 @@ public class ConfidenceConfiguration extends AlgorithmConfiguration {
 		else return getItem(ALPHA);
 	}
 
+	/**
+	 * Gets the alpha of the confidence interval.
+	 *
+	 * @return the alpha
+	 */
 	public double getAlpha() {
 		return Double.parseDouble(getItem(ALPHA));
 	}

@@ -161,7 +161,7 @@ public class ExperimentVoter extends Thread {
 		PrintWriter pw;
 		try {
 			pw = new PrintWriter(new FileOutputStream(new File(outFolderName + "/voter/results.csv"), true));
-			pw.append(expData.getName() + "," + expData.obsNumber() + ",");
+			pw.append(expData.getName() + "," + expData.getSnapshotNumber() + ",");
 			for(Metric met : validationMetrics){
 				pw.append(String.valueOf(met.evaluateAnomalyResults(expData, voting, anomalyTreshold)) + ",");
 			}

@@ -34,8 +34,8 @@ public abstract class DetectionAlgorithm {
 	protected abstract double evaluateSnapshot(Snapshot sysSnapshot);
 	
 	public double[] evaluateExperiment(ExperimentData expData){
-		double[] res = new double[expData.obsNumber()];
-		for(int i=0;i<expData.obsNumber();i++){
+		double[] res = new double[expData.getSnapshotNumber()];
+		for(int i=0;i<expData.getSnapshotNumber();i++){
 			if(expData.hasNextSnapshot())
 				res[i] = evaluateSnapshot(expData.nextSnapshot());
 		}
