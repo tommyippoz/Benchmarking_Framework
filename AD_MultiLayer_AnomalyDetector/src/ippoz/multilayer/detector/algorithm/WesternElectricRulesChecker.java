@@ -120,7 +120,7 @@ public class WesternElectricRulesChecker extends IndicatorDetectionAlgorithm {
 			if(mapCall.compareTo(sCall) == 0)
 				entry = mapCall;
 		}
-		if(entry == null){
+		if(entry == null){ 
 			histZones.put(sCall, new LinkedList<WER_Zone>());
 			entry = sCall;
 		}
