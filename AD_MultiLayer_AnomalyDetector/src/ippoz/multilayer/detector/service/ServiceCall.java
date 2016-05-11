@@ -13,7 +13,7 @@ import java.util.Date;
  *
  * @author Tommy
  */
-public class ServiceCall {
+public class ServiceCall implements Comparable<ServiceCall> {
 	
 	/** The service name. */
 	private String serviceName;
@@ -98,6 +98,15 @@ public class ServiceCall {
 	 */
 	public boolean isAliveAt(Date timestamp){
 		return timestamp.getTime() >= startTime.getTime() && timestamp.getTime() <= endTime.getTime();
+	}
+
+	@Override
+	public int compareTo(ServiceCall other) {
+		if(other.getServiceName().equals(serviceName) && other.getResponseCode().equals(responseCode)){
+			if(other.getStartTime().equals(startTime) && other.getEndTime().equals(endTime))
+				return 0;
+			else return 1;
+		} else return -1;
 	}
 	
 }

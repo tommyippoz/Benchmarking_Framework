@@ -34,3 +34,6 @@ CONF,0.99
 
 type,rcc_weight
 RCC,10.0
+
+type,wer_weight
+WER,1.0

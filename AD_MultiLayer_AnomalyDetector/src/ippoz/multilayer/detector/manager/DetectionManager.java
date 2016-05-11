@@ -8,6 +8,7 @@ import ippoz.multilayer.detector.configuration.ConfidenceConfiguration;
 import ippoz.multilayer.detector.configuration.HistoricalConfiguration;
 import ippoz.multilayer.detector.configuration.RemoteCallConfiguration;
 import ippoz.multilayer.detector.configuration.SPSConfiguration;
+import ippoz.multilayer.detector.configuration.WesternElectricRulesConfiguration;
 import ippoz.multilayer.detector.metric.Custom_Metric;
 import ippoz.multilayer.detector.metric.FMeasure_Metric;
 import ippoz.multilayer.detector.metric.FN_Metric;
@@ -277,6 +278,8 @@ public class DetectionManager {
 										alConf = new ConfidenceConfiguration();
 									} else if(readed.split(",")[0].toUpperCase().equals("RCC")){
 										alConf = new RemoteCallConfiguration();
+									} else if(readed.split(",")[0].toUpperCase().equals("WER")){
+										alConf = new WesternElectricRulesConfiguration();
 									} else alConf = null;
 									for(String element : readed.split(",")){
 										if(i > 0)

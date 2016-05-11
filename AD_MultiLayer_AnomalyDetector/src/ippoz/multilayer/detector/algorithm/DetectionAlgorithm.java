@@ -8,6 +8,7 @@ import ippoz.multilayer.detector.configuration.ConfidenceConfiguration;
 import ippoz.multilayer.detector.configuration.HistoricalConfiguration;
 import ippoz.multilayer.detector.configuration.RemoteCallConfiguration;
 import ippoz.multilayer.detector.configuration.SPSConfiguration;
+import ippoz.multilayer.detector.configuration.WesternElectricRulesConfiguration;
 import ippoz.multilayer.detector.data.ExperimentData;
 import ippoz.multilayer.detector.data.Indicator;
 import ippoz.multilayer.detector.data.LayerType;
@@ -65,6 +66,8 @@ public abstract class DetectionAlgorithm {
 				return new ConfidenceIntervalChecker(indicator, dataType, conf);
 			case "RCC":
 				return new RemoteCallChecker(conf);
+			case "WER":
+				return new WesternElectricRulesChecker(indicator, dataType, conf);
 			default:
 				return null;
 		}
@@ -234,6 +237,8 @@ public abstract class DetectionAlgorithm {
 			return "CONF";
 		else if (conf instanceof RemoteCallConfiguration)
 			return "RCC";
+		else if (conf instanceof WesternElectricRulesConfiguration)
+			return "WER";
 		else return "";
 	}
 
