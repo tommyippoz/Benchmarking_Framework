@@ -3,8 +3,8 @@
  */
 package ippoz.multilayer.detector.performance;
 
+import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.data.ExperimentData;
-import ippoz.multilayer.detector.data.LayerType;
 import ippoz.multilayer.detector.support.AppUtility;
 
 import java.util.HashMap;

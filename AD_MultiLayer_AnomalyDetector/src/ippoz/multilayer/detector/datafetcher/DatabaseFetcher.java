@@ -3,7 +3,7 @@
  */
 package ippoz.multilayer.detector.datafetcher;
 
-import ippoz.multilayer.detector.data.LayerType;
+import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.data.Observation;
 import ippoz.multilayer.detector.datafetcher.database.DatabaseManager;
 import ippoz.multilayer.detector.failure.InjectedElement;

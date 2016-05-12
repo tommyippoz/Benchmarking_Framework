@@ -3,9 +3,9 @@
  */
 package ippoz.multilayer.detector.manager;
 
+import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.data.ExperimentData;
-import ippoz.multilayer.detector.data.Indicator;
 import ippoz.multilayer.detector.metric.Metric;
 import ippoz.multilayer.detector.reputation.Reputation;
 import ippoz.multilayer.detector.support.AppLogger;

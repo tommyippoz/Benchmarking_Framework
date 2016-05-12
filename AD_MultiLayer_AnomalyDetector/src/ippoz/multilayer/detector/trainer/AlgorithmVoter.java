@@ -3,8 +3,8 @@
  */
 package ippoz.multilayer.detector.trainer;
 
+import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
-import ippoz.multilayer.detector.data.LayerType;
 import ippoz.multilayer.detector.data.Snapshot;
 
 /**

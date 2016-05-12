@@ -3,8 +3,8 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
+import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.data.Indicator;
 import ippoz.multilayer.detector.data.Snapshot;
 import ippoz.multilayer.detector.service.ServiceCall;
 import ippoz.multilayer.detector.service.ServiceStat;

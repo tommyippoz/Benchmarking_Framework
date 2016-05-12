@@ -3,6 +3,8 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
+import ippoz.multilayer.commons.indicator.Indicator;
+import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.configuration.ConfidenceConfiguration;
 import ippoz.multilayer.detector.configuration.HistoricalConfiguration;
@@ -10,8 +12,6 @@ import ippoz.multilayer.detector.configuration.RemoteCallConfiguration;
 import ippoz.multilayer.detector.configuration.SPSConfiguration;
 import ippoz.multilayer.detector.configuration.WesternElectricRulesConfiguration;
 import ippoz.multilayer.detector.data.ExperimentData;
-import ippoz.multilayer.detector.data.Indicator;
-import ippoz.multilayer.detector.data.LayerType;
 import ippoz.multilayer.detector.data.Snapshot;
 import ippoz.multilayer.detector.service.StatPair;
 import ippoz.multilayer.detector.support.AppLogger;

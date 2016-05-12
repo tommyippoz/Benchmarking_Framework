@@ -3,6 +3,7 @@
  */
 package ippoz.multilayer.detector.data;
 
+import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.support.AppLogger;
 import ippoz.multilayer.detector.support.AppUtility;
 

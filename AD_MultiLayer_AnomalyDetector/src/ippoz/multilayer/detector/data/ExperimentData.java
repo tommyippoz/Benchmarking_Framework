@@ -3,6 +3,8 @@
  */
 package ippoz.multilayer.detector.data;
 
+import ippoz.multilayer.commons.indicator.Indicator;
+import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.failure.InjectedElement;
 import ippoz.multilayer.detector.service.ServiceCall;
 import ippoz.multilayer.detector.service.ServiceStat;

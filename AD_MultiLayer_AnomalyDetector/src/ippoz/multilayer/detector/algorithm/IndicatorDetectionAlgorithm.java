@@ -3,9 +3,9 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
+import ippoz.multilayer.commons.indicator.Indicator;
+import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.data.Indicator;
-import ippoz.multilayer.detector.data.LayerType;
 
 // TODO: Auto-generated Javadoc
 /**

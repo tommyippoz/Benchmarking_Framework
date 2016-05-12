@@ -3,9 +3,9 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
+import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.configuration.SPSConfiguration;
-import ippoz.multilayer.detector.data.Indicator;
 import ippoz.multilayer.detector.data.Snapshot;
 import ippoz.multilayer.detector.graphics.ChartDrawer;
 import ippoz.multilayer.detector.graphics.XYChartDrawer;
