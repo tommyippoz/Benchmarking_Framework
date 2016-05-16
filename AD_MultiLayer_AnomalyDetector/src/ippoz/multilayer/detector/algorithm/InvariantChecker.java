@@ -7,6 +7,7 @@ import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
+import ippoz.multilayer.detector.invariants.Invariant;
 
 /**
  * @author Tommy
@@ -18,13 +19,12 @@ public class InvariantChecker extends DetectionAlgorithm {
 
 	public InvariantChecker(AlgorithmConfiguration conf, Invariant invariant) {
 		super(conf);
-		// TODO Auto-generated constructor stub
+		this.invariant = invariant;
 	}
 
 	@Override
 	protected double evaluateSnapshot(Snapshot sysSnapshot) {
-		// TODO Auto-generated method stub
-		return 0;
+		return invariant.evaluateInvariant(sysSnapshot) ? 1.0 : 0.0;
 	}
 
 	@Override
@@ -41,13 +41,11 @@ public class InvariantChecker extends DetectionAlgorithm {
 
 	@Override
 	public DataCategory getDataType() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Indicator getIndicator() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
