@@ -16,15 +16,15 @@ public class IndicatorMember extends InvariantMember{
 	private Indicator indicator;
 	private DataCategory categoryTag;
 	
-	public IndicatorMember(Class<?> memberType, Indicator indicator, DataCategory categoryTag) {
-		super(memberType, indicator.getName());
+	public IndicatorMember(Indicator indicator, DataCategory categoryTag) {
+		super(indicator.getIndicatorType(), indicator.getName());
 		this.indicator = indicator;
 		this.categoryTag = categoryTag;
 	}
 
 	@Override
 	public String getStringValue(Snapshot snapshot) {
-		return snapshot.getObservation().getValue(indicator, categoryTag);
+		return snapshot.getObservation().getValue(indicator.getName(), categoryTag);
 	}
 
 	@Override

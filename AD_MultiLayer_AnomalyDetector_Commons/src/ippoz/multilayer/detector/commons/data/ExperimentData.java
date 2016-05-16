@@ -3,6 +3,7 @@
  */
 package ippoz.multilayer.detector.commons.data;
 
+import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.commons.failure.InjectedElement;
@@ -188,7 +189,7 @@ public class ExperimentData implements Cloneable {
 		LinkedList<Indicator> indList = new LinkedList<Indicator>();
 		if(snapList != null && snapList.size() > 0){
 			for(Indicator ind : snapList.get(0).getObservation().getIndicators()){
-				if(AppUtility.isNumber(snapList.get(0).getObservation().getValue(ind, IndicatorData.PLAIN_DATA_TAG)))
+				if(AppUtility.isNumber(snapList.get(0).getObservation().getValue(ind, DataCategory.PLAIN)))
 					indList.add(ind);
 			}
 		}

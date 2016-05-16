@@ -22,7 +22,7 @@ import java.util.LinkedList;
  *
  * @author Tommy
  */
-public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrainer>{
+public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrainer> {
 	
 	/** The algorithm tag. */
 	private String algTag;	
@@ -73,6 +73,24 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 		this.reputation = reputation;
 		this.configurations = configurations;
 		expList = deepClone(trainData);
+	}
+	
+	/**
+	 * Instantiates a new algorithm trainer.
+	 *
+	 * @param algTag the algorithm tag
+	 * @param indicator the involved indicator
+	 * @param categoryTag the data category tag
+	 * @param metric the used metric
+	 * @param reputation the used reputation metric
+	 * @param trainData the considered train data
+	 * @param configurations the possible configurations
+	 */
+	public AlgorithmTrainer(String algTag, Indicator indicator, DataCategory categoryTag, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData, AlgorithmConfiguration configuration) {
+		this(algTag, indicator, categoryTag, metric, reputation, trainData, new HashMap<String, LinkedList<AlgorithmConfiguration>>());
+		configurations.put(algTag, new LinkedList<AlgorithmConfiguration>());
+		configurations.get(algTag).add(configuration);
+		bestConf = configuration;
 	}
 
 	/**

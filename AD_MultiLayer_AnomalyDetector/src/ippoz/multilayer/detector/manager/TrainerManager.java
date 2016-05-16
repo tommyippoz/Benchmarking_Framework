@@ -57,6 +57,8 @@ public class TrainerManager extends ThreadScheduler {
 	/** The algorithm types. */
 	private String[] algTypes;
 	
+	private InvariantManager iManager;
+	
 	/**
 	 * Instantiates a new trainer manager.
 	 *
@@ -91,6 +93,7 @@ public class TrainerManager extends ThreadScheduler {
 		try {
 			start();
 			join();
+			filterTrainings(getThreadList());
 			saveScores(getThreadList());
 			pManager.addTiming(TimingsManager.TRAIN_RUNS, Double.valueOf(expList.size()));
 			pManager.addTiming(TimingsManager.TRAIN_TIME, (double)(System.currentTimeMillis() - start));
@@ -99,6 +102,12 @@ public class TrainerManager extends ThreadScheduler {
 		} catch (InterruptedException ex) {
 			AppLogger.logException(getClass(), ex, "Unable to complete training phase");
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void filterTrainings(LinkedList<? extends Thread> list) {
+		LinkedList<AlgorithmTrainer> tList = (LinkedList<AlgorithmTrainer>)list;
+		// TODO
 	}
 
 	/* (non-Javadoc)
@@ -111,12 +120,15 @@ public class TrainerManager extends ThreadScheduler {
 		for(String algType : algTypes){
 			if(algType.equals("RCC")){
 				trainerList.add(new AlgorithmTrainer(algType, null, null, metric, reputation, expList, confList));
-			} else {
+			} else if(algType.equals("SPS") || algType.equals("CONF") || algType.equals("HIST") || algType.equals("WER")){
 				for(Indicator indicator : indList){
 					for(DataCategory dataType : dataTypes){
 						trainerList.add(new AlgorithmTrainer(algType, indicator, dataType, metric, reputation, expList, confList));
 					}
 				}
+			} else if(algType.equals("INV")){
+				iManager = new InvariantManager(indList, dataTypes, expList, metric, reputation);
+				trainerList.addAll(iManager.getInvList());
 			}
 		}
 		setThreadList(trainerList);

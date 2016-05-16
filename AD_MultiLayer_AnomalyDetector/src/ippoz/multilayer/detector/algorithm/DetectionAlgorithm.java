@@ -69,6 +69,8 @@ public abstract class DetectionAlgorithm {
 				return new RemoteCallChecker(conf);
 			case "WER":
 				return new WesternElectricRulesChecker(indicator, dataType, conf);
+			case "INV":
+				return new InvariantChecker(conf);
 			default:
 				return null;
 		}

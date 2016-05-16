@@ -30,11 +30,7 @@ public class Invariant {
 	}
 	
 	public boolean evaluateInvariant(Snapshot snapshot){
-		if(firstMember.getValue(snapshot) instanceof Double || firstMember.getValue(snapshot) instanceof Integer)
-			return evaluateOperand(firstMember.getDoubleValue(snapshot), secondMember.getDoubleValue(snapshot));
-		else if(firstMember.getValue(snapshot) instanceof Long)
-			return evaluateOperand(firstMember.getLongValue(snapshot), secondMember.getLongValue(snapshot));
-		else return false;
+		return evaluateOperand(firstMember.getDoubleValue(snapshot), secondMember.getDoubleValue(snapshot));
 	}
 	
 	private boolean evaluateOperand(double val1, double val2){

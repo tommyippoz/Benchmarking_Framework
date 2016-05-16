@@ -3,6 +3,7 @@
  */
 package ippoz.multilayer.detector.commons.datafetcher.database;
 
+import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.commons.data.IndicatorData;
@@ -82,13 +83,13 @@ public class DatabaseManager {
 	public LinkedList<Observation> getRunObservations() {
 		Observation obs;
 		LinkedList<Observation> obsList = new LinkedList<Observation>();
-		HashMap<String, String> indData;
+		HashMap<DataCategory, String> indData;
 		for(HashMap<String, String> obsMap : connector.executeCustomQuery(null, "select observation_id, ob_time from observation where run_id = " + runId)){
 			obs = new Observation(obsMap.get("ob_time"));
 			for(HashMap<String, String> indObs : connector.executeCustomQuery(null, "select indicator_observation_id, probe_type_id, in_tag from indicator natural join indicator_observation where observation_id = " + obsMap.get("observation_id"))) {
-				indData = new HashMap<String, String>();
+				indData = new HashMap<DataCategory, String>();
 				for(HashMap<String, String> indValues : connector.executeCustomQuery(null, "select vc_description, ioc_value from indicator_observation_category natural join value_category where indicator_observation_id = " + indObs.get("indicator_observation_id"))) {
-					indData.put(indValues.get("vc_description").toUpperCase(), indValues.get("ioc_value"));
+					indData.put(DataCategory.valueOf(indValues.get("vc_description").toUpperCase()), indValues.get("ioc_value"));
 				}
 				obs.addIndicator(new Indicator(indObs.get("in_tag"), layers.get(indObs.get("probe_type_id")), String.class), new IndicatorData(indData));
 			}

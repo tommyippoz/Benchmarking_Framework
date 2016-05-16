@@ -3,10 +3,14 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
+import java.io.File;
+import java.util.TreeMap;
+
 import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
+import ippoz.multilayer.detector.configuration.InvariantConfiguration;
 import ippoz.multilayer.detector.invariants.Invariant;
 
 /**
@@ -17,9 +21,10 @@ public class InvariantChecker extends DetectionAlgorithm {
 	
 	private Invariant invariant;
 
-	public InvariantChecker(AlgorithmConfiguration conf, Invariant invariant) {
+	public InvariantChecker(AlgorithmConfiguration conf) {
 		super(conf);
-		this.invariant = invariant;
+		if(conf instanceof InvariantConfiguration)
+			invariant = ((InvariantConfiguration)conf).getInvariant();
 	}
 
 	@Override
