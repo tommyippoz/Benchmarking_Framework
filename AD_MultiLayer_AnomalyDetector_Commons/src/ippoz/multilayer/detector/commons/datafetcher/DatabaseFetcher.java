@@ -1,15 +1,15 @@
 /**
  * 
  */
-package ippoz.multilayer.detector.datafetcher;
+package ippoz.multilayer.detector.commons.datafetcher;
 
 import ippoz.multilayer.commons.layers.LayerType;
-import ippoz.multilayer.detector.data.Observation;
-import ippoz.multilayer.detector.datafetcher.database.DatabaseManager;
-import ippoz.multilayer.detector.failure.InjectedElement;
-import ippoz.multilayer.detector.service.ServiceCall;
-import ippoz.multilayer.detector.service.ServiceStat;
-import ippoz.multilayer.detector.support.AppLogger;
+import ippoz.multilayer.detector.commons.data.Observation;
+import ippoz.multilayer.detector.commons.datafetcher.database.DatabaseManager;
+import ippoz.multilayer.detector.commons.failure.InjectedElement;
+import ippoz.multilayer.detector.commons.service.ServiceCall;
+import ippoz.multilayer.detector.commons.service.ServiceStat;
+import ippoz.multilayer.detector.commons.support.AppLogger;
 
 import java.sql.SQLException;
 import java.util.HashMap;

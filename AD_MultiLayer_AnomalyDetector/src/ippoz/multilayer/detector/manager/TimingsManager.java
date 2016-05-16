@@ -3,7 +3,7 @@
  */
 package ippoz.multilayer.detector.manager;
 
-import ippoz.multilayer.detector.support.AppLogger;
+import ippoz.multilayer.detector.commons.support.AppLogger;
 
 import java.io.BufferedWriter;
 import java.io.File;

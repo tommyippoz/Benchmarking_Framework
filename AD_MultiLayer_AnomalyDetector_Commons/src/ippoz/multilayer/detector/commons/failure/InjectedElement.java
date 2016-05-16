@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ippoz.multilayer.detector.failure;
+package ippoz.multilayer.detector.commons.failure;
 
 import java.util.Date;
 

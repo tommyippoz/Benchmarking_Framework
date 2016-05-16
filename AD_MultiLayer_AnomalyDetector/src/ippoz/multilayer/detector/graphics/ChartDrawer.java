@@ -3,7 +3,7 @@
  */
 package ippoz.multilayer.detector.graphics;
 
-import ippoz.multilayer.detector.support.AppLogger;
+import ippoz.multilayer.detector.commons.support.AppLogger;
 
 import java.io.File;
 import java.io.IOException;

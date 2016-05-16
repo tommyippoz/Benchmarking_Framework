@@ -1,9 +1,9 @@
 /**
  * 
  */
-package ippoz.multilayer.detector.service;
+package ippoz.multilayer.detector.commons.service;
 
-import ippoz.multilayer.detector.support.AppUtility;
+import ippoz.multilayer.detector.commons.support.AppUtility;
 
 import java.util.Date;
 

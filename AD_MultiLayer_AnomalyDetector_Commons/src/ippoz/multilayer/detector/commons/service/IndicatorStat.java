@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ippoz.multilayer.detector.service;
+package ippoz.multilayer.detector.commons.service;
 
 /**
  * The Class IndicatorStat.

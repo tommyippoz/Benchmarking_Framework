@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ippoz.multilayer.detector.data;
+package ippoz.multilayer.detector.commons.data;
 
 /**
  * The Enum ExperimentType.

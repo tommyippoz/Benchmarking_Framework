@@ -4,12 +4,12 @@
 package ippoz.multilayer.detector.algorithm;
 
 import ippoz.multilayer.commons.indicator.Indicator;
+import ippoz.multilayer.detector.commons.data.Snapshot;
+import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.configuration.SPSConfiguration;
-import ippoz.multilayer.detector.data.Snapshot;
 import ippoz.multilayer.detector.graphics.ChartDrawer;
 import ippoz.multilayer.detector.graphics.XYChartDrawer;
-import ippoz.multilayer.detector.support.AppUtility;
 
 import java.io.File;
 import java.util.Date;

@@ -4,12 +4,12 @@
 package ippoz.multilayer.detector.trainer;
 
 import ippoz.multilayer.commons.layers.LayerType;
-import ippoz.multilayer.detector.data.ExperimentData;
-import ippoz.multilayer.detector.data.Snapshot;
+import ippoz.multilayer.detector.commons.data.ExperimentData;
+import ippoz.multilayer.detector.commons.data.Snapshot;
+import ippoz.multilayer.detector.commons.support.AppLogger;
+import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.graphics.HistogramChartDrawer;
 import ippoz.multilayer.detector.metric.Metric;
-import ippoz.multilayer.detector.support.AppLogger;
-import ippoz.multilayer.detector.support.AppUtility;
 
 import java.io.BufferedWriter;
 import java.io.File;

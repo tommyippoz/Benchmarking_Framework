@@ -4,11 +4,11 @@
 package ippoz.multilayer.detector.algorithm;
 
 import ippoz.multilayer.commons.indicator.Indicator;
+import ippoz.multilayer.detector.commons.data.Snapshot;
+import ippoz.multilayer.detector.commons.service.ServiceCall;
+import ippoz.multilayer.detector.commons.service.ServiceStat;
+import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.data.Snapshot;
-import ippoz.multilayer.detector.service.ServiceCall;
-import ippoz.multilayer.detector.service.ServiceStat;
-import ippoz.multilayer.detector.support.AppUtility;
 
 import java.util.Date;
 

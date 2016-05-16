@@ -3,7 +3,7 @@
  */
 package ippoz.multilayer.detector.metric;
 
-import ippoz.multilayer.detector.data.ExperimentData;
+import ippoz.multilayer.detector.commons.data.ExperimentData;
 
 import java.util.Date;
 import java.util.HashMap;

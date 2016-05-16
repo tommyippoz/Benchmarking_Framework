@@ -3,9 +3,9 @@
  */
 package ippoz.multilayer.detector.executable;
 
+import ippoz.multilayer.detector.commons.support.AppLogger;
+import ippoz.multilayer.detector.commons.support.PreferencesManager;
 import ippoz.multilayer.detector.manager.DetectionManager;
-import ippoz.multilayer.detector.support.AppLogger;
-import ippoz.multilayer.detector.support.PreferencesManager;
 
 /**
  * The Class DetectorMain.

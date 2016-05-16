@@ -1,11 +1,11 @@
 /**
  * 
  */
-package ippoz.multilayer.detector.data;
+package ippoz.multilayer.detector.commons.data;
 
-import ippoz.multilayer.detector.failure.InjectedElement;
-import ippoz.multilayer.detector.service.ServiceCall;
-import ippoz.multilayer.detector.service.ServiceStat;
+import ippoz.multilayer.detector.commons.failure.InjectedElement;
+import ippoz.multilayer.detector.commons.service.ServiceCall;
+import ippoz.multilayer.detector.commons.service.ServiceStat;
 
 import java.util.Date;
 import java.util.HashMap;

@@ -5,7 +5,7 @@ package ippoz.multilayer.detector.trainer;
 
 import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
-import ippoz.multilayer.detector.data.Snapshot;
+import ippoz.multilayer.detector.commons.data.Snapshot;
 
 /**
  * The Class AlgorithmVoter.

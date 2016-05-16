@@ -5,12 +5,12 @@ package ippoz.multilayer.detector.trainer;
 
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
+import ippoz.multilayer.detector.commons.data.ExperimentData;
+import ippoz.multilayer.detector.commons.support.AppLogger;
+import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.data.ExperimentData;
 import ippoz.multilayer.detector.metric.Metric;
 import ippoz.multilayer.detector.reputation.Reputation;
-import ippoz.multilayer.detector.support.AppLogger;
-import ippoz.multilayer.detector.support.AppUtility;
 
 import java.util.HashMap;
 import java.util.LinkedList;

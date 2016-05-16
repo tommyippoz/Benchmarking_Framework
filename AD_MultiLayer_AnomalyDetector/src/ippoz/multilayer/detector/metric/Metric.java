@@ -4,8 +4,8 @@
 package ippoz.multilayer.detector.metric;
 
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
-import ippoz.multilayer.detector.data.ExperimentData;
-import ippoz.multilayer.detector.data.Snapshot;
+import ippoz.multilayer.detector.commons.data.ExperimentData;
+import ippoz.multilayer.detector.commons.data.Snapshot;
 
 import java.util.Date;
 import java.util.HashMap;

@@ -4,13 +4,13 @@
 package ippoz.multilayer.detector.algorithm;
 
 import ippoz.multilayer.commons.indicator.Indicator;
+import ippoz.multilayer.detector.commons.data.Snapshot;
+import ippoz.multilayer.detector.commons.service.IndicatorStat;
+import ippoz.multilayer.detector.commons.service.ServiceCall;
+import ippoz.multilayer.detector.commons.service.ServiceStat;
+import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.configuration.HistoricalConfiguration;
-import ippoz.multilayer.detector.data.Snapshot;
-import ippoz.multilayer.detector.service.IndicatorStat;
-import ippoz.multilayer.detector.service.ServiceCall;
-import ippoz.multilayer.detector.service.ServiceStat;
-import ippoz.multilayer.detector.support.AppLogger;
 
 import java.util.HashMap;
 

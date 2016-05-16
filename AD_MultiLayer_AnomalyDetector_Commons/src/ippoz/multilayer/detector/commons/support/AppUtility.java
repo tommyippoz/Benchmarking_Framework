@@ -1,10 +1,10 @@
 /**
  * 
  */
-package ippoz.multilayer.detector.support;
+package ippoz.multilayer.detector.commons.support;
 
-import ippoz.multilayer.detector.data.ExperimentData;
-import ippoz.multilayer.detector.failure.InjectedElement;
+import ippoz.multilayer.detector.commons.data.ExperimentData;
+import ippoz.multilayer.detector.commons.failure.InjectedElement;
 
 import java.io.BufferedReader;
 import java.io.File;

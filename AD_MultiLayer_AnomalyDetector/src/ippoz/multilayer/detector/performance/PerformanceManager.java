@@ -3,7 +3,7 @@
  */
 package ippoz.multilayer.detector.performance;
 
-import ippoz.multilayer.detector.data.ExperimentData;
+import ippoz.multilayer.detector.commons.data.ExperimentData;
 
 import java.util.HashMap;
 import java.util.LinkedList;

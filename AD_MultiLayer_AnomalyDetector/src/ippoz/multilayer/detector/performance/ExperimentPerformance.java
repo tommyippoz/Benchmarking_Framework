@@ -4,8 +4,8 @@
 package ippoz.multilayer.detector.performance;
 
 import ippoz.multilayer.commons.layers.LayerType;
-import ippoz.multilayer.detector.data.ExperimentData;
-import ippoz.multilayer.detector.support.AppUtility;
+import ippoz.multilayer.detector.commons.data.ExperimentData;
+import ippoz.multilayer.detector.commons.support.AppUtility;
 
 import java.util.HashMap;
 import java.util.LinkedList;

@@ -1,9 +1,9 @@
 /**
  * 
  */
-package ippoz.multilayer.detector.datafetcher.database;
+package ippoz.multilayer.detector.commons.datafetcher.database;
 
-import ippoz.multilayer.detector.support.AppLogger;
+import ippoz.multilayer.detector.commons.support.AppLogger;
 
 import java.io.BufferedReader;
 import java.io.File;

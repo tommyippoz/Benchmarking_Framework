@@ -3,6 +3,9 @@
  */
 package ippoz.multilayer.detector.manager;
 
+import ippoz.multilayer.detector.commons.support.AppLogger;
+import ippoz.multilayer.detector.commons.support.AppUtility;
+import ippoz.multilayer.detector.commons.support.PreferencesManager;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.configuration.ConfidenceConfiguration;
 import ippoz.multilayer.detector.configuration.HistoricalConfiguration;
@@ -23,9 +26,6 @@ import ippoz.multilayer.detector.reputation.BetaReputation;
 import ippoz.multilayer.detector.reputation.ConstantReputation;
 import ippoz.multilayer.detector.reputation.MetricReputation;
 import ippoz.multilayer.detector.reputation.Reputation;
-import ippoz.multilayer.detector.support.AppLogger;
-import ippoz.multilayer.detector.support.AppUtility;
-import ippoz.multilayer.detector.support.PreferencesManager;
 
 import java.io.BufferedReader;
 import java.io.File;

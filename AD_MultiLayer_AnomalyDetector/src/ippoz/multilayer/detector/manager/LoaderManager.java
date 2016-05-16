@@ -3,11 +3,11 @@
  */
 package ippoz.multilayer.detector.manager;
 
-import ippoz.multilayer.detector.data.ExperimentData;
-import ippoz.multilayer.detector.datafetcher.DataFetcher;
-import ippoz.multilayer.detector.datafetcher.DatabaseFetcher;
-import ippoz.multilayer.detector.support.AppLogger;
-import ippoz.multilayer.detector.support.ThreadScheduler;
+import ippoz.multilayer.detector.commons.data.ExperimentData;
+import ippoz.multilayer.detector.commons.datafetcher.DataFetcher;
+import ippoz.multilayer.detector.commons.datafetcher.DatabaseFetcher;
+import ippoz.multilayer.detector.commons.support.AppLogger;
+import ippoz.multilayer.detector.commons.support.ThreadScheduler;
 
 import java.util.LinkedList;
 

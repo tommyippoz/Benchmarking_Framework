@@ -5,16 +5,16 @@ package ippoz.multilayer.detector.manager;
 
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
+import ippoz.multilayer.detector.commons.data.ExperimentData;
+import ippoz.multilayer.detector.commons.support.AppLogger;
+import ippoz.multilayer.detector.commons.support.PreferencesManager;
+import ippoz.multilayer.detector.commons.support.ThreadScheduler;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.configuration.ConfidenceConfiguration;
 import ippoz.multilayer.detector.configuration.HistoricalConfiguration;
 import ippoz.multilayer.detector.configuration.RemoteCallConfiguration;
 import ippoz.multilayer.detector.configuration.SPSConfiguration;
-import ippoz.multilayer.detector.data.ExperimentData;
 import ippoz.multilayer.detector.metric.Metric;
-import ippoz.multilayer.detector.support.AppLogger;
-import ippoz.multilayer.detector.support.PreferencesManager;
-import ippoz.multilayer.detector.support.ThreadScheduler;
 import ippoz.multilayer.detector.trainer.AlgorithmVoter;
 import ippoz.multilayer.detector.trainer.ExperimentVoter;
 

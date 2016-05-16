@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ippoz.multilayer.detector.support;
+package ippoz.multilayer.detector.commons.support;
 
 import java.io.IOException;
 import java.util.logging.FileHandler;
