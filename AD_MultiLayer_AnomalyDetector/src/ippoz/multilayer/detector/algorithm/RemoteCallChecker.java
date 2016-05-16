@@ -3,6 +3,7 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
+import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.service.ServiceCall;
@@ -110,7 +111,7 @@ public class RemoteCallChecker extends DetectionAlgorithm {
 	 * @see ippoz.multilayer.detector.algorithm.DetectionAlgorithm#getDataType()
 	 */
 	@Override
-	public String getDataType() {
+	public DataCategory getDataType() {
 		return null;
 	}
 

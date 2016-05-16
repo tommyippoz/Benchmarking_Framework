@@ -3,6 +3,7 @@
  */
 package ippoz.multilayer.detector.trainer;
 
+import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
@@ -30,7 +31,7 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	private Indicator indicator;
 	
 	/** The data category tag. */
-	private String categoryTag;
+	private DataCategory categoryTag;
 	
 	/** The used metric. */
 	private Metric metric;
@@ -64,7 +65,7 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	 * @param trainData the considered train data
 	 * @param configurations the possible configurations
 	 */
-	public AlgorithmTrainer(String algTag, Indicator indicator, String categoryTag, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData, HashMap<String, LinkedList<AlgorithmConfiguration>> configurations) {
+	public AlgorithmTrainer(String algTag, Indicator indicator, DataCategory categoryTag, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData, HashMap<String, LinkedList<AlgorithmConfiguration>> configurations) {
 		this.algTag = algTag;
 		this.indicator = indicator;
 		this.categoryTag = categoryTag;
@@ -192,7 +193,7 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	 *
 	 * @return the data type
 	 */
-	public String getDataType(){
+	public DataCategory getDataType(){
 		return categoryTag;
 	}
 

@@ -3,6 +3,7 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
+import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
@@ -56,7 +57,7 @@ public abstract class DetectionAlgorithm {
 	 * @param conf the configuration
 	 * @return the detection algorithm
 	 */
-	public static DetectionAlgorithm buildAlgorithm(String algTag, String dataType, Indicator indicator, AlgorithmConfiguration conf) {
+	public static DetectionAlgorithm buildAlgorithm(String algTag, DataCategory dataType, Indicator indicator, AlgorithmConfiguration conf) {
 		switch(algTag.toUpperCase()){
 			case "SPS":
 				return new SPSDetector(indicator, dataType, conf);
@@ -256,7 +257,7 @@ public abstract class DetectionAlgorithm {
 	 *
 	 * @return the data type
 	 */
-	public abstract String getDataType();
+	public abstract DataCategory getDataType();
 
 	/**
 	 * Gets the indicator.

@@ -3,6 +3,7 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
+import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.service.IndicatorStat;
@@ -31,7 +32,7 @@ public class ConfidenceIntervalChecker extends IndicatorDetectionAlgorithm {
 	 * @param categoryTag the data category tag
 	 * @param conf the configuration
 	 */
-	public ConfidenceIntervalChecker(Indicator indicator, String categoryTag, AlgorithmConfiguration conf) {
+	public ConfidenceIntervalChecker(Indicator indicator, DataCategory categoryTag, AlgorithmConfiguration conf) {
 		super(indicator, categoryTag, conf);
 	}
 

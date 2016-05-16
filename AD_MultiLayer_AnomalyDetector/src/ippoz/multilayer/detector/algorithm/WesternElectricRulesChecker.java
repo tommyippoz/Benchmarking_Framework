@@ -6,6 +6,7 @@ package ippoz.multilayer.detector.algorithm;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.commons.data.Observation;
 import ippoz.multilayer.detector.commons.data.Snapshot;
@@ -22,7 +23,7 @@ public class WesternElectricRulesChecker extends IndicatorDetectionAlgorithm {
 	
 	private HashMap<ServiceCall, LinkedList<WER_Zone>> histZones;
 	
-	public WesternElectricRulesChecker(Indicator indicator, String categoryTag, AlgorithmConfiguration conf) {
+	public WesternElectricRulesChecker(Indicator indicator, DataCategory categoryTag, AlgorithmConfiguration conf) {
 		super(indicator, categoryTag, conf);
 		histZones = new HashMap<ServiceCall, LinkedList<WER_Zone>>();
 	}

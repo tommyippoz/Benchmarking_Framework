@@ -3,6 +3,7 @@
  */
 package ippoz.multilayer.detector.commons.data;
 
+import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.AppUtility;
@@ -69,7 +70,7 @@ public class Observation {
 	 * @param categoryTag the data category (plain, diff)
 	 * @return the indicator value
 	 */
-	public String getValue(Indicator indicator, String categoryTag) {
+	public String getValue(Indicator indicator, DataCategory categoryTag) {
 		return observedIndicators.get(indicator).getCategoryValue(categoryTag);
 	}
 	
@@ -80,7 +81,7 @@ public class Observation {
 	 * @param categoryTag the data category (plain, diff)
 	 * @return the indicator value
 	 */
-	public String getValue(String indicatorName, String categoryTag) {
+	public String getValue(String indicatorName, DataCategory categoryTag) {
 		for(Indicator ind : getIndicators()){
 			if(ind.getName().equals(indicatorName))
 				return getValue(ind, categoryTag);

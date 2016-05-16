@@ -3,6 +3,7 @@
  */
 package ippoz.multilayer.detector.manager;
 
+import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.commons.support.PreferencesManager;
@@ -112,7 +113,7 @@ public class DetectionManager {
 	private Reputation reputation;
 	
 	/** The used data types (plain, diff...). */
-	private String[] dataTypes;
+	private DataCategory[] dataTypes;
 	
 	/** The algorithm types (SPS, Historical...). */
 	private String[] algTypes;
@@ -187,9 +188,9 @@ public class DetectionManager {
 	 *
 	 * @return the data types
 	 */
-	private String[] getDataTypes() {
+	private DataCategory[] getDataTypes() {
 		File dataTypeFile = new File(prefManager.getPreference(DetectionManager.SETUP_FILE_FOLDER) + "dataSeries.preferences");
-		LinkedList<String> dataList = new LinkedList<String>();
+		LinkedList<DataCategory> dataList = new LinkedList<DataCategory>();
 		BufferedReader reader;
 		String readed;
 		try {
@@ -200,7 +201,7 @@ public class DetectionManager {
 					if(readed != null){
 						readed = readed.trim();
 						if(readed.length() > 0 && !readed.trim().startsWith("*")){
-							dataList.add(readed.trim());
+							dataList.add(DataCategory.valueOf(readed.trim()));
 						}
 					}
 				}
@@ -209,7 +210,7 @@ public class DetectionManager {
 		} catch(Exception ex){
 			AppLogger.logException(getClass(), ex, "Unable to read data types");
 		}
-		return dataList.toArray(new String[dataList.size()]);
+		return dataList.toArray(new DataCategory[dataList.size()]);
 	}
 	
 	/**

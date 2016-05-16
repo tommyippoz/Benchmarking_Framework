@@ -3,6 +3,7 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
+import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.service.IndicatorStat;
@@ -29,7 +30,7 @@ public class HistoricalIndicatorChecker extends IndicatorDetectionAlgorithm {
 	 * @param categoryTag the data category tag
 	 * @param conf the configuration
 	 */
-	public HistoricalIndicatorChecker(Indicator indicator, String categoryTag, AlgorithmConfiguration conf) {
+	public HistoricalIndicatorChecker(Indicator indicator, DataCategory categoryTag, AlgorithmConfiguration conf) {
 		super(indicator, categoryTag, conf);
 	}
 

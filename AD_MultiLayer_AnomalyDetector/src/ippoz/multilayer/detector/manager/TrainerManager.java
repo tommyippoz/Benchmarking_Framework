@@ -3,6 +3,7 @@
  */
 package ippoz.multilayer.detector.manager;
 
+import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.support.AppLogger;
@@ -51,7 +52,7 @@ public class TrainerManager extends ThreadScheduler {
 	private LinkedList<Indicator> indList;
 	
 	/** The data types. */
-	private String[] dataTypes;
+	private DataCategory[] dataTypes;
 	
 	/** The algorithm types. */
 	private String[] algTypes;
@@ -68,7 +69,7 @@ public class TrainerManager extends ThreadScheduler {
 	 * @param dataTypes the data types
 	 * @param algTypes the algorithm types
 	 */
-	public TrainerManager(PreferencesManager prefManager, TimingsManager pManager, LinkedList<ExperimentData> expList, HashMap<String, LinkedList<AlgorithmConfiguration>> confList, Metric metric, Reputation reputation, String[] dataTypes, String[] algTypes) {
+	public TrainerManager(PreferencesManager prefManager, TimingsManager pManager, LinkedList<ExperimentData> expList, HashMap<String, LinkedList<AlgorithmConfiguration>> confList, Metric metric, Reputation reputation, DataCategory[] dataTypes, String[] algTypes) {
 		super();
 		this.prefManager = prefManager;
 		this.pManager = pManager;
@@ -112,7 +113,7 @@ public class TrainerManager extends ThreadScheduler {
 				trainerList.add(new AlgorithmTrainer(algType, null, null, metric, reputation, expList, confList));
 			} else {
 				for(Indicator indicator : indList){
-					for(String dataType : dataTypes){
+					for(DataCategory dataType : dataTypes){
 						trainerList.add(new AlgorithmTrainer(algType, indicator, dataType, metric, reputation, expList, confList));
 					}
 				}

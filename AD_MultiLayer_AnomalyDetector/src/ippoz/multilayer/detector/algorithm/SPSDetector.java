@@ -3,6 +3,7 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
+import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.support.AppUtility;
@@ -77,7 +78,7 @@ public class SPSDetector extends IndicatorDetectionAlgorithm {
 	 * @param categoryTag the data category tag
 	 * @param conf the configuration
 	 */
-	public SPSDetector(Indicator indicator, String categoryTag, AlgorithmConfiguration conf) {
+	public SPSDetector(Indicator indicator, DataCategory categoryTag, AlgorithmConfiguration conf) {
 		super(indicator, categoryTag, conf);
 		calculator = new SPSCalculator();
 		anomalies = new TreeMap<Date, Double>();

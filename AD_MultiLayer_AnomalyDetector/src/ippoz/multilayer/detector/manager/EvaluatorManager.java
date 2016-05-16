@@ -3,6 +3,7 @@
  */
 package ippoz.multilayer.detector.manager;
 
+import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
@@ -210,7 +211,7 @@ public class EvaluatorManager extends ThreadScheduler {
 									conf.addItem(AlgorithmConfiguration.WEIGHT, splitted[3]);
 									conf.addItem(AlgorithmConfiguration.SCORE, splitted[4]);
 								}
-								voterList.add(new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(splitted[2], splitted[1], indicatorList.get(splitted[0]), conf), Double.parseDouble(splitted[4]), Double.parseDouble(splitted[3])));
+								voterList.add(new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(splitted[2], DataCategory.valueOf(splitted[1]), indicatorList.get(splitted[0]), conf), Double.parseDouble(splitted[4]), Double.parseDouble(splitted[3])));
 							}
 						}
 					}
