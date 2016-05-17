@@ -13,8 +13,10 @@ import ippoz.multilayer.detector.commons.support.ThreadScheduler;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.configuration.ConfidenceConfiguration;
 import ippoz.multilayer.detector.configuration.HistoricalConfiguration;
+import ippoz.multilayer.detector.configuration.InvariantConfiguration;
 import ippoz.multilayer.detector.configuration.RemoteCallConfiguration;
 import ippoz.multilayer.detector.configuration.SPSConfiguration;
+import ippoz.multilayer.detector.invariants.Invariant;
 import ippoz.multilayer.detector.metric.Metric;
 import ippoz.multilayer.detector.trainer.AlgorithmVoter;
 import ippoz.multilayer.detector.trainer.ExperimentVoter;
@@ -204,6 +206,9 @@ public class EvaluatorManager extends ThreadScheduler {
 										conf = new RemoteCallConfiguration();
 										conf.addItem(RemoteCallConfiguration.RCC_WEIGHT, splitted[5]);
 										break;
+									case "INV":
+										conf = new InvariantConfiguration(new Invariant(splitted[5]));
+										break;
 									default:
 										conf = null;
 								}
@@ -211,7 +216,7 @@ public class EvaluatorManager extends ThreadScheduler {
 									conf.addItem(AlgorithmConfiguration.WEIGHT, splitted[3]);
 									conf.addItem(AlgorithmConfiguration.SCORE, splitted[4]);
 								}
-								voterList.add(new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(splitted[2], DataCategory.valueOf(splitted[1]), indicatorList.get(splitted[0]), conf), Double.parseDouble(splitted[4]), Double.parseDouble(splitted[3])));
+								voterList.add(new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(splitted[2], DataCategory.valueOf(splitted[1].toUpperCase()), indicatorList.get(splitted[0]), conf), Double.parseDouble(splitted[4]), Double.parseDouble(splitted[3])));
 							}
 						}
 					}

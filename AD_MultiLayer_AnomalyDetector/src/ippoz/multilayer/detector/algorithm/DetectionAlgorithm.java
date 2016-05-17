@@ -6,13 +6,13 @@ package ippoz.multilayer.detector.algorithm;
 import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.commons.layers.LayerType;
-import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.service.StatPair;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.configuration.ConfidenceConfiguration;
 import ippoz.multilayer.detector.configuration.HistoricalConfiguration;
+import ippoz.multilayer.detector.configuration.InvariantConfiguration;
 import ippoz.multilayer.detector.configuration.RemoteCallConfiguration;
 import ippoz.multilayer.detector.configuration.SPSConfiguration;
 import ippoz.multilayer.detector.configuration.WesternElectricRulesConfiguration;
@@ -93,21 +93,6 @@ public abstract class DetectionAlgorithm {
 	 * @return the result of the evaluation
 	 */
 	protected abstract double evaluateSnapshot(Snapshot sysSnapshot);
-	
-	/**
-	 * Evaluates an experiment.
-	 *
-	 * @param expData the experiment data
-	 * @return the list of the evaluations
-	 */
-	public double[] evaluateExperiment(ExperimentData expData){
-		double[] res = new double[expData.getSnapshotNumber()];
-		for(int i=0;i<expData.getSnapshotNumber();i++){
-			if(expData.hasNextSnapshot())
-				res[i] = evaluateSnapshot(expData.nextSnapshot());
-		}
-		return res;
-	}
 	
 	/**
 	 * Prints the results of the detection.
@@ -242,6 +227,8 @@ public abstract class DetectionAlgorithm {
 			return "RCC";
 		else if (conf instanceof WesternElectricRulesConfiguration)
 			return "WER";
+		else if (conf instanceof InvariantConfiguration)
+			return "INV";
 		else return "";
 	}
 

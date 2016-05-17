@@ -54,6 +54,9 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	/** The reputation score. */
 	private double reputationScore;
 	
+	/** Flag that indicates if the trained algorithm retrieves different values (e.g., not always true / false). */
+	private boolean sameResultFlag;
+	
 	/**
 	 * Instantiates a new algorithm trainer.
 	 *
@@ -110,6 +113,10 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 		}
 		return list;
 	}
+	
+	public boolean isValidTrain(){
+		return !sameResultFlag;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Thread#run()
@@ -124,7 +131,7 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 			metricResults = new LinkedList<Double>();
 			algorithm = DetectionAlgorithm.buildAlgorithm(algTag, categoryTag, indicator, conf);
 			for(ExperimentData expData : expList){
-				metricResults.add(metric.evaluateMetric(algorithm, expData));
+				metricResults.add(metric.evaluateMetric(algorithm, expData)[0]);
 			}
 			currentMetricValue = AppUtility.calcAvg(metricResults.toArray(new Double[metricResults.size()]));
 			if(bestMetricValue.isNaN() || metric.compareResults(currentMetricValue, bestMetricValue) == 1){
@@ -145,11 +152,16 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	 * @return the metric score
 	 */
 	private double evaluateMetricScore(LinkedList<ExperimentData> trainData){
+		double[] metricEvaluation;
 		LinkedList<Double> metricResults = new LinkedList<Double>();
+		LinkedList<Double> algResults = new LinkedList<Double>();
 		DetectionAlgorithm algorithm = DetectionAlgorithm.buildAlgorithm(algTag, categoryTag, indicator, bestConf);
 		for(ExperimentData expData : trainData){
-			metricResults.add(metric.evaluateMetric(algorithm, expData));
+			metricEvaluation = metric.evaluateMetric(algorithm, expData);
+			metricResults.add(metricEvaluation[0]);
+			algResults.add(metricEvaluation[1]);
 		}
+		sameResultFlag = AppUtility.calcStd(algResults, AppUtility.calcAvg(algResults)) == 0.0;
 		return AppUtility.calcAvg(metricResults.toArray(new Double[metricResults.size()]));
 	}
 	

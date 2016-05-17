@@ -100,12 +100,6 @@ public class DetectionManager {
 	/** The timings manager. */
 	private TimingsManager pManager;
 	
-	/** The trainer manager. */
-	private TrainerManager tManager;
-	
-	/** The evaluation manager. */
-	private EvaluatorManager eManager;
-	
 	/** The chosen metric. */
 	private Metric metric;
 	
@@ -131,9 +125,6 @@ public class DetectionManager {
 		reputation = getReputation(metric);
 		dataTypes = getDataTypes();
 		algTypes = getAlgTypes();
-		if(needTest())
-			tManager = new TrainerManager(prefManager, pManager, new LoaderManager(readRunIds(TRAIN_RUN_PREFERENCE), "train", pManager, prefManager.getPreference(DB_USERNAME), prefManager.getPreference(DB_PASSWORD)).fetch(), loadConfigurations(), metric, reputation, dataTypes, algTypes);
-		eManager = new EvaluatorManager(prefManager, pManager, new LoaderManager(readRunIds(VALIDATION_RUN_PREFERENCE), "validation", pManager, prefManager.getPreference(DB_USERNAME), prefManager.getPreference(DB_PASSWORD)).fetch(), loadValidationMetrics(), detectionManager.getPreference(DM_ANOMALY_TRESHOLD), Double.parseDouble(detectionManager.getPreference(DM_CONVERGENCE_TIME)), Double.parseDouble(detectionManager.getPreference(DM_SCORE_TRESHOLD)));
 		pManager.addTiming(TimingsManager.SCORING_METRIC, metric.getMetricName());
 		pManager.addTiming(TimingsManager.REPUTATION_METRIC, reputation.getReputationTag());
 		pManager.addTiming(TimingsManager.EXECUTION_TIME, new Date().toString());
@@ -173,14 +164,30 @@ public class DetectionManager {
 	 * Starts the train process.
 	 */
 	public void train(){
-		tManager.train();
+		TrainerManager tManager;
+		try {
+			if(needTest()) {
+				tManager = new TrainerManager(prefManager, pManager, new LoaderManager(readRunIds(TRAIN_RUN_PREFERENCE), "train", pManager, prefManager.getPreference(DB_USERNAME), prefManager.getPreference(DB_PASSWORD)).fetch(), loadConfigurations(), metric, reputation, dataTypes, algTypes);
+				tManager.train();
+				tManager.flush();
+			}
+		} catch(Exception ex){
+			AppLogger.logException(getClass(), ex, "Unable to train detector");
+		}
 	}
 	
 	/**
 	 * Starts the evaluation process.
 	 */
 	public void evaluate(){
-		eManager.detectAnomalies();
+		EvaluatorManager eManager;
+		try {
+			eManager = new EvaluatorManager(prefManager, pManager, new LoaderManager(readRunIds(VALIDATION_RUN_PREFERENCE), "validation", pManager, prefManager.getPreference(DB_USERNAME), prefManager.getPreference(DB_PASSWORD)).fetch(), loadValidationMetrics(), detectionManager.getPreference(DM_ANOMALY_TRESHOLD), Double.parseDouble(detectionManager.getPreference(DM_CONVERGENCE_TIME)), Double.parseDouble(detectionManager.getPreference(DM_SCORE_TRESHOLD)));
+			eManager.detectAnomalies();
+			eManager.flush();
+		} catch(Exception ex){
+			AppLogger.logException(getClass(), ex, "Unable to evaluate detector");
+		}
 	}
 	
 	/**

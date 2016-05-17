@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -79,6 +80,10 @@ public class AppUtility {
 		}
 	}
 	
+	public static double calcAvg(Collection<Double> values) {
+		return calcAvg(values.toArray(new Double[values.size()]));
+	}
+	
 	public static Double calcAvg(LinkedList<Integer> values){
 		double mean = 0;
 		for(Integer d : values){
@@ -101,6 +106,10 @@ public class AppUtility {
 			std = std + Math.pow(d-mean, 2);
 		}
 		return std / values.length;
+	}
+	
+	public static double calcStd(Collection<Double> values, double mean) {
+		return calcStd(values.toArray(new Double[values.size()]), mean);
 	}
 	
 	public static Double calcStd(LinkedList<Integer> values, Double mean){

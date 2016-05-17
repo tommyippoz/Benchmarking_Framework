@@ -6,6 +6,7 @@ package ippoz.multilayer.detector.metric;
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.data.Snapshot;
+import ippoz.multilayer.detector.commons.support.AppUtility;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -24,9 +25,9 @@ public abstract class Metric {
 	 *
 	 * @param alg the algorithm
 	 * @param expData the experiment data
-	 * @return the anomaly evaluation
+	 * @return the anomaly evaluation [metric score, avg algorithm score, std algorithm score]
 	 */
-	public double evaluateMetric(DetectionAlgorithm alg, ExperimentData expData){
+	public double[] evaluateMetric(DetectionAlgorithm alg, ExperimentData expData){
 		Snapshot sysSnapshot;
 		HashMap<Date, Double> anomalyEvaluations = new HashMap<Date, Double>();
 		expData.resetIterator();
@@ -35,7 +36,7 @@ public abstract class Metric {
 			anomalyEvaluations.put(sysSnapshot.getTimestamp(), alg.snapshotAnomalyRate(sysSnapshot));
 		}
 		expData.resetIterator();
-		return evaluateAnomalyResults(expData, anomalyEvaluations);
+		return new double[]{evaluateAnomalyResults(expData, anomalyEvaluations), AppUtility.calcAvg(anomalyEvaluations.values()), AppUtility.calcStd(anomalyEvaluations.values(), AppUtility.calcAvg(anomalyEvaluations.values()))};
 	}
 
 	/**

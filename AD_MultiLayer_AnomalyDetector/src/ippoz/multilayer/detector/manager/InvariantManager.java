@@ -28,7 +28,6 @@ public class InvariantManager {
 	private LinkedList<ExperimentData> expList;
 	private Metric metric;
 	private Reputation reputation;
-	private LinkedList<AlgorithmTrainer> invList;
 	
 	public InvariantManager(LinkedList<Indicator> indList, DataCategory[] dataTypes, LinkedList<ExperimentData> expList, Metric metric, Reputation reputation) {
 		this.indList = indList;
@@ -36,12 +35,6 @@ public class InvariantManager {
 		this.expList = expList;
 		this.metric = metric;
 		this.reputation = reputation;
-		invList = initInvariants();
-	}
-	
-	private LinkedList<AlgorithmTrainer> initInvariants(){
-		LinkedList<AlgorithmTrainer> allInv = generateInvariants();
-		return filterInvSyntax(allInv);
 	}
 
 	private LinkedList<AlgorithmTrainer> filterInvSyntax(LinkedList<AlgorithmTrainer> allInv) {
@@ -55,7 +48,22 @@ public class InvariantManager {
 		}
 		return filtered;
 	}
-
+	
+	public LinkedList<AlgorithmTrainer> filterInvType(LinkedList<AlgorithmTrainer> allInv) {
+		Invariant invariant;
+		LinkedList<AlgorithmTrainer> toRemove = new LinkedList<AlgorithmTrainer>();
+		LinkedList<String> foundMembers = new LinkedList<String>();
+		for(AlgorithmTrainer invTrainer : allInv){
+			invariant = ((InvariantConfiguration)invTrainer.getBestConfiguration()).getInvariant();
+			if(invariant.getFirstMember() instanceof IndicatorMember){
+				if(!foundMembers.contains(invariant.getFirstMember().toString()))
+					foundMembers.add(invariant.getFirstMember().toString());
+				else toRemove.add(invTrainer);
+			}
+		}
+		return toRemove;
+	}
+	
 	private LinkedList<AlgorithmTrainer> generateInvariants() {
 		LinkedList<AlgorithmTrainer> allInv = new LinkedList<AlgorithmTrainer>();
 		for(Indicator firstMember : indList){
@@ -72,8 +80,9 @@ public class InvariantManager {
 		return allInv;
 	}
 	
-	public LinkedList<AlgorithmTrainer> getInvList(){
-		return invList;
+	public LinkedList<AlgorithmTrainer> getAllInvariants(){
+		LinkedList<AlgorithmTrainer> allInv = generateInvariants();
+		return filterInvSyntax(allInv);
 	}
 	
 }

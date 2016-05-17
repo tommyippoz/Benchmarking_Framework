@@ -1,70 +1,70 @@
-timestamp,anomaly_alerts,JVM@HIST,JVM@SPS,JVM@CONF,UNIX_NETWORK@SPS,CENTOS@HIST,CENTOS@SPS,details
-0.0,2,0,0,2,0,0,0,ConfidenceIntervalChecker@SystemCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|
-1.0,9,0,1,0,4,0,4,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Listen|SPSDetector@ProcessCpuLoad|SPSDetector@Cached Memory|SPSDetector@Tcp_Syn|SPSDetector@CPU Kernel Processes|SPSDetector@Tcp_Syn|SPSDetector@PageOut|SPSDetector@Minor Page Faults|
-2.0,8,0,1,0,3,0,4,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Listen|SPSDetector@ProcessCpuLoad|SPSDetector@Cached Memory|SPSDetector@CPU Kernel Processes|SPSDetector@Tcp_Syn|SPSDetector@PageOut|SPSDetector@Minor Page Faults|
-3.0,8,2,0,2,2,1,1,SPSDetector@Tcp_Syn|HistoricalIndicatorChecker@CPU I/O Wait Processes|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@Tcp_Syn|HistoricalIndicatorChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|SPSDetector@PageOut|
-4.0,8,2,0,2,3,0,1,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Listen|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@Tcp_Syn|HistoricalIndicatorChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|SPSDetector@PageOut|
-5.0,5,0,0,0,4,0,1,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Listen|SPSDetector@Tcp_Syn|SPSDetector@Tcp_Syn|SPSDetector@PageOut|
-6.0,7,0,0,0,4,0,3,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Listen|SPSDetector@Cached Memory|SPSDetector@Tcp_Syn|SPSDetector@CPU Kernel Processes|SPSDetector@Tcp_Syn|SPSDetector@Buffers|
-7.0,3,0,0,0,0,0,3,SPSDetector@Cached Memory|SPSDetector@CPU Kernel Processes|SPSDetector@Buffers|
-8.0,2,0,0,0,0,0,2,SPSDetector@Cached Memory|SPSDetector@CPU Kernel Processes|
-9.0,2,0,0,0,0,1,1,HistoricalIndicatorChecker@CPU I/O Wait Processes|SPSDetector@PageOut|
-10.0,1,0,0,0,0,0,1,SPSDetector@PageOut|
-11.0,3,0,0,0,0,0,3,SPSDetector@Cached Memory|SPSDetector@CPU Kernel Processes|SPSDetector@Minor Page Faults|
-12.0,5,0,0,0,4,0,1,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Listen|SPSDetector@Tcp_Syn|SPSDetector@Tcp_Syn|SPSDetector@Minor Page Faults|
-13.0,4,0,0,0,4,0,0,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Listen|SPSDetector@Tcp_Syn|SPSDetector@Tcp_Syn|
-14.0,2,0,0,0,2,0,0,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Syn|
-15.0,1,0,0,0,1,0,0,SPSDetector@Tcp_Listen|
-16.0,1,0,0,0,1,0,0,SPSDetector@Tcp_Listen|
-17.0,0,0,0,0,0,0,0,
-18.0,0,0,0,0,0,0,0,
-19.0,6,2,0,2,0,1,1,HistoricalIndicatorChecker@CPU I/O Wait Processes|HistoricalIndicatorChecker@ProcessCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|SPSDetector@PageOut|
-20.0,1,0,0,0,0,0,1,SPSDetector@PageOut|
-21.0,4,2,0,2,0,0,0,HistoricalIndicatorChecker@ProcessCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|
-22.0,0,0,0,0,0,0,0,
-23.0,0,0,0,0,0,0,0,
-24.0,1,0,0,0,0,1,0,HistoricalIndicatorChecker@CPU I/O Wait Processes|
-25.0,1,0,0,0,1,0,0,SPSDetector@Tcp_Listen|
-26.0,4,2,0,2,0,0,0,HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|ConfidenceIntervalChecker@SystemCpuLoad|ConfidenceIntervalChecker@SystemCpuLoad|
-27.0,4,2,0,2,0,0,0,HistoricalIndicatorChecker@ProcessCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|
-28.0,1,0,0,0,0,0,1,SPSDetector@Minor Page Faults|
-29.0,9,4,0,4,0,0,1,HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|ConfidenceIntervalChecker@SystemCpuLoad|ConfidenceIntervalChecker@SystemCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|SPSDetector@Minor Page Faults|
-30.0,8,3,0,4,0,1,0,HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|ConfidenceIntervalChecker@SystemCpuLoad|ConfidenceIntervalChecker@SystemCpuLoad|HistoricalIndicatorChecker@CPU I/O Wait Processes|HistoricalIndicatorChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|
-31.0,10,3,0,4,2,1,0,HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|ConfidenceIntervalChecker@SystemCpuLoad|ConfidenceIntervalChecker@SystemCpuLoad|SPSDetector@Tcp_Syn|HistoricalIndicatorChecker@CPU I/O Wait Processes|SPSDetector@Tcp_Syn|HistoricalIndicatorChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|
-32.0,21,2,2,2,4,1,10,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Listen|SPSDetector@Cached Memory|SPSDetector@Inactive Files|SPSDetector@Inactive Memory|SPSDetector@Active Files|SPSDetector@ProcessCpuLoad|SPSDetector@Active Memory|SPSDetector@Free Memory|SPSDetector@Cached Memory|SPSDetector@Activated Virtual Pages|SPSDetector@Tcp_Syn|HistoricalIndicatorChecker@CPU I/O Wait Processes|SPSDetector@CPU Kernel Processes|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@Tcp_Syn|HistoricalIndicatorChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|SPSDetector@PageOut|SPSDetector@ProcessCpuTime|
-33.0,8,0,1,0,3,0,4,SPSDetector@Tcp_Listen|SPSDetector@Tcp_Listen|SPSDetector@Active Files|SPSDetector@ProcessCpuLoad|SPSDetector@Cached Memory|SPSDetector@Tcp_Syn|SPSDetector@CPU Kernel Processes|SPSDetector@PageOut|
-34.0,11,4,1,4,1,0,1,SPSDetector@Tcp_Listen|HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|ConfidenceIntervalChecker@SystemCpuLoad|ConfidenceIntervalChecker@SystemCpuLoad|SPSDetector@ProcessCpuLoad|SPSDetector@CPU Kernel Processes|HistoricalIndicatorChecker@ProcessCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|
-35.0,6,3,0,3,0,0,0,HistoricalIndicatorChecker@SystemCpuLoad|ConfidenceIntervalChecker@SystemCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|
-36.0,9,4,0,4,0,0,1,HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|ConfidenceIntervalChecker@SystemCpuLoad|ConfidenceIntervalChecker@SystemCpuLoad|SPSDetector@CPU Kernel Processes|HistoricalIndicatorChecker@ProcessCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|
-37.0,12,4,0,4,0,0,4,SPSDetector@Cached Memory|HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|ConfidenceIntervalChecker@SystemCpuLoad|ConfidenceIntervalChecker@SystemCpuLoad|SPSDetector@Inactive Files|SPSDetector@Inactive Memory|SPSDetector@CPU Kernel Processes|HistoricalIndicatorChecker@ProcessCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|
-38.0,4,0,0,0,0,0,4,SPSDetector@Buffers|SPSDetector@Inactive Memory|SPSDetector@Buffers|SPSDetector@PageOut|
-39.0,4,0,0,0,0,0,4,SPSDetector@PageOut|SPSDetector@CPU I/O Wait Processes|SPSDetector@Buffers|SPSDetector@PageOut|
-40.0,3,1,0,1,0,0,1,HistoricalIndicatorChecker@SystemCpuLoad|ConfidenceIntervalChecker@SystemCpuLoad|SPSDetector@PageOut|
-41.0,7,2,0,2,0,1,2,SPSDetector@CPU I/O Wait Processes|HistoricalIndicatorChecker@CPU I/O Wait Processes|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@Buffers|HistoricalIndicatorChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|
-42.0,7,2,0,2,0,0,3,SPSDetector@Inactive Files|SPSDetector@Inactive Memory|HistoricalIndicatorChecker@ProcessCpuLoad|SPSDetector@Buffers|HistoricalIndicatorChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|
-43.0,2,0,0,0,2,0,0,SPSDetector@Tcp_Syn|SPSDetector@Tcp_Syn|
-44.0,3,0,0,0,2,0,1,SPSDetector@CPU User Processes|SPSDetector@Tcp_Syn|SPSDetector@Tcp_Syn|
-45.0,9,0,0,0,1,0,8,SPSDetector@Cached Memory|SPSDetector@Inactive Files|SPSDetector@Inactive Memory|SPSDetector@Active Files|SPSDetector@Free Memory|SPSDetector@Cached Memory|SPSDetector@Activated Virtual Pages|SPSDetector@Tcp_Syn|SPSDetector@CPU Kernel Processes|
-46.0,8,0,0,0,0,0,8,SPSDetector@Cached Memory|SPSDetector@Inactive Files|SPSDetector@Inactive Memory|SPSDetector@Active Files|SPSDetector@Free Memory|SPSDetector@Cached Memory|SPSDetector@Activated Virtual Pages|SPSDetector@CPU Kernel Processes|
-47.0,3,0,0,0,0,0,3,SPSDetector@CPU User Processes|SPSDetector@Cached Memory|SPSDetector@CPU Kernel Processes|
-48.0,8,0,0,0,0,0,8,SPSDetector@Cached Memory|SPSDetector@Inactive Files|SPSDetector@Inactive Memory|SPSDetector@Active Files|SPSDetector@Free Memory|SPSDetector@Cached Memory|SPSDetector@Activated Virtual Pages|SPSDetector@CPU Kernel Processes|
-49.0,2,0,0,0,0,0,2,SPSDetector@PageOut|SPSDetector@PageOut|
-50.0,1,0,0,0,0,0,1,SPSDetector@PageOut|
-51.0,1,0,0,0,0,0,1,SPSDetector@Free Memory|
-52.0,3,0,0,0,0,0,3,SPSDetector@Active Memory|SPSDetector@Minor Page Faults|SPSDetector@CPU Soft Interrupts|
-53.0,0,0,0,0,0,0,0,
-54.0,1,0,0,0,0,0,1,SPSDetector@Buffers|
-55.0,1,0,0,0,0,0,1,SPSDetector@Buffers|
-56.0,0,0,0,0,0,0,0,
-57.0,1,0,0,0,1,0,0,SPSDetector@Tcp_Syn|
-58.0,2,0,0,0,2,0,0,SPSDetector@Tcp_Syn|SPSDetector@Tcp_Syn|
-59.0,2,0,0,0,2,0,0,SPSDetector@Tcp_Syn|SPSDetector@Tcp_Syn|
-60.0,1,0,0,0,1,0,0,SPSDetector@Tcp_Syn|
-61.0,10,2,4,2,0,0,2,SPSDetector@ProcessCpuLoad|SPSDetector@Active Memory|SPSDetector@Minor Page Faults|HistoricalIndicatorChecker@ProcessCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|SPSDetector@NonHeapMemoryUsage.used|SPSDetector@ProcessCpuTime|SPSDetector@CommittedVirtualMemorySize|
-62.0,1,0,1,0,0,0,0,SPSDetector@ProcessCpuLoad|
-63.0,5,2,0,2,0,0,1,SPSDetector@Minor Page Faults|HistoricalIndicatorChecker@ProcessCpuLoad|HistoricalIndicatorChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|ConfidenceIntervalChecker@ProcessCpuLoad|
-64.0,6,2,0,2,0,0,2,HistoricalIndicatorChecker@SystemCpuLoad|HistoricalIndicatorChecker@SystemCpuLoad|ConfidenceIntervalChecker@SystemCpuLoad|ConfidenceIntervalChecker@SystemCpuLoad|SPSDetector@CPU I/O Wait Processes|SPSDetector@PageOut|
-65.0,2,0,1,0,0,0,1,SPSDetector@PageOut|SPSDetector@CommittedVirtualMemorySize|
-66.0,2,0,0,0,0,0,2,SPSDetector@Buffers|SPSDetector@PageOut|
-67.0,1,0,0,0,0,0,1,SPSDetector@PageOut|
-68.0,0,0,0,0,0,0,0,
+timestamp,anomaly_alerts,NO_LAYER@INV,details
+0.0,0,0,
+1.0,0,0,
+2.0,0,0,
+3.0,0,0,
+4.0,0,0,
+5.0,0,0,
+6.0,0,0,
+7.0,0,0,
+8.0,0,0,
+9.0,0,0,
+10.0,0,0,
+11.0,0,0,
+12.0,0,0,
+13.0,0,0,
+14.0,0,0,
+15.0,0,0,
+16.0,0,0,
+17.0,0,0,
+18.0,0,0,
+19.0,0,0,
+20.0,0,0,
+21.0,0,0,
+22.0,0,0,
+23.0,0,0,
+24.0,0,0,
+25.0,0,0,
+26.0,0,0,
+27.0,0,0,
+28.0,0,0,
+29.0,0,0,
+30.0,0,0,
+31.0,0,0,
+32.0,2,2,ippoz.multilayer.detector.algorithm.InvariantChecker@dfcd48b|ippoz.multilayer.detector.algorithm.InvariantChecker@52ccc4ab|
+33.0,0,0,
+34.0,0,0,
+35.0,0,0,
+36.0,0,0,
+37.0,0,0,
+38.0,1,1,ippoz.multilayer.detector.algorithm.InvariantChecker@4fea40d1|
+39.0,0,0,
+40.0,0,0,
+41.0,0,0,
+42.0,0,0,
+43.0,0,0,
+44.0,0,0,
+45.0,0,0,
+46.0,0,0,
+47.0,0,0,
+48.0,0,0,
+49.0,0,0,
+50.0,0,0,
+51.0,0,0,
+52.0,0,0,
+53.0,0,0,
+54.0,0,0,
+55.0,0,0,
+56.0,0,0,
+57.0,0,0,
+58.0,0,0,
+59.0,0,0,
+60.0,0,0,
+61.0,0,0,
+62.0,0,0,
+63.0,0,0,
+64.0,0,0,
+65.0,0,0,
+66.0,0,0,
+67.0,0,0,
+68.0,0,0,

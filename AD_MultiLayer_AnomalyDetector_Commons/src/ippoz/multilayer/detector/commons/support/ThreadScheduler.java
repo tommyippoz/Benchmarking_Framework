@@ -106,6 +106,10 @@ public abstract class ThreadScheduler extends Thread {
 		}
 	}
 	
+	public void flush(){
+		tList = null;
+	}
+	
 	/**
 	 * Inits the scheduling structure.
 	 */

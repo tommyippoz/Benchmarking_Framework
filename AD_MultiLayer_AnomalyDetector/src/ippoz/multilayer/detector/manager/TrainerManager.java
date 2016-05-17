@@ -10,6 +10,7 @@ import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.PreferencesManager;
 import ippoz.multilayer.detector.commons.support.ThreadScheduler;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
+import ippoz.multilayer.detector.configuration.InvariantConfiguration;
 import ippoz.multilayer.detector.metric.Metric;
 import ippoz.multilayer.detector.reputation.Reputation;
 import ippoz.multilayer.detector.trainer.AlgorithmTrainer;
@@ -88,13 +89,14 @@ public class TrainerManager extends ThreadScheduler {
 	 * Starts the train process. 
 	 * The scores are saved in a file specified in the preferences.
 	 */
+	@SuppressWarnings("unchecked")
 	public void train(){
 		long start = System.currentTimeMillis();
 		try {
 			start();
 			join();
-			filterTrainings(getThreadList());
-			saveScores(getThreadList());
+			Collections.sort((LinkedList<AlgorithmTrainer>)getThreadList());
+			saveScores(filterTrainers(getThreadList()));
 			pManager.addTiming(TimingsManager.TRAIN_RUNS, Double.valueOf(expList.size()));
 			pManager.addTiming(TimingsManager.TRAIN_TIME, (double)(System.currentTimeMillis() - start));
 			pManager.addTiming(TimingsManager.AVG_TRAIN_TIME, ((System.currentTimeMillis() - start)/threadNumber()*1.0));
@@ -104,10 +106,14 @@ public class TrainerManager extends ThreadScheduler {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private void filterTrainings(LinkedList<? extends Thread> list) {
-		LinkedList<AlgorithmTrainer> tList = (LinkedList<AlgorithmTrainer>)list;
-		// TODO
+	private LinkedList<? extends Thread> filterTrainers(LinkedList<? extends Thread> trainerList) {
+		LinkedList<AlgorithmTrainer> invList = new LinkedList<AlgorithmTrainer>();
+		for(Thread t : trainerList){
+			if(((AlgorithmTrainer)t).getBestConfiguration() instanceof InvariantConfiguration)
+				invList.add((AlgorithmTrainer)t);
+		}
+		trainerList.removeAll(iManager.filterInvType(invList));
+		return trainerList;
 	}
 
 	/* (non-Javadoc)
@@ -128,7 +134,7 @@ public class TrainerManager extends ThreadScheduler {
 				}
 			} else if(algType.equals("INV")){
 				iManager = new InvariantManager(indList, dataTypes, expList, metric, reputation);
-				trainerList.addAll(iManager.getInvList());
+				trainerList.addAll(iManager.getAllInvariants());
 			}
 		}
 		setThreadList(trainerList);
@@ -156,22 +162,22 @@ public class TrainerManager extends ThreadScheduler {
 	 *
 	 * @param list the list of algorithm trainers
 	 */
-	@SuppressWarnings("unchecked")
 	private void saveScores(LinkedList<? extends Thread> list) {
 		BufferedWriter writer;
 		AlgorithmTrainer trainer;
-		Collections.sort((LinkedList<AlgorithmTrainer>)list);
 		try {
 			writer = new BufferedWriter(new FileWriter(new File(prefManager.getPreference(DetectionManager.SCORES_FILE_FOLDER) + "scores.csv")));
 			writer.write("indicator_name,data_series_type,algorithm_type,reputation_score,metric_score(" + metric.getMetricName() + "),configuration\n");
 			for(Thread tThread : list){
 				trainer = (AlgorithmTrainer)tThread;
-				writer.write(trainer.getIndicatorName() + "," + 
-						trainer.getDataType() + "," + 
-						trainer.getAlgType() + "," +
-						trainer.getReputationScore() + "," + 
-						trainer.getMetricScore() + "," +  
-						trainer.getBestConfiguration().toFileRow(false) + "\n");
+				if(trainer.isValidTrain()) {
+					writer.write(trainer.getIndicatorName() + "," + 
+							trainer.getDataType() + "," + 
+							trainer.getAlgType() + "," +
+							trainer.getReputationScore() + "," + 
+							trainer.getMetricScore() + "," +  
+							trainer.getBestConfiguration().toFileRow(false) + "\n");
+				}
 			}
 			writer.close();
 		} catch(IOException ex){

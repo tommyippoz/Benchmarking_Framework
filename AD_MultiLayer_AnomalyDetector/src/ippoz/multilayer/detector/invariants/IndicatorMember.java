@@ -5,6 +5,7 @@ package ippoz.multilayer.detector.invariants;
 
 import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.indicator.Indicator;
+import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 
 /**
@@ -21,6 +22,12 @@ public class IndicatorMember extends InvariantMember{
 		this.indicator = indicator;
 		this.categoryTag = categoryTag;
 	}
+	
+	public IndicatorMember(String indicatorName, DataCategory categoryTag) {
+		super(Double.class, indicatorName);
+		indicator = new Indicator(indicatorName, LayerType.NO_LAYER, Double.class);
+		this.categoryTag = categoryTag;
+	}
 
 	@Override
 	public String getStringValue(Snapshot snapshot) {
@@ -29,7 +36,19 @@ public class IndicatorMember extends InvariantMember{
 
 	@Override
 	public String toString() {
-		return getMemberName();
+		return getMemberName() + " (" + categoryTag + ")";
 	}
+
+	@Override
+	public boolean equals(Object other) {
+		IndicatorMember oMember = (IndicatorMember)other;
+		return oMember.getMemberName().equals(getMemberName()) && oMember.getDataCategory().equals(categoryTag);
+	}
+
+	private DataCategory getDataCategory() {
+		return categoryTag;
+	}
+	
+	
 
 }
