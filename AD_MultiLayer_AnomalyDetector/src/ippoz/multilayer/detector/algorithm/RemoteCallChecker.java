@@ -3,15 +3,11 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
-import ippoz.multilayer.commons.datacategory.DataCategory;
-import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.commons.data.Snapshot;
+import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.service.ServiceCall;
-import ippoz.multilayer.detector.commons.service.ServiceStat;
 import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
-
-import java.util.Date;
 
 /**
  * The Class RemoteCallChecker.
@@ -54,7 +50,7 @@ public class RemoteCallChecker extends DetectionAlgorithm {
 	public double evaluateSnapshot(Snapshot sysSnapshot) {
 		double evalResult = 0.0;
 		for(ServiceCall call : sysSnapshot.getServiceCalls()){
-			evalResult = evalResult + analyzeServiceCall(sysSnapshot.getTimestamp(), call, sysSnapshot.getServiceStatList().get(call.getServiceName()));
+			evalResult = evalResult + analyzeServiceCall(sysSnapshot, call);
 		}
 		return evalResult / sysSnapshot.getServiceCalls().size();
 	}
@@ -67,12 +63,12 @@ public class RemoteCallChecker extends DetectionAlgorithm {
 	 * @param serviceStat the service stat
 	 * @return the double
 	 */
-	private double analyzeServiceCall(Date snapTime, ServiceCall call, ServiceStat serviceStat) {
-		if(call.getEndTime().compareTo(snapTime) == 0){
+	private double analyzeServiceCall(Snapshot snapshot, ServiceCall call) {
+		if(call.getEndTime().compareTo(snapshot.getTimestamp()) == 0){
 			if(!call.getResponseCode().equals("200"))
 				return weight;
-			else return evaluateAbsDiff(AppUtility.getSecondsBetween(call.getEndTime(), call.getStartTime()), serviceStat.getTimeStat(), 1.0);
-		} else return evaluateOverDiff(AppUtility.getSecondsBetween(snapTime, call.getStartTime()), serviceStat.getTimeStat());
+			else return evaluateAbsDiff(AppUtility.getSecondsBetween(call.getEndTime(), call.getStartTime()), snapshot.getServiceObsStat(call.getServiceName()), 1.0);
+		} else return evaluateOverDiff(AppUtility.getSecondsBetween(snapshot.getTimestamp(), call.getStartTime()), snapshot.getServiceTimingStat(call.getServiceName()));
 	}
 
 	/* (non-Javadoc)
@@ -107,20 +103,10 @@ public class RemoteCallChecker extends DetectionAlgorithm {
 		return getClass().getSimpleName();
 	}
 
-	/* (non-Javadoc)
-	 * @see ippoz.multilayer.detector.algorithm.DetectionAlgorithm#getDataType()
-	 */
 	@Override
-	public DataCategory getDataType() {
+	public DataSeries getDataSeries() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see ippoz.multilayer.detector.algorithm.DetectionAlgorithm#getIndicator()
-	 */
-	@Override
-	public Indicator getIndicator() {
-		return null;
-	}
-	
 }

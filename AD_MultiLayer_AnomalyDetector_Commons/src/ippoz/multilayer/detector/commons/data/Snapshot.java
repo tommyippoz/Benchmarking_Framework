@@ -6,6 +6,7 @@ package ippoz.multilayer.detector.commons.data;
 import ippoz.multilayer.detector.commons.failure.InjectedElement;
 import ippoz.multilayer.detector.commons.service.ServiceCall;
 import ippoz.multilayer.detector.commons.service.ServiceStat;
+import ippoz.multilayer.detector.commons.service.StatPair;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -19,14 +20,14 @@ import java.util.LinkedList;
  */
 public class Snapshot {
 	
-	/** The observation. */
-	private Observation obs;
-	
 	/** The list of services called at that time instant. */
 	private LinkedList<ServiceCall> sCall;
 	
 	/** The injection at that time instant. */
 	private InjectedElement injEl;
+	
+	/** The snapshot timestamp. */
+	private Date timestamp;
 	
 	/** The service stat list. */
 	private HashMap<String, ServiceStat> ssList;
@@ -34,13 +35,11 @@ public class Snapshot {
 	/**
 	 * Instantiates a new snapshot.
 	 *
-	 * @param obs the observation
 	 * @param currentCalls the current calls
 	 * @param injEl the injection
-	 * @param ssList the service stat list
 	 */
-	public Snapshot(Observation obs, LinkedList<ServiceCall> currentCalls, InjectedElement injEl, HashMap<String, ServiceStat> ssList) {
-		this.obs = obs;
+	public Snapshot(Date timestamp, LinkedList<ServiceCall> currentCalls, InjectedElement injEl, HashMap<String, ServiceStat> ssList) {
+		this.timestamp = timestamp;
 		this.sCall = currentCalls;
 		this.injEl = injEl;
 		this.ssList = ssList;
@@ -52,25 +51,25 @@ public class Snapshot {
 	 * @return the timestamp
 	 */
 	public Date getTimestamp(){
-		return obs.getTimestamp();
+		return timestamp;
 	}
 	
 	/**
-	 * Gets the service stat list.
+	 * Gets the service obs stat.
 	 *
-	 * @return the service stat list
+	 * @return the service obs stat
 	 */
-	public HashMap<String, ServiceStat> getServiceStatList(){
-		return ssList;
+	public StatPair getServiceObsStat(String serviceName){
+		return ssList.get(serviceName).getObsStat();
 	}
 	
 	/**
-	 * Gets the observation.
+	 * Gets the service timing stat.
 	 *
-	 * @return the observation
+	 * @return the service timing stat
 	 */
-	public Observation getObservation() {
-		return obs;
+	public StatPair getServiceTimingStat(String serviceName){
+		return ssList.get(serviceName).getTimeStat();
 	}
 	
 	/**
@@ -89,6 +88,10 @@ public class Snapshot {
 	 */
 	public InjectedElement getInjectedElement() {
 		return injEl;
+	}
+
+	public HashMap<String, ServiceStat> getServiceStats() {
+		return ssList;
 	}
 	
 }

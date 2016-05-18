@@ -3,9 +3,8 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
-import ippoz.multilayer.commons.datacategory.DataCategory;
-import ippoz.multilayer.commons.indicator.Indicator;
-import ippoz.multilayer.detector.commons.data.Snapshot;
+import ippoz.multilayer.detector.commons.data.DataSeriesSnapshot;
+import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.configuration.SPSConfiguration;
@@ -27,7 +26,7 @@ import org.apache.commons.math3.special.Erf;
  *
  * @author Tommy
  */
-public class SPSDetector extends IndicatorDetectionAlgorithm {
+public class SPSDetector extends DataSeriesDetectionAlgorithm {
 	
 	/** The Constant SPS_UPPER_BOUND. */
 	public static final String SPS_UPPER_BOUND = "UpperBound";
@@ -78,8 +77,8 @@ public class SPSDetector extends IndicatorDetectionAlgorithm {
 	 * @param categoryTag the data category tag
 	 * @param conf the configuration
 	 */
-	public SPSDetector(Indicator indicator, DataCategory categoryTag, AlgorithmConfiguration conf) {
-		super(indicator, categoryTag, conf);
+	public SPSDetector(DataSeries dataSeries, AlgorithmConfiguration conf) {
+		super(dataSeries, conf);
 		calculator = new SPSCalculator();
 		anomalies = new TreeMap<Date, Double>();
 		failures = new TreeMap<Date, Double>();
@@ -88,14 +87,11 @@ public class SPSDetector extends IndicatorDetectionAlgorithm {
 		lowerTreshold = new TreeMap<Date, Double>();
 		newTresholds = null;
 	}
-
-	/* (non-Javadoc)
-	 * @see ippoz.multilayer.detector.algorithm.DetectionAlgorithm#evaluateSnapshot(ippoz.multilayer.detector.data.Snapshot)
-	 */
+	
 	@Override
-	public double evaluateSnapshot(Snapshot sysSnapshot) {
+	protected double evaluateDataSeriesSnapshot(DataSeriesSnapshot sysSnapshot) {
 		double anomalyScore;
-		observations.put(sysSnapshot.getTimestamp(), Double.valueOf(sysSnapshot.getObservation().getValue(indicator.getName(), categoryTag)));
+		observations.put(sysSnapshot.getTimestamp(), sysSnapshot.getSnapValue());
 		if(newTresholds != null) {
 			lowerTreshold.put(sysSnapshot.getTimestamp(), newTresholds[0]);
 			upperTreshold.put(sysSnapshot.getTimestamp(), newTresholds[1]);
@@ -105,23 +101,22 @@ public class SPSDetector extends IndicatorDetectionAlgorithm {
 		}
 		anomalyScore = calculateAnomalyScore(sysSnapshot);
 		if(anomalyScore >= 1.0)
-			anomalies.put(sysSnapshot.getTimestamp(), Double.valueOf(sysSnapshot.getObservation().getValue(indicator.getName(), categoryTag)));
+			anomalies.put(sysSnapshot.getTimestamp(), sysSnapshot.getSnapValue());
 		if(sysSnapshot.getInjectedElement() != null && sysSnapshot.getInjectedElement().getTimestamp().compareTo(sysSnapshot.getTimestamp()) == 0)
-			failures.put(sysSnapshot.getTimestamp(), Double.valueOf(sysSnapshot.getObservation().getValue(indicator.getName(), categoryTag)));
+			failures.put(sysSnapshot.getTimestamp(), sysSnapshot.getSnapValue());
 		newTresholds = calculator.calculateTreshold(sysSnapshot);
 		return anomalyScore;
 	}
-	
+
 	/**
 	 * Calculates anomaly score following SPS rules.
 	 *
 	 * @param sysSnapshot the system snapshot
 	 * @return the anomaly score
 	 */
-	private double calculateAnomalyScore(Snapshot sysSnapshot){
-		double value = Double.valueOf(sysSnapshot.getObservation().getValue(indicator.getName(), categoryTag));
+	private double calculateAnomalyScore(DataSeriesSnapshot sysSnapshot){
 		if(lowerTreshold.size() > 0 && upperTreshold.size() > 0) {
-			if(value <= upperTreshold.get(upperTreshold.lastKey()) && value >= lowerTreshold.get(lowerTreshold.lastKey()))
+			if(sysSnapshot.getSnapValue() <= upperTreshold.get(upperTreshold.lastKey()) && sysSnapshot.getSnapValue() >= lowerTreshold.get(lowerTreshold.lastKey()))
 				return 0;
 			else return 1;
 		} else return 0;
@@ -136,8 +131,8 @@ public class SPSDetector extends IndicatorDetectionAlgorithm {
 		File outFolder = new File(outFolderName + "/graphics/" + expTag);
 		if(!outFolder.exists())
 			outFolder.mkdirs();
-		chart = new XYChartDrawer(indicator.getName() + "#" + categoryTag, "Seconds", "Values", getDataset());
-		chart.saveToFile(outFolder.getPath() + "/" + indicator.getName() + "#" + categoryTag + ".png", IMG_WIDTH, IMG_HEIGHT);
+		chart = new XYChartDrawer(dataSeries.getName(), "Seconds", "Values", getDataset());
+		chart.saveToFile(outFolder.getPath() + "/" + dataSeries.getName() + ".png", IMG_WIDTH, IMG_HEIGHT);
 	}
 
 	/**
@@ -215,9 +210,9 @@ public class SPSDetector extends IndicatorDetectionAlgorithm {
 		 * @param sysSnapshot the current snapshot
 		 * @return the new thresholds
 		 */
-		public double[] calculateTreshold(Snapshot sysSnapshot){
+		public double[] calculateTreshold(DataSeriesSnapshot sysSnapshot){
 			double calcTreshold = 0;
-			addSPSBlock(Double.parseDouble(sysSnapshot.getObservation().getValue(indicator.getName(), categoryTag)), sysSnapshot.getTimestamp());
+			addSPSBlock(sysSnapshot.getSnapValue(), sysSnapshot.getTimestamp());
 			if(observedValues.size() > 1)
 				calcTreshold = computeThreshold();
 			else calcTreshold = observedValues.getLast().getObs();

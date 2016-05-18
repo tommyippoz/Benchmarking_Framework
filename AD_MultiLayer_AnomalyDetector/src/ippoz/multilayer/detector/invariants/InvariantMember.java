@@ -3,7 +3,7 @@
  */
 package ippoz.multilayer.detector.invariants;
 
-import ippoz.multilayer.detector.commons.data.Snapshot;
+import ippoz.multilayer.detector.commons.data.MultipleSnapshot;
 
 /**
  * @author Tommy
@@ -23,7 +23,7 @@ public abstract class InvariantMember {
 		return memberName;
 	}
 
-	public Object getValue(Snapshot snapshot){
+	public Object getValue(MultipleSnapshot snapshot){
 		return memberType.cast(getStringValue(snapshot));
 	}
 	
@@ -31,13 +31,13 @@ public abstract class InvariantMember {
 		return memberType.cast(rawData);
 	}
 	
-	public abstract String getStringValue(Snapshot snapshot);
+	public abstract String getStringValue(MultipleSnapshot snapshot);
 	
-	public Double getDoubleValue(Snapshot snapshot){
+	public Double getDoubleValue(MultipleSnapshot snapshot){
 		return Double.parseDouble(getStringValue(snapshot));
 	}
 	
-	public Long getLongValue(Snapshot snapshot){
+	public Long getLongValue(MultipleSnapshot snapshot){
 		return Long.parseLong(getStringValue(snapshot));
 	}
 	

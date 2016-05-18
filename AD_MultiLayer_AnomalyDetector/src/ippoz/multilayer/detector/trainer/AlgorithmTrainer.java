@@ -4,9 +4,9 @@
 package ippoz.multilayer.detector.trainer;
 
 import ippoz.multilayer.commons.datacategory.DataCategory;
-import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
+import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
@@ -27,11 +27,8 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	/** The algorithm tag. */
 	private String algTag;	
 	
-	/** The involved indicator. */
-	private Indicator indicator;
-	
-	/** The data category tag. */
-	private DataCategory categoryTag;
+	/** The involved data series. */
+	private DataSeries dataSeries;
 	
 	/** The used metric. */
 	private Metric metric;
@@ -68,10 +65,9 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	 * @param trainData the considered train data
 	 * @param configurations the possible configurations
 	 */
-	public AlgorithmTrainer(String algTag, Indicator indicator, DataCategory categoryTag, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData, HashMap<String, LinkedList<AlgorithmConfiguration>> configurations) {
+	public AlgorithmTrainer(String algTag, DataSeries dataSeries, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData, HashMap<String, LinkedList<AlgorithmConfiguration>> configurations) {
 		this.algTag = algTag;
-		this.indicator = indicator;
-		this.categoryTag = categoryTag;
+		this.dataSeries = dataSeries;
 		this.metric = metric;
 		this.reputation = reputation;
 		this.configurations = configurations;
@@ -89,8 +85,8 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	 * @param trainData the considered train data
 	 * @param configurations the possible configurations
 	 */
-	public AlgorithmTrainer(String algTag, Indicator indicator, DataCategory categoryTag, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData, AlgorithmConfiguration configuration) {
-		this(algTag, indicator, categoryTag, metric, reputation, trainData, new HashMap<String, LinkedList<AlgorithmConfiguration>>());
+	public AlgorithmTrainer(String algTag, DataSeries dataSeries, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData, AlgorithmConfiguration configuration) {
+		this(algTag, dataSeries, metric, reputation, trainData, new HashMap<String, LinkedList<AlgorithmConfiguration>>());
 		configurations.put(algTag, new LinkedList<AlgorithmConfiguration>());
 		configurations.get(algTag).add(configuration);
 		bestConf = configuration;
@@ -129,7 +125,7 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 		DetectionAlgorithm algorithm;
 		for(AlgorithmConfiguration conf : configurations.get(algTag.toUpperCase())){
 			metricResults = new LinkedList<Double>();
-			algorithm = DetectionAlgorithm.buildAlgorithm(algTag, categoryTag, indicator, conf);
+			algorithm = DetectionAlgorithm.buildAlgorithm(algTag, dataSeries, conf);
 			for(ExperimentData expData : expList){
 				metricResults.add(metric.evaluateMetric(algorithm, expData)[0]);
 			}
@@ -155,7 +151,7 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 		double[] metricEvaluation;
 		LinkedList<Double> metricResults = new LinkedList<Double>();
 		LinkedList<Double> algResults = new LinkedList<Double>();
-		DetectionAlgorithm algorithm = DetectionAlgorithm.buildAlgorithm(algTag, categoryTag, indicator, bestConf);
+		DetectionAlgorithm algorithm = DetectionAlgorithm.buildAlgorithm(algTag, dataSeries, bestConf);
 		for(ExperimentData expData : trainData){
 			metricEvaluation = metric.evaluateMetric(algorithm, expData);
 			metricResults.add(metricEvaluation[0]);
@@ -173,7 +169,7 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	 */
 	private double evaluateReputationScore(LinkedList<ExperimentData> trainData){
 		LinkedList<Double> reputationResults = new LinkedList<Double>();
-		DetectionAlgorithm algorithm = DetectionAlgorithm.buildAlgorithm(algTag, categoryTag, indicator, bestConf);
+		DetectionAlgorithm algorithm = DetectionAlgorithm.buildAlgorithm(algTag, dataSeries, bestConf);
 		for(ExperimentData expData : trainData){
 			reputationResults.add(reputation.evaluateReputation(algorithm, expData));
 		}
@@ -208,23 +204,25 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	}
 	
 	/**
-	 * Gets the indicator name.
+	 * Gets the series name.
 	 *
-	 * @return the indicator name
+	 * @return the series name
 	 */
 	public String getIndicatorName(){
-		if(indicator != null)
-			return indicator.getName();
+		if(dataSeries != null)
+			return dataSeries.getName();
 		else return null;
 	}
 	
 	/**
-	 * Gets the data type.
+	 * Gets the series name.
 	 *
-	 * @return the data type
+	 * @return the series name
 	 */
-	public DataCategory getDataType(){
-		return categoryTag;
+	public DataCategory getDataCategory(){
+		if(dataSeries != null)
+			return dataSeries.getDataCategory();
+		else return null;
 	}
 
 	/**

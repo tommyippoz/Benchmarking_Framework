@@ -3,10 +3,9 @@
  */
 package ippoz.multilayer.detector.manager;
 
-import ippoz.multilayer.commons.datacategory.DataCategory;
-import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
+import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.PreferencesManager;
 import ippoz.multilayer.detector.commons.support.ThreadScheduler;
@@ -27,7 +26,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -59,9 +57,6 @@ public class EvaluatorManager extends ThreadScheduler {
 	/** The detector score threshold. Used to filter the available anomaly checkers by score. */
 	private double detectorScoreTreshold;
 	
-	/** The indicator list. */
-	private HashMap<String, Indicator> indicatorList;
-	
 	/**
 	 * Instantiates a new evaluator manager.
 	 *
@@ -80,18 +75,7 @@ public class EvaluatorManager extends ThreadScheduler {
 		this.validationMetrics = validationMetrics;
 		this.algConvergence = algConvergence;
 		this.detectorScoreTreshold = detectorScoreTreshold;
-		buildIndicatorList();
 		anomalyTreshold = getAnomalyVoterTreshold(anTresholdString, loadTrainScores().size());
-	}
-
-	/**
-	 * Builds the indicator list.
-	 */
-	private void buildIndicatorList(){
-		indicatorList = new HashMap<String, Indicator>();
-		for(Indicator ind : expList.getFirst().getNumericIndicators()){
-			indicatorList.put(ind.getName(), ind);
-		}
 	}
 	
 	/**
@@ -216,7 +200,7 @@ public class EvaluatorManager extends ThreadScheduler {
 									conf.addItem(AlgorithmConfiguration.WEIGHT, splitted[3]);
 									conf.addItem(AlgorithmConfiguration.SCORE, splitted[4]);
 								}
-								voterList.add(new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(splitted[2], DataCategory.valueOf(splitted[1].toUpperCase()), indicatorList.get(splitted[0]), conf), Double.parseDouble(splitted[4]), Double.parseDouble(splitted[3])));
+								voterList.add(new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(splitted[0], DataSeries.fromString(splitted[1]), conf), Double.parseDouble(splitted[4]), Double.parseDouble(splitted[3])));
 							}
 						}
 					}

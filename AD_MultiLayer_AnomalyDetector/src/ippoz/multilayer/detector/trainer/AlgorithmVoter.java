@@ -4,6 +4,7 @@
 package ippoz.multilayer.detector.trainer;
 
 import ippoz.multilayer.commons.layers.LayerType;
+import ippoz.multilayer.detector.algorithm.DataSeriesDetectionAlgorithm;
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 
@@ -42,7 +43,10 @@ public class AlgorithmVoter implements Cloneable {
 	 */
 	@Override
 	protected AlgorithmVoter clone() throws CloneNotSupportedException {
-		return new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(alg.getAlgorithmType(), alg.getDataType(), alg.getIndicator(), alg.getConfiguration()), metricScore, reputationScore);
+		if(alg instanceof DataSeriesDetectionAlgorithm)
+			return new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(alg.getAlgorithmType(), ((DataSeriesDetectionAlgorithm)alg).getDataSeries(), alg.getConfiguration()), metricScore, reputationScore);
+		else return new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(alg.getAlgorithmType(), null, alg.getConfiguration()), metricScore, reputationScore);
+		
 	}
 
 	/**
@@ -90,7 +94,9 @@ public class AlgorithmVoter implements Cloneable {
 	 * @return the layer type
 	 */
 	public LayerType getLayerType() {
-		return alg.getLayerType();
+		if(alg.getDataSeries() != null)
+			return alg.getDataSeries().getLayerType();
+		else return LayerType.NO_LAYER;
 	}
 
 	/**

@@ -3,12 +3,9 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
-import java.io.File;
-import java.util.TreeMap;
-
-import ippoz.multilayer.commons.datacategory.DataCategory;
-import ippoz.multilayer.commons.indicator.Indicator;
+import ippoz.multilayer.detector.commons.data.MultipleSnapshot;
 import ippoz.multilayer.detector.commons.data.Snapshot;
+import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.configuration.InvariantConfiguration;
 import ippoz.multilayer.detector.invariants.Invariant;
@@ -29,7 +26,9 @@ public class InvariantChecker extends DetectionAlgorithm {
 
 	@Override
 	protected double evaluateSnapshot(Snapshot sysSnapshot) {
-		return invariant.evaluateInvariant(sysSnapshot) ? 1.0 : 0.0;
+		if(sysSnapshot instanceof MultipleSnapshot)
+			return invariant.evaluateInvariant((MultipleSnapshot)sysSnapshot) ? 1.0 : 0.0;
+		else return Double.MIN_VALUE;
 	}
 
 	@Override
@@ -45,12 +44,8 @@ public class InvariantChecker extends DetectionAlgorithm {
 	}
 
 	@Override
-	public DataCategory getDataType() {
-		return null;
-	}
-
-	@Override
-	public Indicator getIndicator() {
+	public DataSeries getDataSeries() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

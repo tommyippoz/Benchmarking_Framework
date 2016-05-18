@@ -4,8 +4,8 @@
 package ippoz.multilayer.detector.manager;
 
 import ippoz.multilayer.commons.datacategory.DataCategory;
-import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
+import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.PreferencesManager;
 import ippoz.multilayer.detector.commons.support.ThreadScheduler;
@@ -50,10 +50,7 @@ public class TrainerManager extends ThreadScheduler {
 	private Reputation reputation;
 	
 	/** The list of indicators. */
-	private LinkedList<Indicator> indList;
-	
-	/** The data types. */
-	private DataCategory[] dataTypes;
+	private LinkedList<DataSeries> seriesList;
 	
 	/** The algorithm types. */
 	private String[] algTypes;
@@ -80,9 +77,12 @@ public class TrainerManager extends ThreadScheduler {
 		this.confList = confList;
 		this.metric = metric;
 		this.reputation = reputation;
-		this.indList = expList.getFirst().getNumericIndicators();
-		this.dataTypes = dataTypes;
 		this.algTypes = algTypes;
+		seriesList = generateDataSeries(dataTypes);
+	}
+
+	private LinkedList<DataSeries> generateDataSeries(DataCategory[] dataTypes) {
+		return DataSeries.allCombinations(expList.getFirst().getIndicators(), dataTypes);
 	}
 
 	/**
@@ -125,15 +125,13 @@ public class TrainerManager extends ThreadScheduler {
 		LinkedList<AlgorithmTrainer> trainerList = new LinkedList<AlgorithmTrainer>();
 		for(String algType : algTypes){
 			if(algType.equals("RCC")){
-				trainerList.add(new AlgorithmTrainer(algType, null, null, metric, reputation, expList, confList));
+				trainerList.add(new AlgorithmTrainer(algType, null, metric, reputation, expList, confList));
 			} else if(algType.equals("SPS") || algType.equals("CONF") || algType.equals("HIST") || algType.equals("WER")){
-				for(Indicator indicator : indList){
-					for(DataCategory dataType : dataTypes){
-						trainerList.add(new AlgorithmTrainer(algType, indicator, dataType, metric, reputation, expList, confList));
-					}
+				for(DataSeries dataSeries : seriesList){
+					trainerList.add(new AlgorithmTrainer(algType, dataSeries, metric, reputation, expList, confList));
 				}
 			} else if(algType.equals("INV")){
-				iManager = new InvariantManager(indList, dataTypes, expList, metric, reputation);
+				iManager = new InvariantManager(seriesList, expList, metric, reputation);
 				trainerList.addAll(iManager.getAllInvariants());
 			}
 		}
@@ -172,7 +170,7 @@ public class TrainerManager extends ThreadScheduler {
 				trainer = (AlgorithmTrainer)tThread;
 				if(trainer.isValidTrain()) {
 					writer.write(trainer.getIndicatorName() + "," + 
-							trainer.getDataType() + "," + 
+							trainer.getDataCategory() + "," + 
 							trainer.getAlgType() + "," +
 							trainer.getReputationScore() + "," + 
 							trainer.getMetricScore() + "," +  

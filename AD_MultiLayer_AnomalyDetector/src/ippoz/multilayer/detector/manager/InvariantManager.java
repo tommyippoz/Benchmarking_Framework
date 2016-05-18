@@ -3,11 +3,10 @@
  */
 package ippoz.multilayer.detector.manager;
 
-import ippoz.multilayer.commons.datacategory.DataCategory;
-import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
+import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.configuration.InvariantConfiguration;
-import ippoz.multilayer.detector.invariants.IndicatorMember;
+import ippoz.multilayer.detector.invariants.DataSeriesMember;
 import ippoz.multilayer.detector.invariants.Invariant;
 import ippoz.multilayer.detector.metric.Metric;
 import ippoz.multilayer.detector.reputation.Reputation;
@@ -23,15 +22,13 @@ public class InvariantManager {
 	
 	private final String[] invariantOperandList = {">"};
 	
-	private LinkedList<Indicator> indList;
-	private DataCategory[] dataTypes;
+	private LinkedList<DataSeries> seriesList;
 	private LinkedList<ExperimentData> expList;
 	private Metric metric;
 	private Reputation reputation;
 	
-	public InvariantManager(LinkedList<Indicator> indList, DataCategory[] dataTypes, LinkedList<ExperimentData> expList, Metric metric, Reputation reputation) {
-		this.indList = indList;
-		this.dataTypes = dataTypes;
+	public InvariantManager(LinkedList<DataSeries> seriesList, LinkedList<ExperimentData> expList, Metric metric, Reputation reputation) {
+		this.seriesList = seriesList;
 		this.expList = expList;
 		this.metric = metric;
 		this.reputation = reputation;
@@ -55,7 +52,7 @@ public class InvariantManager {
 		LinkedList<String> foundMembers = new LinkedList<String>();
 		for(AlgorithmTrainer invTrainer : allInv){
 			invariant = ((InvariantConfiguration)invTrainer.getBestConfiguration()).getInvariant();
-			if(invariant.getFirstMember() instanceof IndicatorMember){
+			if(invariant.getFirstMember() instanceof DataSeriesMember){
 				if(!foundMembers.contains(invariant.getFirstMember().toString()))
 					foundMembers.add(invariant.getFirstMember().toString());
 				else toRemove.add(invTrainer);
@@ -66,14 +63,10 @@ public class InvariantManager {
 	
 	private LinkedList<AlgorithmTrainer> generateInvariants() {
 		LinkedList<AlgorithmTrainer> allInv = new LinkedList<AlgorithmTrainer>();
-		for(Indicator firstMember : indList){
-			for(DataCategory firstCategory : dataTypes){
-				for(Indicator secondMember : indList){
-					for(DataCategory secondCategory : dataTypes){
-						for(String operand : invariantOperandList){
-							allInv.add(new AlgorithmTrainer("INV", null, null, metric, reputation, expList, new InvariantConfiguration(new Invariant(new IndicatorMember(firstMember, firstCategory), new IndicatorMember(secondMember, secondCategory), operand))));
-						}
-					}
+		for(DataSeries firstMember : seriesList){
+			for(DataSeries secondMember : seriesList){
+				for(String operand : invariantOperandList){
+					allInv.add(new AlgorithmTrainer("INV", null, metric, reputation, expList, new InvariantConfiguration(new Invariant(new DataSeriesMember(firstMember), new DataSeriesMember(secondMember), operand))));
 				}
 			}
 		}

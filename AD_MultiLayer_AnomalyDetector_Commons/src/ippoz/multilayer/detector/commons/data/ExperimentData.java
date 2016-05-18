@@ -3,14 +3,12 @@
  */
 package ippoz.multilayer.detector.commons.data;
 
-import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.commons.failure.InjectedElement;
 import ippoz.multilayer.detector.commons.service.ServiceCall;
 import ippoz.multilayer.detector.commons.service.ServiceStat;
 import ippoz.multilayer.detector.commons.support.AppLogger;
-import ippoz.multilayer.detector.commons.support.AppUtility;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,6 +39,9 @@ public class ExperimentData implements Cloneable {
 	/** The timings. */
 	private HashMap<String, HashMap<LayerType, LinkedList<Integer>>> timings;
 	
+	/** The observation list. */
+	private LinkedList<Observation> obsList;
+	
 	/** The snapshot list. */
 	private ArrayList<Snapshot> snapList;
 	
@@ -58,7 +59,7 @@ public class ExperimentData implements Cloneable {
 	 * @param timings the timings
 	 */
 	public ExperimentData(String expID, LinkedList<Observation> obsList, LinkedList<ServiceCall> callList, LinkedList<InjectedElement> injList, HashMap<String, ServiceStat> ssList, HashMap<String, HashMap<LayerType, LinkedList<Integer>>> timings){
-		this(expID, new ArrayList<Snapshot>(), callList, injList, ssList, timings);
+		this(expID, obsList, new ArrayList<Snapshot>(), callList, injList, ssList, timings);
 		snapList = buildSnapshots(obsList);
 		snapIterator = snapList.iterator();	
 	}
@@ -73,8 +74,9 @@ public class ExperimentData implements Cloneable {
 	 * @param ssList the service stats list
 	 * @param timings the timings
 	 */
-	public ExperimentData(String expID, ArrayList<Snapshot> snapList, LinkedList<ServiceCall> callList, LinkedList<InjectedElement> injList, HashMap<String, ServiceStat> ssList, HashMap<String, HashMap<LayerType, LinkedList<Integer>>> timings){
+	public ExperimentData(String expID, LinkedList<Observation> obsList, ArrayList<Snapshot> snapList, LinkedList<ServiceCall> callList, LinkedList<InjectedElement> injList, HashMap<String, ServiceStat> ssList, HashMap<String, HashMap<LayerType, LinkedList<Integer>>> timings){
 		expName = "exp" + expID;
+		this.obsList = obsList;
 		this.snapList = snapList;
 		this.callList = callList;
 		this.injList = injList;
@@ -88,7 +90,7 @@ public class ExperimentData implements Cloneable {
 	 */
 	@Override
 	public ExperimentData clone() throws CloneNotSupportedException {
-		ExperimentData eData = new ExperimentData(expName, snapList, callList, injList, ssList, timings);
+		ExperimentData eData = new ExperimentData(expName, obsList, snapList, callList, injList, ssList, timings);
 		return eData;
 	}
 
@@ -121,7 +123,7 @@ public class ExperimentData implements Cloneable {
 			if(injList.size() > injIndex && injList.get(injIndex).getTimestamp().compareTo(obs.getTimestamp()) == 0)
 				currentInj = injList.get(injIndex);
 			else currentInj = null;		
-			builtSnap.add(new Snapshot(obs, currentCalls, currentInj, ssList));
+			builtSnap.add(new Snapshot(obs.getTimestamp(), currentCalls, currentInj, ssList));
 		}
 		return builtSnap;
 	}
@@ -166,37 +168,6 @@ public class ExperimentData implements Cloneable {
 	}
 
 	/**
-	 * Gets the indicator names.
-	 *
-	 * @return the indicator names
-	 */
-	public LinkedList<String> getIndicatorNames() {
-		LinkedList<String> indNames = new LinkedList<String>();
-		if(snapList != null && snapList.size() > 0){
-			for(Indicator ind : snapList.get(0).getObservation().getIndicators()){
-				indNames.add(ind.getName());
-			}
-		}
-		return indNames;
-	}
-
-	/**
-	 * Gets the numeric indicators.
-	 *
-	 * @return the numeric indicators
-	 */
-	public LinkedList<Indicator> getNumericIndicators() {
-		LinkedList<Indicator> indList = new LinkedList<Indicator>();
-		if(snapList != null && snapList.size() > 0){
-			for(Indicator ind : snapList.get(0).getObservation().getIndicators()){
-				if(AppUtility.isNumber(snapList.get(0).getObservation().getValue(ind, DataCategory.PLAIN)))
-					indList.add(ind);
-			}
-		}
-		return indList;
-	}
-
-	/**
 	 * Resets snapshot iterator.
 	 */
 	public void resetIterator() {
@@ -218,7 +189,7 @@ public class ExperimentData implements Cloneable {
 	 * @return the first timestamp
 	 */
 	public Date getFirstTimestamp(){
-		return snapList.get(0).getObservation().getTimestamp();
+		return snapList.get(0).getTimestamp();
 	}
 
 	/**
@@ -229,22 +200,26 @@ public class ExperimentData implements Cloneable {
 	public HashMap<String, HashMap<LayerType, LinkedList<Integer>>> getMonitorPerformanceIndexes() {
 		return timings;
 	}
-	
-	/**
-	 * Gets the layer indicators.
-	 *
-	 * @return the layer indicators
-	 */
+
 	public HashMap<LayerType, Integer> getLayerIndicators(){
 		HashMap<LayerType, Integer> layerInd = new HashMap<LayerType, Integer>();
 		if(snapList.size() > 0){
-			for(Indicator ind : snapList.get(0).getObservation().getIndicators()){
+			for(Indicator ind : obsList.get(0).getIndicators()){
 				if(layerInd.get(ind.getLayer()) == null)
 					layerInd.put(ind.getLayer(), 0);
 				layerInd.replace(ind.getLayer(), layerInd.get(ind.getLayer())+1);
 			}
 		}
 		return layerInd;
+	}
+	
+	/**
+	 * Gets the indicators.
+	 *
+	 * @return the indicators
+	 */
+	public Indicator[] getIndicators() {
+		return obsList.get(0).getIndicators();
 	}
 	
 }

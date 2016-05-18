@@ -6,12 +6,9 @@ package ippoz.multilayer.detector.algorithm;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import ippoz.multilayer.commons.datacategory.DataCategory;
-import ippoz.multilayer.commons.indicator.Indicator;
-import ippoz.multilayer.detector.commons.data.Observation;
-import ippoz.multilayer.detector.commons.data.Snapshot;
+import ippoz.multilayer.detector.commons.data.DataSeriesSnapshot;
+import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.service.ServiceCall;
-import ippoz.multilayer.detector.commons.service.ServiceStat;
 import ippoz.multilayer.detector.commons.service.StatPair;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
 
@@ -19,21 +16,21 @@ import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
  * @author Tommy
  *
  */
-public class WesternElectricRulesChecker extends IndicatorDetectionAlgorithm {
+public class WesternElectricRulesChecker extends DataSeriesDetectionAlgorithm {
 	
 	private HashMap<ServiceCall, LinkedList<WER_Zone>> histZones;
 	
-	public WesternElectricRulesChecker(Indicator indicator, DataCategory categoryTag, AlgorithmConfiguration conf) {
-		super(indicator, categoryTag, conf);
+	public WesternElectricRulesChecker(DataSeries dataSeries, AlgorithmConfiguration conf) {
+		super(dataSeries, conf);
 		histZones = new HashMap<ServiceCall, LinkedList<WER_Zone>>();
 	}
 
 	@Override
-	protected double evaluateSnapshot(Snapshot sysSnapshot) {
+	protected double evaluateDataSeriesSnapshot(DataSeriesSnapshot sysSnapshot) {
 		double anomalyRate = 0.0;
 		if(sysSnapshot.getServiceCalls().size() > 0){
 			for(ServiceCall sCall : sysSnapshot.getServiceCalls()){
-				anomalyRate = anomalyRate + evaluateZones(updateHistZones(sCall, sysSnapshot.getObservation(), sysSnapshot.getServiceStatList()));
+				anomalyRate = anomalyRate + evaluateZones(updateHistZones(sCall, sysSnapshot.getSnapValue(), sysSnapshot.getSnapStat().get(sCall.getServiceName())));
 			}
 			return anomalyRate / sysSnapshot.getServiceCalls().size();
 		} else return 0;
@@ -115,7 +112,7 @@ public class WesternElectricRulesChecker extends IndicatorDetectionAlgorithm {
 		return false;
 	}
 
-	private ServiceCall updateHistZones(ServiceCall sCall, Observation obs, HashMap<String, ServiceStat> sStats) {
+	private ServiceCall updateHistZones(ServiceCall sCall, Double snapValue, StatPair snapStat) {
 		ServiceCall entry = null;
 		for(ServiceCall mapCall : histZones.keySet()){
 			if(mapCall.compareTo(sCall) == 0)
@@ -125,7 +122,7 @@ public class WesternElectricRulesChecker extends IndicatorDetectionAlgorithm {
 			histZones.put(sCall, new LinkedList<WER_Zone>());
 			entry = sCall;
 		}
-		histZones.get(entry).add(getZone(Double.valueOf(obs.getValue(indicator.getName(), categoryTag)), sStats.get(sCall.getServiceName()).getIndStat(indicator.getName()).getAllObs()));
+		histZones.get(entry).add(getZone(snapValue, snapStat));
 		return entry;
 	}
 

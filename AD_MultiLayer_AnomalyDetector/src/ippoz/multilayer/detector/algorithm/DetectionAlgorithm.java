@@ -3,10 +3,8 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
-import ippoz.multilayer.commons.datacategory.DataCategory;
-import ippoz.multilayer.commons.indicator.Indicator;
-import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.commons.data.Snapshot;
+import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.service.StatPair;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
@@ -57,18 +55,18 @@ public abstract class DetectionAlgorithm {
 	 * @param conf the configuration
 	 * @return the detection algorithm
 	 */
-	public static DetectionAlgorithm buildAlgorithm(String algTag, DataCategory dataType, Indicator indicator, AlgorithmConfiguration conf) {
+	public static DetectionAlgorithm buildAlgorithm(String algTag, DataSeries dataSeries, AlgorithmConfiguration conf) {
 		switch(algTag.toUpperCase()){
 			case "SPS":
-				return new SPSDetector(indicator, dataType, conf);
+				return new SPSDetector(dataSeries, conf);
 			case "HIST":
-				return new HistoricalIndicatorChecker(indicator, dataType, conf);
+				return new HistoricalIndicatorChecker(dataSeries, conf);
 			case "CONF":
-				return new ConfidenceIntervalChecker(indicator, dataType, conf);
+				return new ConfidenceIntervalChecker(dataSeries, conf);
 			case "RCC":
 				return new RemoteCallChecker(conf);
 			case "WER":
-				return new WesternElectricRulesChecker(indicator, dataType, conf);
+				return new WesternElectricRulesChecker(dataSeries, conf);
 			case "INV":
 				return new InvariantChecker(conf);
 			default:
@@ -198,19 +196,6 @@ public abstract class DetectionAlgorithm {
 		else return outVal;
 	}
 	
-	
-
-	/**
-	 * Gets the layer linked to the algorithm.
-	 *
-	 * @return the layer type
-	 */
-	public LayerType getLayerType() {
-		if(this instanceof IndicatorDetectionAlgorithm){
-			return ((IndicatorDetectionAlgorithm)this).getIndicatorLayer();
-		} else return LayerType.NO_LAYER;
-	}
-
 	/**
 	 * Gets the algorithm type.
 	 *
@@ -242,17 +227,10 @@ public abstract class DetectionAlgorithm {
 	}
 
 	/**
-	 * Gets the data type.
+	 * Gets the data series.
 	 *
-	 * @return the data type
+	 * @return the data series
 	 */
-	public abstract DataCategory getDataType();
-
-	/**
-	 * Gets the indicator.
-	 *
-	 * @return the indicator
-	 */
-	public abstract Indicator getIndicator();
+	public abstract DataSeries getDataSeries();
 
 }

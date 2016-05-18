@@ -3,7 +3,7 @@
  */
 package ippoz.multilayer.detector.invariants;
 
-import ippoz.multilayer.detector.commons.data.Snapshot;
+import ippoz.multilayer.detector.commons.data.MultipleSnapshot;
 
 /**
  * @author Tommy
@@ -19,7 +19,7 @@ public class ConstantMember extends InvariantMember {
 	}
 
 	@Override
-	public String getStringValue(Snapshot snapshot) {
+	public String getStringValue(MultipleSnapshot snapshot) {
 		return String.valueOf(getValueFromRaw(baseValue));
 	}
 

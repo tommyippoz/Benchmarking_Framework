@@ -3,8 +3,8 @@
  */
 package ippoz.multilayer.detector.invariants;
 
-import ippoz.multilayer.commons.datacategory.DataCategory;
-import ippoz.multilayer.detector.commons.data.Snapshot;
+import ippoz.multilayer.detector.commons.data.MultipleSnapshot;
+import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.support.AppUtility;
 
 /**
@@ -42,7 +42,7 @@ public class Invariant {
 		if(AppUtility.isNumber(mString))
 			return new ConstantMember(Double.class, mString);
 		else {
-			return new IndicatorMember(mString.substring(0, mString.indexOf("(")).trim(), DataCategory.valueOf(mString.substring(mString.indexOf("(")+1, mString.indexOf(")"))));
+			return new DataSeriesMember(DataSeries.fromString(mString));
 		}
 	}
 
@@ -54,8 +54,8 @@ public class Invariant {
 		return secondMember;
 	}
 	
-	public boolean evaluateInvariant(Snapshot snapshot){
-		return evaluateOperand(firstMember.getDoubleValue(snapshot), secondMember.getDoubleValue(snapshot));
+	public boolean evaluateInvariant(MultipleSnapshot sysSnapshot){
+		return evaluateOperand(firstMember.getDoubleValue(sysSnapshot), secondMember.getDoubleValue(sysSnapshot));
 	}
 	
 	private boolean evaluateOperand(double val1, double val2){
@@ -80,8 +80,6 @@ public class Invariant {
 	@Override
 	public String toString() {
 		return firstMember.toString() + " " + operand + " " + secondMember.toString();
-	}	
-	
-	
+	}		
 
 }
