@@ -35,7 +35,7 @@ public class HistoricalIndicatorChecker extends DataSeriesDetectionAlgorithm {
 		double anomalyRate = 0.0;
 		if(sysSnapshot.getServiceCalls().size() > 0){
 			for(ServiceCall sCall : sysSnapshot.getServiceCalls()){
-				anomalyRate = anomalyRate + analyzeCall(sysSnapshot.getSnapValue(), sCall, sysSnapshot.getSnapStat().get(sCall.getServiceName()));
+				anomalyRate = anomalyRate + analyzeCall(sysSnapshot.getSnapValue(), sCall, sysSnapshot.getSnapStat(sCall));
 			}
 			return anomalyRate / sysSnapshot.getServiceCalls().size();
 		} else return 0;

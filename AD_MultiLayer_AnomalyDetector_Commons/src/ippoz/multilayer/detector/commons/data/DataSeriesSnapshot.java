@@ -20,13 +20,11 @@ public class DataSeriesSnapshot extends Snapshot {
 
 	private DataSeries dataSeries;
 	private Double snapValue;
-	private HashMap<String, StatPair> snapStat;
 	
 	public DataSeriesSnapshot(Observation obs, LinkedList<ServiceCall> currentCalls, InjectedElement injEl, HashMap<String, ServiceStat> ssList, DataSeries dataSeries) {
 		super(obs.getTimestamp(), currentCalls, injEl, ssList);
 		this.dataSeries = dataSeries;
 		snapValue = dataSeries.getSeriesValue(obs);
-		snapStat = dataSeries.getSeriesServiceStats(ssList);
 	}
 
 	public DataSeries getDataSeries() {
@@ -37,8 +35,8 @@ public class DataSeriesSnapshot extends Snapshot {
 		return snapValue;
 	}
 
-	public HashMap<String, StatPair> getSnapStat() {
-		return snapStat;
+	public StatPair getSnapStat(ServiceCall sCall) {
+		return dataSeries.getSeriesServiceStat(getTimestamp(), sCall, getServiceStats().get(sCall.getServiceName()));
 	}
 
 }
