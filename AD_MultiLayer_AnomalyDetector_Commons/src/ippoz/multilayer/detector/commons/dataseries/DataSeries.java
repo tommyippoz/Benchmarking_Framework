@@ -91,14 +91,14 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 	
 	public static DataSeries fromStrings(String seriesName, DataCategory dataType, LayerType layerType) {
 		if(layerType.equals(LayerType.COMPOSITION)){
-			if(seriesName.contains("*")){
-				return new ProductDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf("*")-1).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf("*")+2, seriesName.length()-1).trim()), dataType);
+			if(seriesName.contains(")*(")){
+				return new ProductDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")*(")).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")*(")+3, seriesName.length()-1).trim()), dataType);
 			} else if(seriesName.contains("/")){
-				return new FractionDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf("/")-1).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf("/")+2, seriesName.length()-1).trim()), dataType);
+				return new FractionDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")/(")).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")/(")+3, seriesName.length()-1).trim()), dataType);
 			} else if(seriesName.contains("+")){
-				return new SumDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf("+")-1).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf("+")+2, seriesName.length()-1).trim()), dataType);
+				return new SumDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")+(")).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")+(")+3, seriesName.length()-1).trim()), dataType);
 			} else if(seriesName.contains("-")){
-				return new DiffDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf("-")-1).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf("-")+2, seriesName.length()-1).trim()), dataType);
+				return new DiffDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")-(")).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")-(")+3, seriesName.length()-1).trim()), dataType);
 			} else return null;
 		} else return new IndicatorDataSeries(new Indicator(seriesName, layerType, Double.class), dataType);
 	}

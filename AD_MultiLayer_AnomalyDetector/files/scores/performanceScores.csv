@@ -1,10 +1,10 @@
 performance_metric,value
-load_validation_time,12608.0
-exp_load_validation_time,630.0
+load_validation_time,12531.0
+exp_load_validation_time,626.0
 scoring_metric,F-Measure
 selected_anomaly_checkers,16.0
-validation_time,15268.0
+validation_time,19194.0
 reputation_metric,1.0
 validation_runs,16.0
-execution_time,Thu May 19 17:37:09 CEST 2016
-exp_validation_time,954.0
+execution_time,Thu May 19 17:49:59 CEST 2016
+exp_validation_time,1199.0
