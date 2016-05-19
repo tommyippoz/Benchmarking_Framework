@@ -95,11 +95,11 @@ public class ExperimentVoter extends Thread {
 		partialVoting = new TreeMap<Date, HashMap<AlgorithmVoter, Double>>();
 		voting = new TreeMap<Date, Double>();
 		expData.resetIterator();
-		while(expData.hasNextSnapshot()){
-			snapshot = expData.nextSnapshot();
+		for(int i=0;i<expData.getSnapshotNumber();i++){
+			snapshot = expData.getSnapshot(i);
 			snapVoting = new HashMap<AlgorithmVoter, Double>();
 			for(AlgorithmVoter aVoter : algList){
-				snapVoting.put(aVoter, aVoter.voteSnapshot(snapshot));
+				snapVoting.put(aVoter, aVoter.voteSnapshot(snapshot, expData.getDataSeriesSnapshot(aVoter.getDataSeries(), i)));
 			}
 			partialVoting.put(snapshot.getTimestamp(), snapVoting);
 			voting.put(snapshot.getTimestamp(), voteResults(snapVoting));

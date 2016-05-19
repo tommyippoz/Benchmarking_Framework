@@ -166,41 +166,41 @@ public class EvaluatorManager extends ThreadScheduler {
 						readed = readed.trim();
 						if(readed.length() > 0 && readed.indexOf(",") != -1){
 							splitted = readed.split(",");
-							if(splitted.length > 4 && Double.parseDouble(splitted[4]) >= detectorScoreTreshold){
-								switch(splitted[2]){
+							if(splitted.length > 3 && Double.parseDouble(splitted[3]) >= detectorScoreTreshold){
+								switch(splitted[1]){
 									case "HIST":
 										conf = new HistoricalConfiguration();
-										conf.addItem(HistoricalConfiguration.INTERVAL_WIDTH, splitted[5]);
+										conf.addItem(HistoricalConfiguration.INTERVAL_WIDTH, splitted[4]);
 										break;
 									case "SPS":
 										conf = new SPSConfiguration();
-										conf.addItem(SPSConfiguration.PDV, splitted[5]);
-										conf.addItem(SPSConfiguration.PDS, splitted[6]);
-										conf.addItem(SPSConfiguration.POV, splitted[7]);
-										conf.addItem(SPSConfiguration.POS, splitted[8]);
-										conf.addItem(SPSConfiguration.M, splitted[9]);
-										conf.addItem(SPSConfiguration.N, splitted[10]);
-										conf.addItem(SPSConfiguration.DYN_WEIGHT, splitted[11]);
+										conf.addItem(SPSConfiguration.PDV, splitted[4]);
+										conf.addItem(SPSConfiguration.PDS, splitted[5]);
+										conf.addItem(SPSConfiguration.POV, splitted[6]);
+										conf.addItem(SPSConfiguration.POS, splitted[7]);
+										conf.addItem(SPSConfiguration.M, splitted[8]);
+										conf.addItem(SPSConfiguration.N, splitted[9]);
+										conf.addItem(SPSConfiguration.DYN_WEIGHT, splitted[10]);
 										break;
 									case "CONF":
 										conf = new ConfidenceConfiguration();
-										conf.addItem(ConfidenceConfiguration.ALPHA, splitted[5]);
+										conf.addItem(ConfidenceConfiguration.ALPHA, splitted[4]);
 										break;
 									case "RCC":
 										conf = new RemoteCallConfiguration();
-										conf.addItem(RemoteCallConfiguration.RCC_WEIGHT, splitted[5]);
+										conf.addItem(RemoteCallConfiguration.RCC_WEIGHT, splitted[4]);
 										break;
 									case "INV":
-										conf = new InvariantConfiguration(new Invariant(splitted[5]));
+										conf = new InvariantConfiguration(new Invariant(splitted[4]));
 										break;
 									default:
 										conf = null;
 								}
 								if(conf != null){
-									conf.addItem(AlgorithmConfiguration.WEIGHT, splitted[3]);
-									conf.addItem(AlgorithmConfiguration.SCORE, splitted[4]);
+									conf.addItem(AlgorithmConfiguration.WEIGHT, splitted[2]);
+									conf.addItem(AlgorithmConfiguration.SCORE, splitted[3]);
 								}
-								voterList.add(new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(splitted[0], DataSeries.fromString(splitted[1]), conf), Double.parseDouble(splitted[4]), Double.parseDouble(splitted[3])));
+								voterList.add(new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(splitted[1], DataSeries.fromString(splitted[0]), conf), Double.parseDouble(splitted[3]), Double.parseDouble(splitted[2])));
 							}
 						}
 					}

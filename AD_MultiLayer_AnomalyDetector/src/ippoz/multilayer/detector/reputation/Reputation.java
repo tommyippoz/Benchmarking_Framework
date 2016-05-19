@@ -4,8 +4,8 @@
 package ippoz.multilayer.detector.reputation;
 
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
+import ippoz.multilayer.detector.commons.data.DataSeriesSnapshot;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
-import ippoz.multilayer.detector.commons.data.Snapshot;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -47,12 +47,12 @@ public abstract class Reputation {
 	 * @return the computed reputation
 	 */
 	public double evaluateReputation(DetectionAlgorithm alg, ExperimentData expData){
-		Snapshot sysSnapshot;
+		DataSeriesSnapshot sysSnapshot;
 		HashMap<Date, Double> anomalyEvaluations = new HashMap<Date, Double>();
 		expData.resetIterator();
-		while(expData.hasNextSnapshot()){
-			sysSnapshot = expData.nextSnapshot();
-			anomalyEvaluations.put(sysSnapshot.getTimestamp(), alg.snapshotAnomalyRate(sysSnapshot));
+		for(int i=0;i<expData.getSnapshotNumber();i++){
+			sysSnapshot = expData.getDataSeriesSnapshot(alg.getDataSeries(), i);
+			anomalyEvaluations.put(sysSnapshot.getTimestamp(), alg.snapshotAnomalyRate(sysSnapshot, expData.getSnapshot(i)));
 		}
 		expData.resetIterator();
 		return evaluateExperimentReputation(expData, anomalyEvaluations);

@@ -108,11 +108,13 @@ public class TrainerManager extends ThreadScheduler {
 
 	private LinkedList<? extends Thread> filterTrainers(LinkedList<? extends Thread> trainerList) {
 		LinkedList<AlgorithmTrainer> invList = new LinkedList<AlgorithmTrainer>();
-		for(Thread t : trainerList){
-			if(((AlgorithmTrainer)t).getBestConfiguration() instanceof InvariantConfiguration)
-				invList.add((AlgorithmTrainer)t);
+		if(iManager != null){
+			for(Thread t : trainerList){
+				if(((AlgorithmTrainer)t).getBestConfiguration() instanceof InvariantConfiguration)
+					invList.add((AlgorithmTrainer)t);
+			}
+			trainerList.removeAll(iManager.filterInvType(invList));
 		}
-		trainerList.removeAll(iManager.filterInvType(invList));
 		return trainerList;
 	}
 
@@ -165,12 +167,11 @@ public class TrainerManager extends ThreadScheduler {
 		AlgorithmTrainer trainer;
 		try {
 			writer = new BufferedWriter(new FileWriter(new File(prefManager.getPreference(DetectionManager.SCORES_FILE_FOLDER) + "scores.csv")));
-			writer.write("indicator_name,data_series_type,algorithm_type,reputation_score,metric_score(" + metric.getMetricName() + "),configuration\n");
+			writer.write("data_series,algorithm_type,reputation_score,metric_score(" + metric.getMetricName() + "),configuration\n");
 			for(Thread tThread : list){
 				trainer = (AlgorithmTrainer)tThread;
 				if(trainer.isValidTrain()) {
-					writer.write(trainer.getIndicatorName() + "," + 
-							trainer.getDataCategory() + "," + 
+					writer.write(trainer.getSeriesDescription() + "," + 
 							trainer.getAlgType() + "," +
 							trainer.getReputationScore() + "," + 
 							trainer.getMetricScore() + "," +  

@@ -5,6 +5,7 @@ package ippoz.multilayer.detector.commons.data;
 
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.commons.layers.LayerType;
+import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.failure.InjectedElement;
 import ippoz.multilayer.detector.commons.service.ServiceCall;
 import ippoz.multilayer.detector.commons.service.ServiceStat;
@@ -220,6 +221,14 @@ public class ExperimentData implements Cloneable {
 	 */
 	public Indicator[] getIndicators() {
 		return obsList.get(0).getIndicators();
+	}
+
+	public DataSeriesSnapshot getDataSeriesSnapshot(DataSeries dataSeries, int index) {
+		return new DataSeriesSnapshot(obsList.get(index), callList, snapList.get(index).getInjectedElement(), ssList, dataSeries); 
+	}
+
+	public Snapshot getSnapshot(int index) {
+		return snapList.get(index);
 	}
 	
 }

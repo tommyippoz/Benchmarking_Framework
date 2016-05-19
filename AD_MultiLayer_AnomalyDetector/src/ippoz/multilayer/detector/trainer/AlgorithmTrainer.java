@@ -4,6 +4,7 @@
 package ippoz.multilayer.detector.trainer;
 
 import ippoz.multilayer.commons.datacategory.DataCategory;
+import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
@@ -208,9 +209,20 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	 *
 	 * @return the series name
 	 */
-	public String getIndicatorName(){
+	public String getSeriesName(){
 		if(dataSeries != null)
 			return dataSeries.getName();
+		else return null;
+	}
+	
+	/**
+	 * Gets the layer.
+	 *
+	 * @return the layer
+	 */
+	public LayerType getLayerType(){
+		if(dataSeries != null)
+			return dataSeries.getLayerType();
 		else return null;
 	}
 	
@@ -240,6 +252,12 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	@Override
 	public int compareTo(AlgorithmTrainer other) {
 		return Double.compare(other.getMetricScore(), getMetricScore());
+	}
+
+	public String getSeriesDescription() {
+		if(dataSeries != null)
+			return dataSeries.toString();
+		else return "Default";
 	}
 	
 }

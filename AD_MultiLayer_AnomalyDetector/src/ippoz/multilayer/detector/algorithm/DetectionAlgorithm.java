@@ -3,6 +3,7 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
+import ippoz.multilayer.detector.commons.data.DataSeriesSnapshot;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.service.StatPair;
@@ -80,8 +81,12 @@ public abstract class DetectionAlgorithm {
 	 * @param sysSnapshot the given snapshot
 	 * @return the anomaly rate of the snapshot
 	 */
-	public double snapshotAnomalyRate(Snapshot sysSnapshot){
-		return anomalyTrueFalse(evaluateSnapshot(sysSnapshot))*getWeight();
+	public double snapshotAnomalyRate(DataSeriesSnapshot dsSnapshot, Snapshot snapshot){
+		Snapshot outSnapshot;
+		if(getDataSeries() != null)
+			outSnapshot = dsSnapshot;
+		else outSnapshot = snapshot;
+		return anomalyTrueFalse(evaluateSnapshot(outSnapshot))*getWeight();
 	}
 	
 	/**

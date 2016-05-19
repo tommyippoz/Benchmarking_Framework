@@ -24,7 +24,9 @@ public class DataSeriesSnapshot extends Snapshot {
 	public DataSeriesSnapshot(Observation obs, LinkedList<ServiceCall> currentCalls, InjectedElement injEl, HashMap<String, ServiceStat> ssList, DataSeries dataSeries) {
 		super(obs.getTimestamp(), currentCalls, injEl, ssList);
 		this.dataSeries = dataSeries;
-		snapValue = dataSeries.getSeriesValue(obs);
+		if(dataSeries != null)
+			snapValue = dataSeries.getSeriesValue(obs);
+		else snapValue = Double.NaN;
 	}
 
 	public DataSeries getDataSeries() {

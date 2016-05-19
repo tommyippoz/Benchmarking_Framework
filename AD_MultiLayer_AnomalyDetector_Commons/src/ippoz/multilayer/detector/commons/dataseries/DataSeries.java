@@ -29,6 +29,13 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 		this.dataCategory = dataCategory;
 	}
 
+	@Override
+	public String toString() {
+		return seriesName + "#" + dataCategory + "#" + getLayerType();
+	}
+
+
+
 	public String getName() {
 		return seriesName;
 	}
@@ -75,13 +82,46 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 	}
 	
 	public static DataSeries fromString(String stringValue) {
-		// TODO Auto-generated method stub
-		return null;
+		String layer = stringValue.substring(stringValue.lastIndexOf("#")+1);
+		String partial = stringValue.substring(0, stringValue.indexOf(layer)-1);
+		String dataType = partial.substring(partial.lastIndexOf("#")+1);
+		String dataSeries = stringValue.substring(0, partial.lastIndexOf("#"));
+		return fromStrings(dataSeries, DataCategory.valueOf(dataType), LayerType.valueOf(layer));
+	}
+	
+	public static DataSeries fromStrings(String seriesName, DataCategory dataType, LayerType layerType) {
+		if(layerType.equals(LayerType.COMPOSITION)){
+			if(seriesName.contains("*")){
+				return new ProductDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf("*")-1).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf("*")+2, seriesName.length()-1).trim()), dataType);
+			} else if(seriesName.contains("/")){
+				return new FractionDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf("/")-1).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf("/")+2, seriesName.length()-1).trim()), dataType);
+			} else if(seriesName.contains("+")){
+				return new SumDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf("+")-1).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf("+")+2, seriesName.length()-1).trim()), dataType);
+			} else if(seriesName.contains("-")){
+				return new DiffDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf("-")-1).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf("-")+2, seriesName.length()-1).trim()), dataType);
+			} else return null;
+		} else return new IndicatorDataSeries(new Indicator(seriesName, layerType, Double.class), dataType);
 	}
 	
 	public static LinkedList<DataSeries> allCombinations(Indicator[] indicators, DataCategory[] dataTypes) {
-		// TODO Auto-generated method stub
-		return null;
+		LinkedList<DataSeries> outList = new LinkedList<DataSeries>();
+		LinkedList<DataSeries> simpleInd = new LinkedList<DataSeries>();
+		LinkedList<DataSeries> complexInd = new LinkedList<DataSeries>();
+		for(Indicator ind : indicators){
+			for(DataCategory dCat : dataTypes){
+				simpleInd.add(new IndicatorDataSeries(ind, dCat));
+			}
+		}
+		for(DataSeries ds1 : simpleInd){
+			for(DataSeries ds2 : simpleInd){
+				for(DataCategory dCat : dataTypes){
+					complexInd.add(new FractionDataSeries(ds1, ds2, dCat));
+				}
+			}
+		}
+		outList.addAll(simpleInd);
+		outList.addAll(complexInd.subList(0, 1000));
+		return outList;
 	}
 		
 }

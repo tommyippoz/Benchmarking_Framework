@@ -40,11 +40,20 @@ public class Snapshot {
 	 */
 	public Snapshot(Date timestamp, LinkedList<ServiceCall> currentCalls, InjectedElement injEl, HashMap<String, ServiceStat> ssList) {
 		this.timestamp = timestamp;
-		this.sCall = currentCalls;
+		this.sCall = filterCalls(currentCalls);
 		this.injEl = injEl;
 		this.ssList = ssList;
 	}
 	
+	private LinkedList<ServiceCall> filterCalls(LinkedList<ServiceCall> currentCalls) {
+		LinkedList<ServiceCall> okCalls = new LinkedList<ServiceCall>();
+		for(ServiceCall sCall : currentCalls){
+			if(sCall.isAliveAt(timestamp))
+				okCalls.add(sCall);
+		}
+		return okCalls;
+	}
+
 	/**
 	 * Gets the timestamp of that snapshot.
 	 *

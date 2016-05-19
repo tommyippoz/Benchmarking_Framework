@@ -22,7 +22,7 @@ public abstract class ComplexDataSeries extends DataSeries {
 	protected DataSeries secondOperand;
 
 	protected ComplexDataSeries(DataSeries firstOperand, DataSeries secondOperand, String operandTag, DataCategory dataCategory) {
-		super(firstOperand.getName() + " " + operandTag + " " + secondOperand.getName(), dataCategory);
+		super("(" + firstOperand.toString() + ")" + operandTag + "(" + secondOperand.toString() + ")", dataCategory);
 		this.firstOperand = firstOperand;
 		this.secondOperand = secondOperand;
 	}
