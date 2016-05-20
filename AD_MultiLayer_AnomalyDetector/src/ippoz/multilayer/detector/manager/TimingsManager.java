@@ -19,51 +19,54 @@ import java.util.HashMap;
  */
 
 public class TimingsManager {
-	
+
 	/** The train runs. */
-	public static String TRAIN_RUNS = "train_runs";
+	public static final String TRAIN_RUNS = "train_runs";
 	
 	/** The validation runs. */
-	public static String VALIDATION_RUNS = "validation_runs";
+	public static final String VALIDATION_RUNS = "validation_runs";
 	
 	/** The anomaly checkers. */
-	public static String ANOMALY_CHECKERS = "anomaly_checkers";
+	public static final String ANOMALY_CHECKERS = "anomaly_checkers";
 	
 	/** The selected anomaly checkers. */
-	public static String SELECTED_ANOMALY_CHECKERS = "selected_anomaly_checkers";
+	public static final String SELECTED_ANOMALY_CHECKERS = "selected_anomaly_checkers";
 	
 	/** The scoring metric. */
-	public static String SCORING_METRIC = "scoring_metric";
+	public static final String SCORING_METRIC = "scoring_metric";
 	
 	/** The reputation metric. */
-	public static String REPUTATION_METRIC = "reputation_metric";
+	public static final String REPUTATION_METRIC = "reputation_metric";
 	
 	/** The execution time. */
-	public static String EXECUTION_TIME = "execution_time";
+	public static final String EXECUTION_TIME = "execution_time";
 	
 	/** The train time. */
-	public static String TRAIN_TIME = "train_time";
+	public static final String TRAIN_TIME = "train_time";
+	
+	/** The train init time. */
+	public static final String TRAIN_INIT_TIME = "train_init_time";
 	
 	/** The validation time. */
-	public static String VALIDATION_TIME = "validation_time";
+	public static final String VALIDATION_TIME = "validation_time";
 	
 	/** The avg train time. */
-	public static String AVG_TRAIN_TIME = "exp_train_time";
+	public static final String AVG_TRAIN_TIME = "exp_train_time";
 	
 	/** The avg validation time. */
-	public static String AVG_VALIDATION_TIME = "exp_validation_time";
+	public static final String AVG_VALIDATION_TIME = "exp_validation_time";
 	
 	/** The load train time. */
-	public static String LOAD_TRAIN_TIME = "load_train_time";
+	public static final String LOAD_TRAIN_TIME = "load_train_time";
 	
 	/** The load validation time. */
-	public static String LOAD_VALIDATION_TIME = "load_validation_time";
+	public static final String LOAD_VALIDATION_TIME = "load_validation_time";
 	
 	/** The avg load train time. */
-	public static String AVG_LOAD_TRAIN_TIME = "exp_load_train_time";
+	public static final String AVG_LOAD_TRAIN_TIME = "exp_load_train_time";
 	
 	/** The avg load validation time. */
-	public static String AVG_LOAD_VALIDATION_TIME = "exp_load_validation_time";
+	public static final String AVG_LOAD_VALIDATION_TIME = "exp_load_validation_time";
 	
 	/** The timing map. */
 	private HashMap<String, Object> timingMap;

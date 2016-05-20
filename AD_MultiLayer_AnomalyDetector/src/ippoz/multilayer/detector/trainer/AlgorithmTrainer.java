@@ -7,6 +7,7 @@ import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
+import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.AppUtility;
@@ -55,6 +56,8 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	/** Flag that indicates if the trained algorithm retrieves different values (e.g., not always true / false). */
 	private boolean sameResultFlag;
 	
+	private HashMap<String, LinkedList<Snapshot>> algExpSnapshots;
+	
 	/**
 	 * Instantiates a new algorithm trainer.
 	 *
@@ -73,9 +76,10 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 		this.reputation = reputation;
 		this.configurations = configurations;
 		expList = deepClone(trainData);
+		algExpSnapshots = loadAlgExpSnapshots();
 	}
 	
-	/**
+		/**
 	 * Instantiates a new algorithm trainer.
 	 *
 	 * @param algTag the algorithm tag
@@ -91,6 +95,14 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 		configurations.put(algTag, new LinkedList<AlgorithmConfiguration>());
 		configurations.get(algTag).add(configuration);
 		bestConf = configuration;
+	}
+	
+	private HashMap<String, LinkedList<Snapshot>> loadAlgExpSnapshots() {
+		HashMap<String, LinkedList<Snapshot>> expAlgMap = new HashMap<String, LinkedList<Snapshot>>();
+		for(ExperimentData expData : expList){
+			expAlgMap.put(expData.getName(), expData.buildSnapshotsFor(dataSeries));
+		}
+		return expAlgMap;
 	}
 
 	/**
@@ -126,9 +138,9 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 		DetectionAlgorithm algorithm;
 		for(AlgorithmConfiguration conf : configurations.get(algTag.toUpperCase())){
 			metricResults = new LinkedList<Double>();
-			algorithm = DetectionAlgorithm.buildAlgorithm(algTag, dataSeries, conf);
+			algorithm = DetectionAlgorithm.buildAlgorithm(dataSeries, conf);
 			for(ExperimentData expData : expList){
-				metricResults.add(metric.evaluateMetric(algorithm, expData)[0]);
+				metricResults.add(metric.evaluateMetric(algorithm, algExpSnapshots.get(expData.getName()))[0]);
 			}
 			currentMetricValue = AppUtility.calcAvg(metricResults.toArray(new Double[metricResults.size()]));
 			if(bestMetricValue.isNaN() || metric.compareResults(currentMetricValue, bestMetricValue) == 1){
@@ -141,7 +153,7 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 		bestConf.addItem(AlgorithmConfiguration.WEIGHT, String.valueOf(reputationScore));
 		bestConf.addItem(AlgorithmConfiguration.SCORE, String.valueOf(metricScore));
 	}
-	
+
 	/**
 	 * Evaluates metric score on a specified set of experiments.
 	 *
@@ -149,12 +161,12 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	 * @return the metric score
 	 */
 	private double evaluateMetricScore(LinkedList<ExperimentData> trainData){
-		double[] metricEvaluation;
+		double[] metricEvaluation = null;
 		LinkedList<Double> metricResults = new LinkedList<Double>();
 		LinkedList<Double> algResults = new LinkedList<Double>();
-		DetectionAlgorithm algorithm = DetectionAlgorithm.buildAlgorithm(algTag, dataSeries, bestConf);
+		DetectionAlgorithm algorithm = DetectionAlgorithm.buildAlgorithm(dataSeries, bestConf);
 		for(ExperimentData expData : trainData){
-			metricEvaluation = metric.evaluateMetric(algorithm, expData);
+			metricEvaluation = metric.evaluateMetric(algorithm, algExpSnapshots.get(expData.getName()));
 			metricResults.add(metricEvaluation[0]);
 			algResults.add(metricEvaluation[1]);
 		}
@@ -170,9 +182,9 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	 */
 	private double evaluateReputationScore(LinkedList<ExperimentData> trainData){
 		LinkedList<Double> reputationResults = new LinkedList<Double>();
-		DetectionAlgorithm algorithm = DetectionAlgorithm.buildAlgorithm(algTag, dataSeries, bestConf);
+		DetectionAlgorithm algorithm = DetectionAlgorithm.buildAlgorithm(dataSeries, bestConf);
 		for(ExperimentData expData : trainData){
-			reputationResults.add(reputation.evaluateReputation(algorithm, expData));
+			reputationResults.add(reputation.evaluateReputation(algorithm, algExpSnapshots.get(expData.getName())));
 		}
 		return AppUtility.calcAvg(reputationResults.toArray(new Double[reputationResults.size()]));
 	}

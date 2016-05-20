@@ -3,10 +3,11 @@
  */
 package ippoz.multilayer.detector.metric;
 
-import ippoz.multilayer.detector.commons.data.ExperimentData;
+import ippoz.multilayer.detector.commons.data.Snapshot;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -21,9 +22,9 @@ public class Custom_Metric extends BetterMaxMetric {
 	 * @see ippoz.multilayer.detector.metric.Metric#evaluateAnomalyResults(ippoz.multilayer.detector.data.ExperimentData, java.util.HashMap)
 	 */
 	@Override
-	public double evaluateAnomalyResults(ExperimentData expData, HashMap<Date, Double> anomalyEvaluations) {
-		double p = new Precision_Metric().evaluateAnomalyResults(expData, anomalyEvaluations);
-		double r = new Recall_Metric().evaluateAnomalyResults(expData, anomalyEvaluations);
+	public double evaluateAnomalyResults(LinkedList<Snapshot> snapList, HashMap<Date, Double> anomalyEvaluations) {
+		double p = new Precision_Metric().evaluateAnomalyResults(snapList, anomalyEvaluations);
+		double r = new Recall_Metric().evaluateAnomalyResults(snapList, anomalyEvaluations);
 		if(p + r > 0)
 			return 1.25*p*r/(0.25*p+r);
 		else return 0.0;

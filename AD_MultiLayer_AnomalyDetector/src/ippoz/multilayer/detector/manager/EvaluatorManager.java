@@ -3,6 +3,7 @@
  */
 package ippoz.multilayer.detector.manager;
 
+import ippoz.multilayer.detector.algorithm.AlgorithmType;
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
@@ -167,12 +168,12 @@ public class EvaluatorManager extends ThreadScheduler {
 						if(readed.length() > 0 && readed.indexOf(",") != -1){
 							splitted = readed.split(",");
 							if(splitted.length > 3 && Double.parseDouble(splitted[3]) >= detectorScoreTreshold){
-								switch(splitted[1]){
-									case "HIST":
+								switch(AlgorithmType.valueOf(splitted[1])){
+									case HIST:
 										conf = new HistoricalConfiguration();
 										conf.addItem(HistoricalConfiguration.INTERVAL_WIDTH, splitted[4]);
 										break;
-									case "SPS":
+									case SPS:
 										conf = new SPSConfiguration();
 										conf.addItem(SPSConfiguration.PDV, splitted[4]);
 										conf.addItem(SPSConfiguration.PDS, splitted[5]);
@@ -182,15 +183,15 @@ public class EvaluatorManager extends ThreadScheduler {
 										conf.addItem(SPSConfiguration.N, splitted[9]);
 										conf.addItem(SPSConfiguration.DYN_WEIGHT, splitted[10]);
 										break;
-									case "CONF":
+									case CONF:
 										conf = new ConfidenceConfiguration();
 										conf.addItem(ConfidenceConfiguration.ALPHA, splitted[4]);
 										break;
-									case "RCC":
+									case RCC:
 										conf = new RemoteCallConfiguration();
 										conf.addItem(RemoteCallConfiguration.RCC_WEIGHT, splitted[4]);
 										break;
-									case "INV":
+									case INV:
 										conf = new InvariantConfiguration(new Invariant(splitted[4]));
 										break;
 									default:
@@ -200,7 +201,7 @@ public class EvaluatorManager extends ThreadScheduler {
 									conf.addItem(AlgorithmConfiguration.WEIGHT, splitted[2]);
 									conf.addItem(AlgorithmConfiguration.SCORE, splitted[3]);
 								}
-								voterList.add(new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(splitted[1], DataSeries.fromString(splitted[0]), conf), Double.parseDouble(splitted[3]), Double.parseDouble(splitted[2])));
+								voterList.add(new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(DataSeries.fromString(splitted[0]), conf), Double.parseDouble(splitted[3]), Double.parseDouble(splitted[2])));
 							}
 						}
 					}

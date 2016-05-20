@@ -4,12 +4,12 @@
 package ippoz.multilayer.detector.metric;
 
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
-import ippoz.multilayer.detector.commons.data.DataSeriesSnapshot;
-import ippoz.multilayer.detector.commons.data.ExperimentData;
+import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.support.AppUtility;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.TreeMap;
 
 /**
@@ -27,16 +27,16 @@ public abstract class Metric {
 	 * @param expData the experiment data
 	 * @return the anomaly evaluation [metric score, avg algorithm score, std algorithm score]
 	 */
-	public double[] evaluateMetric(DetectionAlgorithm alg, ExperimentData expData){
-		DataSeriesSnapshot sysSnapshot;
+	public double[] evaluateMetric(DetectionAlgorithm alg, LinkedList<Snapshot> snapList){
+		Snapshot currentSnapshot;
+		double average;
 		HashMap<Date, Double> anomalyEvaluations = new HashMap<Date, Double>();
-		expData.resetIterator();
-		for(int i=0;i<expData.getSnapshotNumber();i++){
-			sysSnapshot = expData.getDataSeriesSnapshot(alg.getDataSeries(), i);
-			anomalyEvaluations.put(sysSnapshot.getTimestamp(), alg.snapshotAnomalyRate(sysSnapshot, expData.getSnapshot(i)));
+		for(int i=0;i<snapList.size();i++){
+			currentSnapshot = snapList.get(i);
+			anomalyEvaluations.put(currentSnapshot.getTimestamp(), alg.snapshotAnomalyRate(currentSnapshot));
 		}
-		expData.resetIterator();
-		return new double[]{evaluateAnomalyResults(expData, anomalyEvaluations), AppUtility.calcAvg(anomalyEvaluations.values()), AppUtility.calcStd(anomalyEvaluations.values(), AppUtility.calcAvg(anomalyEvaluations.values()))};
+		average = AppUtility.calcAvg(anomalyEvaluations.values());
+		return new double[]{evaluateAnomalyResults(snapList, anomalyEvaluations), average, AppUtility.calcStd(anomalyEvaluations.values(), average)};
 	}
 
 	/**
@@ -46,7 +46,7 @@ public abstract class Metric {
 	 * @param anomalyEvaluations the anomaly evaluations
 	 * @return the global anomaly evaluation
 	 */
-	public abstract double evaluateAnomalyResults(ExperimentData expData, HashMap<Date, Double> anomalyEvaluations);
+	public abstract double evaluateAnomalyResults(LinkedList<Snapshot> snapList, HashMap<Date, Double> anomalyEvaluations);
 
 	/**
 	 * Returns the anomaly evaluation for the given input data.
@@ -56,12 +56,12 @@ public abstract class Metric {
 	 * @param anomalyTreshold the anomaly threshold
 	 * @return the global anomaly evaluation
 	 */
-	public double evaluateAnomalyResults(ExperimentData expData, TreeMap<Date, Double> voting, double anomalyTreshold) {
+	public double evaluateAnomalyResults(LinkedList<Snapshot> snapList, TreeMap<Date, Double> voting, double anomalyTreshold) {
 		HashMap<Date, Double> convertedMap = new HashMap<Date, Double>(); 
 		for(Date date : voting.keySet()){
 			convertedMap.put(date, voting.get(date)/anomalyTreshold*1.0);
 		}
-		return evaluateAnomalyResults(expData, convertedMap);
+		return evaluateAnomalyResults(snapList, convertedMap);
 	}
 	
 	/**

@@ -6,6 +6,7 @@ package ippoz.multilayer.detector.trainer;
 import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.data.Snapshot;
+import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.graphics.HistogramChartDrawer;
@@ -43,8 +44,8 @@ public class ExperimentVoter extends Thread {
 	/** The Constant FAILURE_LABEL. */
 	public static final String FAILURE_LABEL = "Failure";
 	
-	/** The experiment data. */
-	private ExperimentData expData;
+	/** The experiment name. */
+	private String expName;
 	
 	/** The algorithm list. */
 	private LinkedList<AlgorithmVoter> algList;
@@ -55,6 +56,9 @@ public class ExperimentVoter extends Thread {
 	/** The contracted results of the voting. */
 	private TreeMap<Date, Double> voting;
 	
+	/** The list of the snapshots for each voter */
+	private LinkedList<HashMap<AlgorithmVoter, Snapshot>> expSnapMap;
+	
 	/**
 	 * Instantiates a new experiment voter.
 	 *
@@ -63,8 +67,27 @@ public class ExperimentVoter extends Thread {
 	 */
 	public ExperimentVoter(ExperimentData expData, LinkedList<AlgorithmVoter> algList) {
 		super();
-		this.expData = expData;
+		this.expName = expData.getName();
 		this.algList = deepClone(algList);
+		expSnapMap = loadExpAlgSnapshots(expData);
+	}
+	
+	private LinkedList<HashMap<AlgorithmVoter, Snapshot>> loadExpAlgSnapshots(ExperimentData expData) {
+		DataSeries dataSeries;
+		HashMap<AlgorithmVoter, Snapshot> newMap;
+		LinkedList<HashMap<AlgorithmVoter, Snapshot>> expAlgMap = new LinkedList<HashMap<AlgorithmVoter, Snapshot>>();
+		for(int i=0;i<expData.getSnapshotNumber();i++){
+			newMap = new HashMap<AlgorithmVoter, Snapshot>();
+			for(AlgorithmVoter aVoter : algList){
+				dataSeries = aVoter.getDataSeries();
+				if(dataSeries != null)
+					newMap.put(aVoter, expData.getDataSeriesSnapshot(dataSeries, i));
+				else newMap.put(aVoter, expData.getSnapshot(i));
+				
+			}
+			expAlgMap.add(newMap);
+		}
+		return expAlgMap;
 	}
 	
 	/**
@@ -90,16 +113,15 @@ public class ExperimentVoter extends Thread {
 	 */
 	@Override
 	public void run() {
-		Snapshot snapshot;
+		Snapshot snapshot = null;
 		HashMap<AlgorithmVoter, Double> snapVoting;
 		partialVoting = new TreeMap<Date, HashMap<AlgorithmVoter, Double>>();
 		voting = new TreeMap<Date, Double>();
-		expData.resetIterator();
-		for(int i=0;i<expData.getSnapshotNumber();i++){
-			snapshot = expData.getSnapshot(i);
+		for(int i=0;i<expSnapMap.size();i++){
 			snapVoting = new HashMap<AlgorithmVoter, Double>();
 			for(AlgorithmVoter aVoter : algList){
-				snapVoting.put(aVoter, aVoter.voteSnapshot(snapshot, expData.getDataSeriesSnapshot(aVoter.getDataSeries(), i)));
+				snapshot = expSnapMap.get(i).get(aVoter);
+				snapVoting.put(aVoter, aVoter.voteSnapshot(snapshot));
 			}
 			partialVoting.put(snapshot.getTimestamp(), snapVoting);
 			voting.put(snapshot.getTimestamp(), voteResults(snapVoting));
@@ -132,7 +154,7 @@ public class ExperimentVoter extends Thread {
 	public void printVoting(String outFormat, String outFolderName, Metric[] validationMetrics, double anomalyTreshold, double algConvergence) {
 		printExperimentVoting(outFolderName, validationMetrics, anomalyTreshold, algConvergence);
 		for(AlgorithmVoter aVoter : algList){
-			aVoter.printResults(outFormat, outFolderName, expData.getName());
+			aVoter.printResults(outFormat, outFolderName, expName);
 		}
 	}
 
@@ -161,15 +183,23 @@ public class ExperimentVoter extends Thread {
 		PrintWriter pw;
 		try {
 			pw = new PrintWriter(new FileOutputStream(new File(outFolderName + "/voter/results.csv"), true));
-			pw.append(expData.getName() + "," + expData.getSnapshotNumber() + ",");
+			pw.append(expName + "," + expSnapMap.size() + ",");
 			for(Metric met : validationMetrics){
-				pw.append(String.valueOf(met.evaluateAnomalyResults(expData, voting, anomalyTreshold)) + ",");
+				pw.append(String.valueOf(met.evaluateAnomalyResults(getSimpleSnapshotList(), voting, anomalyTreshold)) + ",");
 			}
 			pw.append("\n");
 			pw.close();
 		} catch (FileNotFoundException ex) {
 			AppLogger.logException(getClass(), ex, "Unable to find results file");
 		} 
+	}
+
+	private LinkedList<Snapshot> getSimpleSnapshotList() {
+		LinkedList<Snapshot> simpleList = new LinkedList<Snapshot>();
+		for(HashMap<AlgorithmVoter, Snapshot> map : expSnapMap){
+			simpleList.add(map.get(algList.getFirst()));
+		}
+		return simpleList;
 	}
 
 	/**
@@ -183,9 +213,18 @@ public class ExperimentVoter extends Thread {
 		HistogramChartDrawer hist;
 		HashMap<String, TreeMap<Double, Double>> voterMap = new HashMap<String, TreeMap<Double, Double>>();
 		voterMap.put(ANOMALY_SCORE_LABEL, AppUtility.convertMapSnapshots(voting));
-		voterMap.put(FAILURE_LABEL, AppUtility.convertFailures(expData));
+		voterMap.put(FAILURE_LABEL, convertFailures(expSnapMap));
 		hist = new HistogramChartDrawer("Anomaly Score", "Seconds", "Score", voterMap, anomalyTreshold, algConvergence);
-		hist.saveToFile(outFolderName + "/voter/graphic/" + expData.getName() + ".png", IMG_WIDTH, IMG_HEIGHT);
+		hist.saveToFile(outFolderName + "/voter/graphic/" + expName + ".png", IMG_WIDTH, IMG_HEIGHT);
+	}
+	
+	private TreeMap<Double, Double> convertFailures(LinkedList<HashMap<AlgorithmVoter, Snapshot>> expSnapMap) {
+		TreeMap<Date, Double> treeMap = new TreeMap<Date, Double>();
+		for(HashMap<AlgorithmVoter, Snapshot> map : expSnapMap){
+			if(map.get(algList.getFirst()).getInjectedElement() != null)
+				treeMap.put(map.get(algList.getFirst()).getTimestamp(), 1.0);
+		}
+		return AppUtility.convertMapTimestamps(expSnapMap.getFirst().get(algList.getFirst()).getTimestamp(), treeMap);
 	}
 	
 	/**
@@ -200,7 +239,7 @@ public class ExperimentVoter extends Thread {
 		int count;
 		try {
 			countMap = buildMap();
-			writer = new BufferedWriter(new FileWriter(new File(outFolderName + "/voter/" + expData.getName() + ".csv")));
+			writer = new BufferedWriter(new FileWriter(new File(outFolderName + "/voter/" + expName + ".csv")));
 			writer.write("timestamp,anomaly_alerts,");
 			for(LayerType currentLayer : countMap.keySet()){
 				for(String algTag : countMap.get(currentLayer).keySet()){
@@ -219,7 +258,7 @@ public class ExperimentVoter extends Thread {
 						count++;
 					}
 				}
-				writer.write(AppUtility.getSecondsBetween(timestamp, expData.getFirstTimestamp()) + ",");
+				writer.write(AppUtility.getSecondsBetween(timestamp, expSnapMap.getFirst().get(algList.getFirst()).getTimestamp()) + ",");
 				writer.write(count + ",");
 				for(LayerType currentLayer : countMap.keySet()){
 					for(String algTag : countMap.get(currentLayer).keySet()){

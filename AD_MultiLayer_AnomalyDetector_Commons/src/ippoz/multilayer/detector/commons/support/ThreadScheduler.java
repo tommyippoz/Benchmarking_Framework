@@ -26,7 +26,7 @@ public abstract class ThreadScheduler extends Thread {
 	 * Instantiates a new thread scheduler with a default load factor.
 	 */
 	public ThreadScheduler(){
-		this(null, 2);
+		this(null, 4);
 	}
 	
 	/**
@@ -47,7 +47,7 @@ public abstract class ThreadScheduler extends Thread {
 	public ThreadScheduler(LinkedList<? extends Thread> tList, int loadFactor){
 		this.tList = tList;
 		this.loadFactor = loadFactor;
-		nProc = Runtime.getRuntime().availableProcessors()*10;
+		nProc = Runtime.getRuntime().availableProcessors();
 	}
 	
 	/**

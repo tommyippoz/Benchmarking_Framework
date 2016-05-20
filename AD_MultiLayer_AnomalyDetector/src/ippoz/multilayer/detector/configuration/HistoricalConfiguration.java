@@ -3,6 +3,8 @@
  */
 package ippoz.multilayer.detector.configuration;
 
+import ippoz.multilayer.detector.algorithm.AlgorithmType;
+
 /**
  * The Class HistoricalConfiguration.
  * Configuration for the HistoricalChecker Algorithm.
@@ -10,9 +12,13 @@ package ippoz.multilayer.detector.configuration;
  * @author Tommy
  */
 public class HistoricalConfiguration extends AlgorithmConfiguration {
-	
+
 	/** The Constant INTERVAL_WIDTH. */
 	public static final String INTERVAL_WIDTH = "interval_width";
+	
+	public HistoricalConfiguration() {
+		super(AlgorithmType.HIST);
+	}
 	
 	/* (non-Javadoc)
 	 * @see ippoz.multilayer.detector.configuration.AlgorithmConfiguration#toString()

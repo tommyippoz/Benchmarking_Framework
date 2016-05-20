@@ -3,6 +3,8 @@
  */
 package ippoz.multilayer.detector.configuration;
 
+import ippoz.multilayer.detector.algorithm.AlgorithmType;
+
 /**
  * The Class SPSConfiguration.
  * Configuration for the SPS algorithm.
@@ -10,7 +12,7 @@ package ippoz.multilayer.detector.configuration;
  * @author Tommy
  */
 public class SPSConfiguration extends AlgorithmConfiguration {
-	
+
 	/** The Constant PDV. */
 	public static final String PDV = "pdv";
 	
@@ -31,6 +33,10 @@ public class SPSConfiguration extends AlgorithmConfiguration {
 	
 	/** The Constant DYN_WEIGHT. */
 	public static final String DYN_WEIGHT = "dweight";
+	
+	public SPSConfiguration() {
+		super(AlgorithmType.SPS);
+	}
 	
 	/* (non-Javadoc)
 	 * @see ippoz.multilayer.detector.configuration.AlgorithmConfiguration#toString()

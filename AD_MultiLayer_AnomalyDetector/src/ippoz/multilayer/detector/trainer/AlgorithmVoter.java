@@ -6,7 +6,6 @@ package ippoz.multilayer.detector.trainer;
 import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.algorithm.DataSeriesDetectionAlgorithm;
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
-import ippoz.multilayer.detector.commons.data.DataSeriesSnapshot;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 
@@ -46,8 +45,8 @@ public class AlgorithmVoter implements Cloneable {
 	@Override
 	protected AlgorithmVoter clone() throws CloneNotSupportedException {
 		if(alg instanceof DataSeriesDetectionAlgorithm)
-			return new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(alg.getAlgorithmType(), ((DataSeriesDetectionAlgorithm)alg).getDataSeries(), alg.getConfiguration()), metricScore, reputationScore);
-		else return new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(alg.getAlgorithmType(), null, alg.getConfiguration()), metricScore, reputationScore);
+			return new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(((DataSeriesDetectionAlgorithm)alg).getDataSeries(), alg.getConfiguration()), metricScore, reputationScore);
+		else return new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(null, alg.getConfiguration()), metricScore, reputationScore);
 		
 	}
 
@@ -57,8 +56,8 @@ public class AlgorithmVoter implements Cloneable {
 	 * @param snap the snapshot
 	 * @return the anomaly voting.
 	 */
-	public double voteSnapshot(Snapshot snap, DataSeriesSnapshot dsSnapshot){
-		return alg.snapshotAnomalyRate(dsSnapshot, snap);
+	public double voteSnapshot(Snapshot snap){
+		return alg.snapshotAnomalyRate(snap);
 	}
 
 	/**

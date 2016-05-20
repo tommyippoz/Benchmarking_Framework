@@ -9,12 +9,10 @@ import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.failure.InjectedElement;
 import ippoz.multilayer.detector.commons.service.ServiceCall;
 import ippoz.multilayer.detector.commons.service.ServiceStat;
-import ippoz.multilayer.detector.commons.support.AppLogger;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -46,9 +44,6 @@ public class ExperimentData implements Cloneable {
 	/** The snapshot list. */
 	private ArrayList<Snapshot> snapList;
 	
-	/** The snapshot iterator. */
-	private Iterator<Snapshot> snapIterator;
-	
 	/**
 	 * Instantiates a new experiment data.
 	 *
@@ -62,7 +57,6 @@ public class ExperimentData implements Cloneable {
 	public ExperimentData(String expID, LinkedList<Observation> obsList, LinkedList<ServiceCall> callList, LinkedList<InjectedElement> injList, HashMap<String, ServiceStat> ssList, HashMap<String, HashMap<LayerType, LinkedList<Integer>>> timings){
 		this(expID, obsList, new ArrayList<Snapshot>(), callList, injList, ssList, timings);
 		snapList = buildSnapshots(obsList);
-		snapIterator = snapList.iterator();	
 	}
 	
 	/**
@@ -83,7 +77,6 @@ public class ExperimentData implements Cloneable {
 		this.injList = injList;
 		this.ssList = ssList;
 		this.timings = timings;
-		snapIterator = snapList.iterator();	
 	}
 	
 	/* (non-Javadoc)
@@ -128,27 +121,6 @@ public class ExperimentData implements Cloneable {
 		}
 		return builtSnap;
 	}
-	
-	/**
-	 * Checks for next snapshot.
-	 *
-	 * @return true, if next snapshot exists
-	 */
-	public boolean hasNextSnapshot(){
-		return snapIterator != null && snapIterator.hasNext();
-	}
-	
-	/**
-	 * Returns the next snapshot.
-	 *
-	 * @return the next snapshot
-	 */
-	public Snapshot nextSnapshot(){
-		if(hasNextSnapshot())
-			return snapIterator.next();
-		else AppLogger.logError(getClass(), "NoSuchSnapshot", "Empty Snapshot list"); 
-		return null;
-	}
 
 	/**
 	 * Returns the snapshot number.
@@ -166,13 +138,6 @@ public class ExperimentData implements Cloneable {
 	 */
 	public HashMap<String, ServiceStat> getServiceStats(){
 		return ssList;
-	}
-
-	/**
-	 * Resets snapshot iterator.
-	 */
-	public void resetIterator() {
-		snapIterator = snapList.iterator();
 	}
 
 	/**
@@ -229,6 +194,16 @@ public class ExperimentData implements Cloneable {
 
 	public Snapshot getSnapshot(int index) {
 		return snapList.get(index);
+	}
+	
+	public LinkedList<Snapshot> buildSnapshotsFor(DataSeries dataSeries){
+		LinkedList<Snapshot> outList = new LinkedList<Snapshot>();
+		for(int i=0;i<getSnapshotNumber();i++){
+			if(dataSeries == null)
+				outList.add(getSnapshot(i));
+			else outList.add(getDataSeriesSnapshot(dataSeries, i));
+		}
+		return outList;
 	}
 	
 }

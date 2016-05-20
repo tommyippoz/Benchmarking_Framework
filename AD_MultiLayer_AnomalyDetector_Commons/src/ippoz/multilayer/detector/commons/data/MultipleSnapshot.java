@@ -19,12 +19,12 @@ public class MultipleSnapshot extends Snapshot {
 
 	private HashMap<DataSeries, DataSeriesSnapshot> dsMap;
 	
-	public MultipleSnapshot(Observation obs, LinkedList<ServiceCall> currentCalls, InjectedElement injEl, HashMap<String, ServiceStat> ssList, LinkedList<DataSeries> seriesList) {
+	public MultipleSnapshot(Observation obs, LinkedList<ServiceCall> currentCalls, InjectedElement injEl, HashMap<String, ServiceStat> ssList, DataSeries[] seriesList) {
 		super(obs.getTimestamp(), currentCalls, injEl, ssList);
 		dsMap = generateMultipleSnapshots(obs, seriesList);
 	}
 
-	private HashMap<DataSeries, DataSeriesSnapshot> generateMultipleSnapshots(Observation obs, LinkedList<DataSeries> seriesList) {
+	private HashMap<DataSeries, DataSeriesSnapshot> generateMultipleSnapshots(Observation obs, DataSeries[] seriesList) {
 		HashMap<DataSeries, DataSeriesSnapshot> outMap = new HashMap<DataSeries, DataSeriesSnapshot>();
 		for(DataSeries ds : seriesList){
 			outMap.put(ds, new DataSeriesSnapshot(obs, getServiceCalls(), getInjectedElement(), getServiceStats(), ds));

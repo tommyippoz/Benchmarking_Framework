@@ -3,13 +3,13 @@
  */
 package ippoz.multilayer.detector.reputation;
 
-import ippoz.multilayer.detector.commons.data.ExperimentData;
+import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.metric.Metric;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MetricReputation.
  * Calculates a reputation depending on a chosen metric.
@@ -36,8 +36,8 @@ public class MetricReputation extends Reputation {
 	 * @see ippoz.multilayer.detector.reputation.Reputation#evaluateExperimentReputation(ippoz.multilayer.detector.data.ExperimentData, java.util.HashMap)
 	 */
 	@Override
-	protected double evaluateExperimentReputation(ExperimentData expData, HashMap<Date, Double> anomalyEvaluations) {
-		return metric.evaluateAnomalyResults(expData, anomalyEvaluations);
+	protected double evaluateExperimentReputation(LinkedList<Snapshot> snapList, HashMap<Date, Double> anomalyEvaluations) {
+		return metric.evaluateAnomalyResults(snapList, anomalyEvaluations);
 	}
 
 }

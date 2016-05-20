@@ -3,6 +3,7 @@
  */
 package ippoz.multilayer.detector.configuration;
 
+import ippoz.multilayer.detector.algorithm.AlgorithmType;
 import ippoz.multilayer.detector.invariants.Invariant;
 
 /**
@@ -14,7 +15,7 @@ public class InvariantConfiguration extends AlgorithmConfiguration {
 	private Invariant invariant;
 	
 	public InvariantConfiguration(Invariant invariant){
-		super();
+		super(AlgorithmType.INV);
 		this.invariant = invariant;
 	}
 	

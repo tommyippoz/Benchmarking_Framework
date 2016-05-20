@@ -3,6 +3,8 @@
  */
 package ippoz.multilayer.detector.configuration;
 
+import ippoz.multilayer.detector.algorithm.AlgorithmType;
+
 /**
  * The Class ConfidenceConfiguration.
  * Configuration for the ConfidenceIntervalChecker Algorithm.
@@ -10,9 +12,13 @@ package ippoz.multilayer.detector.configuration;
  * @author Tommy
  */
 public class ConfidenceConfiguration extends AlgorithmConfiguration {
-	
+
 	/** The Constant ALPHA. */
 	public static final String ALPHA = "alpha";
+	
+	public ConfidenceConfiguration() {
+		super(AlgorithmType.CONF);
+	}
 	
 	/* (non-Javadoc)
 	 * @see ippoz.multilayer.detector.configuration.AlgorithmConfiguration#toString()

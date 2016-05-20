@@ -3,6 +3,8 @@
  */
 package ippoz.multilayer.detector.configuration;
 
+import ippoz.multilayer.detector.algorithm.AlgorithmType;
+
 /**
  * The Class RemoteCallConfiguration.
  * Configuration for the RemoteCallChecker Algorithm.
@@ -10,9 +12,13 @@ package ippoz.multilayer.detector.configuration;
  * @author Tommy
  */
 public class RemoteCallConfiguration extends AlgorithmConfiguration {
-	
+
 	/** The Constant RCC_WEIGHT. */
 	public static final String RCC_WEIGHT = "rcc_weight";
+	
+	public RemoteCallConfiguration() {
+		super(AlgorithmType.RCC);
+	}
 	
 	/* (non-Javadoc)
 	 * @see ippoz.multilayer.detector.configuration.AlgorithmConfiguration#toString()

@@ -123,6 +123,7 @@ public class TrainerManager extends ThreadScheduler {
 	 */
 	@Override
 	protected void initRun(){
+		long initStartTime = System.currentTimeMillis();
 		AppLogger.logInfo(getClass(), "Train Started");
 		LinkedList<AlgorithmTrainer> trainerList = new LinkedList<AlgorithmTrainer>();
 		for(String algType : algTypes){
@@ -138,6 +139,7 @@ public class TrainerManager extends ThreadScheduler {
 			}
 		}
 		setThreadList(trainerList);
+		pManager.addTiming(TimingsManager.TRAIN_INIT_TIME, Double.valueOf(System.currentTimeMillis() - initStartTime));
 		pManager.addTiming(TimingsManager.ANOMALY_CHECKERS, Double.valueOf(trainerList.size()));
 	}
 

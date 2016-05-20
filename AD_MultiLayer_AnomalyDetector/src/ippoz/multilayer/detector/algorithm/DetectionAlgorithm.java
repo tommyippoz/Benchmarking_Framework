@@ -3,7 +3,6 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
-import ippoz.multilayer.detector.commons.data.DataSeriesSnapshot;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.service.StatPair;
@@ -56,19 +55,19 @@ public abstract class DetectionAlgorithm {
 	 * @param conf the configuration
 	 * @return the detection algorithm
 	 */
-	public static DetectionAlgorithm buildAlgorithm(String algTag, DataSeries dataSeries, AlgorithmConfiguration conf) {
-		switch(algTag.toUpperCase()){
-			case "SPS":
+	public static DetectionAlgorithm buildAlgorithm(DataSeries dataSeries, AlgorithmConfiguration conf) {
+		switch(conf.getAlgorithmType()){
+			case SPS:
 				return new SPSDetector(dataSeries, conf);
-			case "HIST":
+			case HIST:
 				return new HistoricalIndicatorChecker(dataSeries, conf);
-			case "CONF":
+			case CONF:
 				return new ConfidenceIntervalChecker(dataSeries, conf);
-			case "RCC":
+			case RCC:
 				return new RemoteCallChecker(conf);
-			case "WER":
+			case WER:
 				return new WesternElectricRulesChecker(dataSeries, conf);
-			case "INV":
+			case INV:
 				return new InvariantChecker(conf);
 			default:
 				return null;
@@ -81,12 +80,8 @@ public abstract class DetectionAlgorithm {
 	 * @param sysSnapshot the given snapshot
 	 * @return the anomaly rate of the snapshot
 	 */
-	public double snapshotAnomalyRate(DataSeriesSnapshot dsSnapshot, Snapshot snapshot){
-		Snapshot outSnapshot;
-		if(getDataSeries() != null)
-			outSnapshot = dsSnapshot;
-		else outSnapshot = snapshot;
-		return anomalyTrueFalse(evaluateSnapshot(outSnapshot))*getWeight();
+	public double snapshotAnomalyRate(Snapshot snapshot){
+		return anomalyTrueFalse(evaluateSnapshot(snapshot))*getWeight();
 	}
 	
 	/**

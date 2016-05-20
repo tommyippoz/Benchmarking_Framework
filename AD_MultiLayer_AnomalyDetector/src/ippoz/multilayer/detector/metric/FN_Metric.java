@@ -3,11 +3,11 @@
  */
 package ippoz.multilayer.detector.metric;
 
-import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * The Class FN_Metric.
@@ -33,19 +33,18 @@ public class FN_Metric extends BetterMinMetric {
 	 * @see ippoz.multilayer.detector.metric.Metric#evaluateAnomalyResults(ippoz.multilayer.detector.data.ExperimentData, java.util.HashMap)
 	 */
 	@Override
-	public double evaluateAnomalyResults(ExperimentData expData, HashMap<Date, Double> anomalyEvaluations) {
+	public double evaluateAnomalyResults(LinkedList<Snapshot> snapList, HashMap<Date, Double> anomalyEvaluations) {
 		int detectionHits = 0;
 		Snapshot snap;
-		expData.resetIterator();
-		while(expData.hasNextSnapshot()){
-			snap = expData.nextSnapshot();
+		for(int i=0;i<snapList.size();i++){
+			snap = snapList.get(i);
 			if(!Metric.anomalyTrueFalse(anomalyEvaluations.get(snap.getTimestamp()))){
 				if(snap.getInjectedElement() != null && snap.getInjectedElement().getTimestamp().compareTo(snap.getTimestamp()) == 0)
 					detectionHits++;
 			} 
 		}
 		if(!absolute)
-			return 1.0*detectionHits/expData.getSnapshotNumber();
+			return 1.0*detectionHits/snapList.size();
 		else return detectionHits;
 	}
 

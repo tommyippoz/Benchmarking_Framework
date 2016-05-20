@@ -3,10 +3,11 @@
  */
 package ippoz.multilayer.detector.metric;
 
-import ippoz.multilayer.detector.commons.data.ExperimentData;
+import ippoz.multilayer.detector.commons.data.Snapshot;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * The Class FalsePositiveRate_Metric.
@@ -20,9 +21,9 @@ public class FalsePositiveRate_Metric extends BetterMinMetric {
 	 * @see ippoz.multilayer.detector.metric.Metric#evaluateAnomalyResults(ippoz.multilayer.detector.data.ExperimentData, java.util.HashMap)
 	 */
 	@Override
-	public double evaluateAnomalyResults(ExperimentData expData, HashMap<Date, Double> anomalyEvaluations) {
-		double tn = new TN_Metric(true).evaluateAnomalyResults(expData, anomalyEvaluations);
-		double fp = new FP_Metric(true).evaluateAnomalyResults(expData, anomalyEvaluations);
+	public double evaluateAnomalyResults(LinkedList<Snapshot> snapList, HashMap<Date, Double> anomalyEvaluations) {
+		double tn = new TN_Metric(true).evaluateAnomalyResults(snapList, anomalyEvaluations);
+		double fp = new FP_Metric(true).evaluateAnomalyResults(snapList, anomalyEvaluations);
 		if(tn + fp > 0)
 			return 1.0*fp/(fp+tn);
 		else return 0.0;

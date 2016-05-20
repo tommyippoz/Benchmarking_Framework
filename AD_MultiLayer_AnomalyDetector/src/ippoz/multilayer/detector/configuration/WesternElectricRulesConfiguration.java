@@ -3,14 +3,21 @@
  */
 package ippoz.multilayer.detector.configuration;
 
+import ippoz.multilayer.detector.algorithm.AlgorithmType;
+
 /**
  * @author Tommy
  *
  */
 public class WesternElectricRulesConfiguration extends AlgorithmConfiguration {
-	
+
 	/** The Constant WER_WEIGHT. */
 	public static final String WER_WEIGHT = "wer_weight";
+	
+	public WesternElectricRulesConfiguration() {
+		super(AlgorithmType.WER);
+		// TODO Auto-generated constructor stub
+	}
 	
 	/* (non-Javadoc)
 	 * @see ippoz.multilayer.detector.configuration.AlgorithmConfiguration#toString()

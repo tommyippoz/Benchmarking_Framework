@@ -3,6 +3,8 @@
  */
 package ippoz.multilayer.detector.configuration;
 
+import ippoz.multilayer.detector.algorithm.AlgorithmType;
+
 import java.util.HashMap;
 
 /**
@@ -22,11 +24,15 @@ public abstract class AlgorithmConfiguration {
 	/** The configuration map. */
 	private HashMap<String, String> confMap;
 	
+	/** The algorithm type */
+	private AlgorithmType algType;
+	
 	/**
 	 * Instantiates a new algorithm configuration.
 	 */
-	public AlgorithmConfiguration(){
+	public AlgorithmConfiguration(AlgorithmType algType){
 		confMap = new HashMap<String, String>();
+		this.algType = algType;
 	}
 	
 	/**
@@ -47,6 +53,15 @@ public abstract class AlgorithmConfiguration {
 	 */
 	public String getItem(String tag){
 		return confMap.get(tag);
+	}
+	
+	/**
+	 * Gets the algorithm type.
+	 *
+	 * @return the algType
+	 */
+	public AlgorithmType getAlgorithmType(){
+		return algType;
 	}
 
 	/* (non-Javadoc)

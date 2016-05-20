@@ -3,9 +3,6 @@
  */
 package ippoz.multilayer.detector.commons.support;
 
-import ippoz.multilayer.detector.commons.data.ExperimentData;
-import ippoz.multilayer.detector.commons.failure.InjectedElement;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -140,14 +137,6 @@ public class AppUtility {
 
 	public static TreeMap<Double, Double> convertMapSnapshots(TreeMap<Date, Double> resultMap) {
 		return convertMapTimestamps(resultMap.firstKey(), resultMap);
-	}
-
-	public static TreeMap<Double, Double> convertFailures(ExperimentData expData) {
-		TreeMap<Date, Double> treeMap = new TreeMap<Date, Double>();
-		for(InjectedElement el : expData.getInjections()){
-			treeMap.put(el.getTimestamp(), 1.0);
-		}
-		return convertMapTimestamps(expData.getFirstTimestamp(), treeMap);
 	}
 	
 }

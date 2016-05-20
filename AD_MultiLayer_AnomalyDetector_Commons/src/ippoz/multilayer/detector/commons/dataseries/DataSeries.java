@@ -34,8 +34,6 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 		return seriesName + "#" + dataCategory + "#" + getLayerType();
 	}
 
-
-
 	public String getName() {
 		return seriesName;
 	}
@@ -120,7 +118,7 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 			}
 		}
 		outList.addAll(simpleInd);
-		outList.addAll(complexInd.subList(0, 1000));
+		//outList.addAll(complexInd.subList(0, 1000));
 		return outList;
 	}
 		
