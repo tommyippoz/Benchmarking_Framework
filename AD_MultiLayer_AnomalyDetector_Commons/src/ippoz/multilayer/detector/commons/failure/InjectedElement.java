@@ -16,6 +16,9 @@ public class InjectedElement {
 	/** The failure timestamp. */
 	private Date timestamp;
 	
+	/** The failure duration. */
+	private int duration;
+	
 	/** The failure description. */
 	private String description;
 
@@ -25,8 +28,9 @@ public class InjectedElement {
 	 * @param timestamp the timestamp
 	 * @param description the description
 	 */
-	public InjectedElement(Date timestamp, String description) {
+	public InjectedElement(Date timestamp, String description, int duration) {
 		this.timestamp = timestamp;
+		this.duration = duration;
 		this.description = description;
 	}
 
@@ -46,6 +50,23 @@ public class InjectedElement {
 	 */
 	public Date getTimestamp() {
 		return timestamp;
+	}
+	
+	/**
+	 * Gets the duration of the injected element.
+	 *
+	 * @return the duration
+	 */
+	public int getDuration() {
+		return duration;
+	}
+
+	public boolean compliesWith(Date refTime) {
+		return timestamp.getTime() <= refTime.getTime() && refTime.getTime() <= timestamp.getTime() + duration*1000;
+	}
+
+	public boolean happensAt(Date refTime) {
+		return timestamp.equals(refTime);
 	}
 
 }

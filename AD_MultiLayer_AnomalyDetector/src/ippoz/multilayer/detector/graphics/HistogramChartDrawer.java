@@ -62,7 +62,7 @@ public class HistogramChartDrawer extends ChartDrawer {
 	 */
 	@Override
 	protected void setupChart(HashMap<String, TreeMap<Double, Double>> data) {
-		XYBarRenderer renderer = new CustomRenderer(new Paint[] {Color.BLUE, Color.RED}, data.get(ExperimentVoter.FAILURE_LABEL));
+		XYBarRenderer renderer = new CustomRenderer(new Paint[] {Color.BLUE, Color.RED, Color.YELLOW}, data.get(ExperimentVoter.FAILURE_LABEL));
         renderer.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
         renderer.setBaseItemLabelsVisible(true);
         ((XYPlot) chart.getPlot()).setRenderer(renderer);
@@ -153,7 +153,12 @@ public class HistogramChartDrawer extends ChartDrawer {
          * @see org.jfree.chart.renderer.AbstractRenderer#getItemPaint(int, int)
          */
         public Paint getItemPaint(final int row, final int column) {
-        	return isInMap(column) ? colors[1] : colors[0];
+        	double result = isInMap(column);
+        	if(Double.isNaN(result))
+        		return colors[0];
+        	if(result > 0)
+        		return colors[1];
+        	else return colors[2];
         }
 
 		/**
@@ -162,14 +167,14 @@ public class HistogramChartDrawer extends ChartDrawer {
 		 * @param column the column
 		 * @return true, if is in map
 		 */
-		private boolean isInMap(int column) {
+		private double isInMap(int column) {
 			if(failureMap != null){
 				for(Double val : failureMap.keySet()){
 					if(val.intValue() == column)
-						return true;
+						return failureMap.get(val);
 				}
 			}
-			return false;
+			return Double.NaN;
 		}
     }
 

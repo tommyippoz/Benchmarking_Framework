@@ -221,8 +221,12 @@ public class ExperimentVoter extends Thread {
 	private TreeMap<Double, Double> convertFailures(LinkedList<HashMap<AlgorithmVoter, Snapshot>> expSnapMap) {
 		TreeMap<Date, Double> treeMap = new TreeMap<Date, Double>();
 		for(HashMap<AlgorithmVoter, Snapshot> map : expSnapMap){
-			if(map.get(algList.getFirst()).getInjectedElement() != null)
+			if(map.get(algList.getFirst()).getInjectedElement() != null){
 				treeMap.put(map.get(algList.getFirst()).getTimestamp(), 1.0);
+				for(int i=1;i<map.get(algList.getFirst()).getInjectedElement().getDuration();i++){
+					treeMap.put(new Date(map.get(algList.getFirst()).getTimestamp().getTime() + i*1000), -1.0);
+				}
+			}
 		}
 		return AppUtility.convertMapTimestamps(expSnapMap.getFirst().get(algList.getFirst()).getTimestamp(), treeMap);
 	}
