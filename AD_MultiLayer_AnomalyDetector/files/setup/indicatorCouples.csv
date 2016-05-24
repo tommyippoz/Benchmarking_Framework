@@ -1,0 +1,7 @@
+* Possible couples highlighting relations between indicators
+Tcp_Listen#DIFFERENCE#UNIX_NETWORK;Tcp_Syn#DIFFERENCE#UNIX_NETWORK
+PageIn#PLAIN#CENTOS;PageOut#PLAIN#CENTOS
+Buffers#PLAIN#CENTOS;Activated Virtual Pages#PLAIN#CENTOS
+ProcessCpuLoad#PLAIN#JVM;SystemCpuLoad#PLAIN#JVM
+Buffers#PLAIN#CENTOS;Cached Memory#PLAIN#CENTOS
+Buffers#PLAIN#CENTOS;NonHeapMemoryUsage.used#PLAIN#JVM

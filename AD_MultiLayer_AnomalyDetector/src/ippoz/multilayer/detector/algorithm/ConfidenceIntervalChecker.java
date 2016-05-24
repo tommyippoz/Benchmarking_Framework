@@ -3,13 +3,13 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
+import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
+import ippoz.multilayer.detector.commons.configuration.ConfidenceConfiguration;
 import ippoz.multilayer.detector.commons.data.DataSeriesSnapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.service.ServiceCall;
 import ippoz.multilayer.detector.commons.service.StatPair;
 import ippoz.multilayer.detector.commons.support.AppLogger;
-import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.configuration.ConfidenceConfiguration;
 
 /**
  * The Class ConfidenceIntervalChecker.

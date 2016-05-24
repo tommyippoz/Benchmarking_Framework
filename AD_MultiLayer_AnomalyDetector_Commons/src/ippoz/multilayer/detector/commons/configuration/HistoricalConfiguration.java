@@ -1,9 +1,9 @@
 /**
  * 
  */
-package ippoz.multilayer.detector.configuration;
+package ippoz.multilayer.detector.commons.configuration;
 
-import ippoz.multilayer.detector.algorithm.AlgorithmType;
+import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
 
 /**
  * The Class HistoricalConfiguration.

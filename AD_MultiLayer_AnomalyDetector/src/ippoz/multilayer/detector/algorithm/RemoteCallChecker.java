@@ -3,11 +3,11 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
+import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.service.ServiceCall;
 import ippoz.multilayer.detector.commons.support.AppUtility;
-import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
 
 /**
  * The Class RemoteCallChecker.

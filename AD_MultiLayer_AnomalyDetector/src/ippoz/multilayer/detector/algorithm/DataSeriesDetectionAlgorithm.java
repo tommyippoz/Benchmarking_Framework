@@ -3,10 +3,10 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
+import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.commons.data.DataSeriesSnapshot;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
-import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
 
 // TODO: Auto-generated Javadoc
 /**

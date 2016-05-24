@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ippoz.multilayer.detector.invariants;
+package ippoz.multilayer.detector.commons.invariants;
 
 import ippoz.multilayer.detector.commons.data.MultipleSnapshot;
 

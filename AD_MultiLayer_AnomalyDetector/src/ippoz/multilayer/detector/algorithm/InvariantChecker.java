@@ -3,12 +3,12 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
+import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
+import ippoz.multilayer.detector.commons.configuration.InvariantConfiguration;
 import ippoz.multilayer.detector.commons.data.MultipleSnapshot;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
-import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.configuration.InvariantConfiguration;
-import ippoz.multilayer.detector.invariants.Invariant;
+import ippoz.multilayer.detector.commons.invariants.Invariant;
 
 /**
  * @author Tommy

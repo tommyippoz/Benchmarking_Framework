@@ -11,8 +11,10 @@ import ippoz.multilayer.detector.commons.service.IndicatorStat;
 import ippoz.multilayer.detector.commons.service.ServiceCall;
 import ippoz.multilayer.detector.commons.service.ServiceStat;
 import ippoz.multilayer.detector.commons.service.StatPair;
+import ippoz.multilayer.detector.commons.support.AppLogger;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -80,11 +82,16 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 	}
 	
 	public static DataSeries fromString(String stringValue) {
-		String layer = stringValue.substring(stringValue.lastIndexOf("#")+1);
-		String partial = stringValue.substring(0, stringValue.indexOf(layer)-1);
-		String dataType = partial.substring(partial.lastIndexOf("#")+1);
-		String dataSeries = stringValue.substring(0, partial.lastIndexOf("#"));
-		return fromStrings(dataSeries, DataCategory.valueOf(dataType), LayerType.valueOf(layer));
+		try {
+			String layer = stringValue.substring(stringValue.lastIndexOf("#")+1);
+			String partial = stringValue.substring(0, stringValue.indexOf(layer)-1);
+			String dataType = partial.substring(partial.lastIndexOf("#")+1);
+			String dataSeries = stringValue.substring(0, partial.lastIndexOf("#"));
+			return fromStrings(dataSeries, DataCategory.valueOf(dataType), LayerType.valueOf(layer));
+		} catch(Exception ex){
+			AppLogger.logError(DataSeries.class, "ParseError", "Unable to parse '" + stringValue + "' dataseries");
+		}
+		return null;
 	}
 	
 	public static DataSeries fromStrings(String seriesName, DataCategory dataType, LayerType layerType) {
@@ -101,6 +108,28 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 		} else return new IndicatorDataSeries(new Indicator(seriesName, layerType, Double.class), dataType);
 	}
 	
+	public static LinkedList<DataSeries> selectedCombinations(Indicator[] indicators, DataCategory[] dataTypes, HashMap<String, String> possibleCouples) {
+		DataSeries firstDS, secondDS;
+		LinkedList<DataSeries> outList = new LinkedList<DataSeries>();
+		LinkedList<DataSeries> simpleInd = new LinkedList<DataSeries>();
+		LinkedList<DataSeries> complexInd = new LinkedList<DataSeries>();
+		for(Indicator ind : indicators){
+			for(DataCategory dCat : dataTypes){
+				simpleInd.add(new IndicatorDataSeries(ind, dCat));
+			}
+		}
+		for(String firstString : possibleCouples.keySet()){
+			firstDS = DataSeries.fromList(simpleInd, firstString);
+			secondDS = DataSeries.fromList(simpleInd, possibleCouples.get(firstString));
+			for(DataCategory dCat : dataTypes){
+				complexInd.add(new FractionDataSeries(firstDS, secondDS, dCat));
+			}
+		}
+		outList.addAll(simpleInd);
+		outList.addAll(complexInd);
+		return outList;
+	}
+	
 	public static LinkedList<DataSeries> allCombinations(Indicator[] indicators, DataCategory[] dataTypes) {
 		LinkedList<DataSeries> outList = new LinkedList<DataSeries>();
 		LinkedList<DataSeries> simpleInd = new LinkedList<DataSeries>();
@@ -110,16 +139,25 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 				simpleInd.add(new IndicatorDataSeries(ind, dCat));
 			}
 		}
-		for(DataSeries ds1 : simpleInd){
-			for(DataSeries ds2 : simpleInd){
+		for(DataSeries firstDS : simpleInd){
+			for(DataSeries secondDS : simpleInd){
 				for(DataCategory dCat : dataTypes){
-					complexInd.add(new FractionDataSeries(ds1, ds2, dCat));
+					complexInd.add(new FractionDataSeries(firstDS, secondDS, dCat));
 				}
 			}
 		}
 		outList.addAll(simpleInd);
-		//outList.addAll(complexInd.subList(0, 1000));
+		outList.addAll(complexInd);
 		return outList;
+	}
+
+	public static DataSeries fromList(LinkedList<DataSeries> seriesList, String newSeriesName) {
+		for(DataSeries ds : seriesList){
+			if(ds.toString().equals(newSeriesName)) {
+				return ds;
+			}
+		}
+		return null;
 	}
 		
 }

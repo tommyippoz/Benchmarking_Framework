@@ -3,11 +3,11 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
+import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
+import ippoz.multilayer.detector.commons.configuration.SPSConfiguration;
 import ippoz.multilayer.detector.commons.data.DataSeriesSnapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.support.AppUtility;
-import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.configuration.SPSConfiguration;
 import ippoz.multilayer.detector.graphics.ChartDrawer;
 import ippoz.multilayer.detector.graphics.XYChartDrawer;
 

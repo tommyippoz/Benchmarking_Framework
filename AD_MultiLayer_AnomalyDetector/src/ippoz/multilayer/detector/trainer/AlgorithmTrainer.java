@@ -6,12 +6,13 @@ package ippoz.multilayer.detector.trainer;
 import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
+import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
+import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.AppUtility;
-import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.metric.Metric;
 import ippoz.multilayer.detector.reputation.Reputation;
 
@@ -27,7 +28,7 @@ import java.util.LinkedList;
 public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrainer> {
 	
 	/** The algorithm tag. */
-	private String algTag;	
+	private AlgorithmType algTag;	
 	
 	/** The involved data series. */
 	private DataSeries dataSeries;
@@ -39,7 +40,7 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	private Reputation reputation;
 	
 	/** The possible configurations. */
-	private HashMap<String, LinkedList<AlgorithmConfiguration>> configurations;
+	private HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> configurations;
 	
 	/** The experiments' list. */
 	private LinkedList<ExperimentData> expList;
@@ -69,7 +70,7 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	 * @param trainData the considered train data
 	 * @param configurations the possible configurations
 	 */
-	public AlgorithmTrainer(String algTag, DataSeries dataSeries, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData, HashMap<String, LinkedList<AlgorithmConfiguration>> configurations) {
+	public AlgorithmTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData, HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> configurations) {
 		this.algTag = algTag;
 		this.dataSeries = dataSeries;
 		this.metric = metric;
@@ -90,21 +91,27 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	 * @param trainData the considered train data
 	 * @param configurations the possible configurations
 	 */
-	public AlgorithmTrainer(String algTag, DataSeries dataSeries, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData, AlgorithmConfiguration configuration) {
-		this(algTag, dataSeries, metric, reputation, trainData, new HashMap<String, LinkedList<AlgorithmConfiguration>>());
+	public AlgorithmTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData, AlgorithmConfiguration configuration) {
+		this.algTag = algTag;
+		this.dataSeries = dataSeries;
+		this.metric = metric;
+		this.reputation = reputation;
+		expList = deepClone(trainData);
+		configurations = new HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>>();
 		configurations.put(algTag, new LinkedList<AlgorithmConfiguration>());
 		configurations.get(algTag).add(configuration);
 		bestConf = configuration;
+		algExpSnapshots = loadAlgExpSnapshots();
 	}
 	
 	private HashMap<String, LinkedList<Snapshot>> loadAlgExpSnapshots() {
 		HashMap<String, LinkedList<Snapshot>> expAlgMap = new HashMap<String, LinkedList<Snapshot>>();
 		for(ExperimentData expData : expList){
-			expAlgMap.put(expData.getName(), expData.buildSnapshotsFor(dataSeries));
+			expAlgMap.put(expData.getName(), expData.buildSnapshotsFor(algTag, dataSeries, bestConf));
 		}
 		return expAlgMap;
 	}
-
+	
 	/**
 	 * Deep clone of the experiment list.
 	 *
@@ -136,7 +143,7 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 		Double currentMetricValue;
 		LinkedList<Double> metricResults;
 		DetectionAlgorithm algorithm;
-		for(AlgorithmConfiguration conf : configurations.get(algTag.toUpperCase())){
+		for(AlgorithmConfiguration conf : configurations.get(algTag)){
 			metricResults = new LinkedList<Double>();
 			algorithm = DetectionAlgorithm.buildAlgorithm(dataSeries, conf);
 			for(ExperimentData expData : expList){
@@ -254,7 +261,7 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	 *
 	 * @return the algorithm type
 	 */
-	public String getAlgType(){
+	public AlgorithmType getAlgType(){
 		return algTag;
 	}
 

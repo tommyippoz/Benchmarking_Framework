@@ -5,8 +5,13 @@ package ippoz.multilayer.detector.commons.data;
 
 import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.commons.layers.LayerType;
+import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
+import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
+import ippoz.multilayer.detector.commons.configuration.InvariantConfiguration;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.failure.InjectedElement;
+import ippoz.multilayer.detector.commons.invariants.DataSeriesMember;
+import ippoz.multilayer.detector.commons.invariants.Invariant;
 import ippoz.multilayer.detector.commons.service.ServiceCall;
 import ippoz.multilayer.detector.commons.service.ServiceStat;
 
@@ -187,6 +192,15 @@ public class ExperimentData implements Cloneable {
 	public Indicator[] getIndicators() {
 		return obsList.get(0).getIndicators();
 	}
+	
+	private MultipleSnapshot getMultipleSnapshot(int index, Invariant inv) {
+		LinkedList<DataSeries> sList = new LinkedList<DataSeries>();
+		if(inv.getFirstMember() instanceof DataSeriesMember)
+			sList.add(((DataSeriesMember)inv.getFirstMember()).getDataSeries());
+		if(inv.getSecondMember() instanceof DataSeriesMember)
+			sList.add(((DataSeriesMember)inv.getSecondMember()).getDataSeries());
+		return new MultipleSnapshot(obsList.get(index), callList, snapList.get(index).getInjectedElement(), ssList, sList.toArray(new DataSeries[sList.size()]));
+	}
 
 	public DataSeriesSnapshot getDataSeriesSnapshot(DataSeries dataSeries, int index) {
 		return new DataSeriesSnapshot(obsList.get(index), callList, snapList.get(index).getInjectedElement(), ssList, dataSeries); 
@@ -196,14 +210,25 @@ public class ExperimentData implements Cloneable {
 		return snapList.get(index);
 	}
 	
-	public LinkedList<Snapshot> buildSnapshotsFor(DataSeries dataSeries){
+	public LinkedList<Snapshot> buildSnapshotsFor(AlgorithmType algType, DataSeries dataSeries, AlgorithmConfiguration conf){
 		LinkedList<Snapshot> outList = new LinkedList<Snapshot>();
 		for(int i=0;i<getSnapshotNumber();i++){
-			if(dataSeries == null)
-				outList.add(getSnapshot(i));
-			else outList.add(getDataSeriesSnapshot(dataSeries, i));
+			outList.add(buildSnapshotFor(algType, i, dataSeries, conf));
 		}
 		return outList;
+	}
+	
+	public Snapshot buildSnapshotFor(AlgorithmType algType, int index, DataSeries dataSeries, AlgorithmConfiguration conf){
+		Invariant inv;
+		switch(algType){
+			case RCC:
+				return getSnapshot(index);
+			case INV:
+				inv = ((InvariantConfiguration)conf).getInvariant();
+				return getMultipleSnapshot(index, inv);
+			default:
+				return getDataSeriesSnapshot(dataSeries, index);
+		}
 	}
 	
 }

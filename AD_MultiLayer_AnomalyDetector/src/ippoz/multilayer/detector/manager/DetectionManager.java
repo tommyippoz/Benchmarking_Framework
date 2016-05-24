@@ -4,15 +4,16 @@
 package ippoz.multilayer.detector.manager;
 
 import ippoz.multilayer.commons.datacategory.DataCategory;
+import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
+import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
+import ippoz.multilayer.detector.commons.configuration.ConfidenceConfiguration;
+import ippoz.multilayer.detector.commons.configuration.HistoricalConfiguration;
+import ippoz.multilayer.detector.commons.configuration.RemoteCallConfiguration;
+import ippoz.multilayer.detector.commons.configuration.SPSConfiguration;
+import ippoz.multilayer.detector.commons.configuration.WesternElectricRulesConfiguration;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.commons.support.PreferencesManager;
-import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.configuration.ConfidenceConfiguration;
-import ippoz.multilayer.detector.configuration.HistoricalConfiguration;
-import ippoz.multilayer.detector.configuration.RemoteCallConfiguration;
-import ippoz.multilayer.detector.configuration.SPSConfiguration;
-import ippoz.multilayer.detector.configuration.WesternElectricRulesConfiguration;
 import ippoz.multilayer.detector.metric.Custom_Metric;
 import ippoz.multilayer.detector.metric.FMeasure_Metric;
 import ippoz.multilayer.detector.metric.FN_Metric;
@@ -54,6 +55,9 @@ public class DetectionManager {
 	
 	/** The Constant VALIDATION_RUN_PREFERENCE. */
 	private static final String VALIDATION_RUN_PREFERENCE = "VALIDATION_RUN_IDS";
+	
+	/** The Constant INV_DOMAIN. */
+	public static final String INV_DOMAIN = "INV_DOMAIN";
 	
 	/** The Constant OUTPUT_FORMAT. */
 	public static final String OUTPUT_FORMAT = "OUTPUT_TYPE";
@@ -110,7 +114,7 @@ public class DetectionManager {
 	private DataCategory[] dataTypes;
 	
 	/** The algorithm types (SPS, Historical...). */
-	private String[] algTypes;
+	private AlgorithmType[] algTypes;
 	
 	/**
 	 * Instantiates a new detection manager.
@@ -225,9 +229,9 @@ public class DetectionManager {
 	 *
 	 * @return the algorithm types
 	 */
-	private String[] getAlgTypes() {
+	private AlgorithmType[] getAlgTypes() {
 		File algTypeFile = new File(prefManager.getPreference(DetectionManager.SETUP_FILE_FOLDER) + "detectionAlgorithms.preferences");
-		LinkedList<String> algTypeList = new LinkedList<String>();
+		LinkedList<AlgorithmType> algTypeList = new LinkedList<AlgorithmType>();
 		BufferedReader reader;
 		String readed;
 		try {
@@ -238,7 +242,7 @@ public class DetectionManager {
 					if(readed != null){
 						readed = readed.trim();
 						if(readed.length() > 0 && !readed.trim().startsWith("*")){
-							algTypeList.add(readed.trim());
+							algTypeList.add(AlgorithmType.valueOf(readed.trim()));
 						}
 					}
 				}
@@ -247,7 +251,7 @@ public class DetectionManager {
 		} catch(Exception ex){
 			AppLogger.logException(getClass(), ex, "Unable to read data types");
 		}
-		return algTypeList.toArray(new String[algTypeList.size()]);
+		return algTypeList.toArray(new AlgorithmType[algTypeList.size()]);
 	}
 
 	/**
@@ -255,9 +259,9 @@ public class DetectionManager {
 	 *
 	 * @return the map of the configurations
 	 */
-	private HashMap<String, LinkedList<AlgorithmConfiguration>> loadConfigurations() {
+	private HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> loadConfigurations() {
 		File confFile = new File(prefManager.getPreference(DetectionManager.CONF_FILE_FOLDER) + "conf.csv");
-		HashMap<String, LinkedList<AlgorithmConfiguration>> confList = new HashMap<String, LinkedList<AlgorithmConfiguration>>();
+		HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> confList = new HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>>();
 		AlgorithmConfiguration alConf;
 		BufferedReader reader;
 		String[] header;
@@ -294,9 +298,9 @@ public class DetectionManager {
 											alConf.addItem(header[i], element);
 										i++;
 									}
-									if(confList.get(readed.split(",")[0].toUpperCase()) == null)
-										confList.put(readed.split(",")[0].toUpperCase(), new LinkedList<AlgorithmConfiguration>());
-									confList.get(readed.split(",")[0].toUpperCase()).add(alConf);
+									if(confList.get(AlgorithmType.valueOf(readed.split(",")[0].toUpperCase())) == null)
+										confList.put(AlgorithmType.valueOf(readed.split(",")[0].toUpperCase()), new LinkedList<AlgorithmConfiguration>());
+									confList.get(AlgorithmType.valueOf(readed.split(",")[0].toUpperCase())).add(alConf);
 								}
 							}
 						}

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ippoz.multilayer.detector.algorithm;
+package ippoz.multilayer.detector.commons.algorithm;
 
 /**
  * @author Tommy

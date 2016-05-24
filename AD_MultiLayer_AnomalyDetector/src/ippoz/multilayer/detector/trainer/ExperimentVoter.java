@@ -4,6 +4,7 @@
 package ippoz.multilayer.detector.trainer;
 
 import ippoz.multilayer.commons.layers.LayerType;
+import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
@@ -80,9 +81,7 @@ public class ExperimentVoter extends Thread {
 			newMap = new HashMap<AlgorithmVoter, Snapshot>();
 			for(AlgorithmVoter aVoter : algList){
 				dataSeries = aVoter.getDataSeries();
-				if(dataSeries != null)
-					newMap.put(aVoter, expData.getDataSeriesSnapshot(dataSeries, i));
-				else newMap.put(aVoter, expData.getSnapshot(i));
+				newMap.put(aVoter, expData.buildSnapshotFor(aVoter.getAlgorithmType(), i, dataSeries, aVoter.getAlgorithmConfiguration()));
 				
 			}
 			expAlgMap.add(newMap);
@@ -238,7 +237,7 @@ public class ExperimentVoter extends Thread {
 	 */
 	private void printText(String outFolderName){
 		BufferedWriter writer = null;
-		HashMap<LayerType, HashMap<String, Integer>> countMap;
+		HashMap<LayerType, HashMap<AlgorithmType, Integer>> countMap;
 		String partial;
 		int count;
 		try {
@@ -246,7 +245,7 @@ public class ExperimentVoter extends Thread {
 			writer = new BufferedWriter(new FileWriter(new File(outFolderName + "/voter/" + expName + ".csv")));
 			writer.write("timestamp,anomaly_alerts,");
 			for(LayerType currentLayer : countMap.keySet()){
-				for(String algTag : countMap.get(currentLayer).keySet()){
+				for(AlgorithmType algTag : countMap.get(currentLayer).keySet()){
 					writer.write(currentLayer.toString() + "@" + algTag + ",");
 				}
 			}
@@ -265,7 +264,7 @@ public class ExperimentVoter extends Thread {
 				writer.write(AppUtility.getSecondsBetween(timestamp, expSnapMap.getFirst().get(algList.getFirst()).getTimestamp()) + ",");
 				writer.write(count + ",");
 				for(LayerType currentLayer : countMap.keySet()){
-					for(String algTag : countMap.get(currentLayer).keySet()){
+					for(AlgorithmType algTag : countMap.get(currentLayer).keySet()){
 						writer.write(countMap.get(currentLayer).get(algTag) + ",");
 					}
 				}
@@ -282,11 +281,11 @@ public class ExperimentVoter extends Thread {
 	 *
 	 * @return the basic map
 	 */
-	private HashMap<LayerType, HashMap<String, Integer>> buildMap() {
-		HashMap<LayerType, HashMap<String, Integer>> map = new HashMap<LayerType, HashMap<String, Integer>>();
+	private HashMap<LayerType, HashMap<AlgorithmType, Integer>> buildMap() {
+		HashMap<LayerType, HashMap<AlgorithmType, Integer>> map = new HashMap<LayerType, HashMap<AlgorithmType, Integer>>();
 		for(AlgorithmVoter aVoter : algList){
 			if(!map.keySet().contains(aVoter.getLayerType()))
-				map.put(aVoter.getLayerType(), new HashMap<String, Integer>());
+				map.put(aVoter.getLayerType(), new HashMap<AlgorithmType, Integer>());
 			if(!map.get(aVoter.getLayerType()).containsKey(aVoter.getAlgorithmType()))
 				map.get(aVoter.getLayerType()).put(aVoter.getAlgorithmType(), 0);
 		}

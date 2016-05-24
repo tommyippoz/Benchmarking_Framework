@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ippoz.multilayer.detector.invariants;
+package ippoz.multilayer.detector.commons.invariants;
 
 import ippoz.multilayer.detector.commons.data.MultipleSnapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
@@ -26,7 +26,7 @@ public class DataSeriesMember extends InvariantMember {
 
 	@Override
 	public String toString() {
-		return getMemberName() + " (" + dataSeries.getDataCategory() + ")";
+		return dataSeries.toString();
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class DataSeriesMember extends InvariantMember {
 		return oMember.getDataSeries().compareTo(dataSeries) == 0;
 	}
 
-	private DataSeries getDataSeries() {
+	public DataSeries getDataSeries() {
 		return dataSeries;
 	}	
 

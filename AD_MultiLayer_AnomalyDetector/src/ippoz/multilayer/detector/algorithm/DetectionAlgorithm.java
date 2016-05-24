@@ -3,17 +3,12 @@
  */
 package ippoz.multilayer.detector.algorithm;
 
+import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
+import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.service.StatPair;
 import ippoz.multilayer.detector.commons.support.AppLogger;
-import ippoz.multilayer.detector.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.configuration.ConfidenceConfiguration;
-import ippoz.multilayer.detector.configuration.HistoricalConfiguration;
-import ippoz.multilayer.detector.configuration.InvariantConfiguration;
-import ippoz.multilayer.detector.configuration.RemoteCallConfiguration;
-import ippoz.multilayer.detector.configuration.SPSConfiguration;
-import ippoz.multilayer.detector.configuration.WesternElectricRulesConfiguration;
 
 /**
  * The Class DetectionAlgorithm.
@@ -201,20 +196,8 @@ public abstract class DetectionAlgorithm {
 	 *
 	 * @return the algorithm type
 	 */
-	public String getAlgorithmType() {
-		if (conf instanceof SPSConfiguration)
-			return "SPS";
-		else if (conf instanceof HistoricalConfiguration)
-			return "HIST";
-		else if (conf instanceof ConfidenceConfiguration)
-			return "CONF";
-		else if (conf instanceof RemoteCallConfiguration)
-			return "RCC";
-		else if (conf instanceof WesternElectricRulesConfiguration)
-			return "WER";
-		else if (conf instanceof InvariantConfiguration)
-			return "INV";
-		else return "";
+	public AlgorithmType getAlgorithmType() {
+		return conf.getAlgorithmType();
 	}
 
 	/**

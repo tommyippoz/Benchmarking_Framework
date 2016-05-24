@@ -6,6 +6,8 @@ package ippoz.multilayer.detector.trainer;
 import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.algorithm.DataSeriesDetectionAlgorithm;
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
+import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
+import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 
@@ -105,7 +107,7 @@ public class AlgorithmVoter implements Cloneable {
 	 *
 	 * @return the algorithm type
 	 */
-	public String getAlgorithmType() {
+	public AlgorithmType getAlgorithmType() {
 		return alg.getAlgorithmType();
 	}
 
@@ -119,6 +121,10 @@ public class AlgorithmVoter implements Cloneable {
 
 	public DataSeries getDataSeries() {
 		return alg.getDataSeries();
+	}
+
+	public AlgorithmConfiguration getAlgorithmConfiguration() {
+		return alg.getConfiguration();
 	}
 
 }

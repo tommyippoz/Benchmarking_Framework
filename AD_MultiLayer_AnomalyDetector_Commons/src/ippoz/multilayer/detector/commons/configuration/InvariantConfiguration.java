@@ -1,10 +1,10 @@
 /**
  * 
  */
-package ippoz.multilayer.detector.configuration;
+package ippoz.multilayer.detector.commons.configuration;
 
-import ippoz.multilayer.detector.algorithm.AlgorithmType;
-import ippoz.multilayer.detector.invariants.Invariant;
+import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
+import ippoz.multilayer.detector.commons.invariants.Invariant;
 
 /**
  * @author Tommy
