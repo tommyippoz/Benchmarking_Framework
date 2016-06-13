@@ -15,6 +15,7 @@ import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.invariants.Invariant;
 import ippoz.multilayer.detector.commons.support.AppLogger;
+import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.commons.support.PreferencesManager;
 import ippoz.multilayer.detector.commons.support.ThreadScheduler;
 import ippoz.multilayer.detector.metric.Metric;
@@ -27,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -40,6 +42,9 @@ public class EvaluatorManager extends ThreadScheduler {
 	/** The preference manager. */
 	private PreferencesManager prefManager;
 	
+	/** The output folder. */
+	private String outputFolder;
+	
 	/** The timings manager. */
 	private TimingsManager pManager;
 	
@@ -48,6 +53,8 @@ public class EvaluatorManager extends ThreadScheduler {
 	
 	/** The validation metrics. */
 	private Metric[] validationMetrics;
+	
+	private LinkedList<HashMap<Metric, Double>> expMetricEvaluations;
 	
 	/** The anomaly threshold. Votings over that threshold raise alarms. */
 	private double anomalyTreshold;
@@ -69,16 +76,30 @@ public class EvaluatorManager extends ThreadScheduler {
 	 * @param algConvergence the algorithm convergence
 	 * @param detectorScoreTreshold the detector score threshold
 	 */
-	public EvaluatorManager(PreferencesManager prefManager, TimingsManager pManager, LinkedList<ExperimentData> expList, Metric[] validationMetrics, String anTresholdString, double algConvergence, double detectorScoreTreshold) {
+	public EvaluatorManager(PreferencesManager prefManager, TimingsManager pManager, LinkedList<ExperimentData> expList, Metric[] validationMetrics, String anTresholdString, double algConvergence, String voterTreshold) {
 		this.prefManager = prefManager;
 		this.pManager = pManager;
 		this.expList = expList;
 		this.validationMetrics = validationMetrics;
 		this.algConvergence = algConvergence;
-		this.detectorScoreTreshold = detectorScoreTreshold;
+		detectorScoreTreshold = getVoterTreshold(voterTreshold);
 		anomalyTreshold = getAnomalyVoterTreshold(anTresholdString, loadTrainScores().size());
+		outputFolder = prefManager.getPreference(DetectionManager.OUTPUT_FOLDER) + "/" + voterTreshold + "_" + anTresholdString;
+		AppLogger.logInfo(getClass(), "Evaluating " + expList.size() + " experiments with [" + voterTreshold + " | " + anTresholdString + "]");
+		
 	}
 	
+	private double getVoterTreshold(String voterTreshold) {
+		if(voterTreshold != null){
+			if(AppUtility.isNumber(voterTreshold))
+				return Double.parseDouble(voterTreshold);
+			else if(voterTreshold.contains("BEST")){
+				return Double.parseDouble(voterTreshold.substring(voterTreshold.indexOf("T")+1).trim());
+			}
+		}
+		return Double.NaN;
+	}
+
 	/**
 	 * Detects anomalies.
 	 * This is the core of the evaluation, which ends in the anomaly evaluation of each snapshot of each experiment.
@@ -120,6 +141,7 @@ public class EvaluatorManager extends ThreadScheduler {
 	protected void initRun() {
 		LinkedList<AlgorithmVoter> algVoters = loadTrainScores();
 		LinkedList<ExperimentVoter> voterList = new LinkedList<ExperimentVoter>();
+		expMetricEvaluations = new LinkedList<HashMap<Metric,Double>>();
 		setupResultsFile();
 		for(ExperimentData expData : expList){
 			voterList.add(new ExperimentVoter(expData, algVoters));
@@ -133,7 +155,7 @@ public class EvaluatorManager extends ThreadScheduler {
 	 */
 	@Override
 	protected void threadStart(Thread t, int tIndex) {
-		AppLogger.logInfo(getClass(), "Evaluating experiment " + tIndex + "/" + threadNumber());
+		//AppLogger.logInfo(getClass(), "Evaluating experiment " + tIndex + "/" + threadNumber());
 	}
 
 	/* (non-Javadoc)
@@ -141,7 +163,8 @@ public class EvaluatorManager extends ThreadScheduler {
 	 */
 	@Override
 	protected void threadComplete(Thread t, int tIndex) {
-		((ExperimentVoter)t).printVoting(prefManager.getPreference(DetectionManager.OUTPUT_FORMAT), prefManager.getPreference(DetectionManager.OUTPUT_FOLDER), validationMetrics, anomalyTreshold, algConvergence);
+		ExperimentVoter myVoter = ((ExperimentVoter)t);
+		expMetricEvaluations.add(myVoter.printVoting(prefManager.getPreference(DetectionManager.OUTPUT_FORMAT), outputFolder, validationMetrics, anomalyTreshold, algConvergence));
 	}
 	
 	/**
@@ -167,7 +190,7 @@ public class EvaluatorManager extends ThreadScheduler {
 						readed = readed.trim();
 						if(readed.length() > 0 && readed.indexOf(",") != -1){
 							splitted = readed.split(",");
-							if(splitted.length > 3 && Double.parseDouble(splitted[3]) >= detectorScoreTreshold){
+							if(splitted.length > 3 && checkAnomalyTreshold(Double.valueOf(splitted[3]), voterList)){
 								switch(AlgorithmType.valueOf(splitted[1])){
 									case HIST:
 										conf = new HistoricalConfiguration();
@@ -214,6 +237,12 @@ public class EvaluatorManager extends ThreadScheduler {
 		return voterList;
 	}
 	
+	private boolean checkAnomalyTreshold(Double newMetricValue, LinkedList<AlgorithmVoter> voterList) {
+		if(detectorScoreTreshold > 1)
+			return voterList.size() < detectorScoreTreshold;
+		else return newMetricValue >= detectorScoreTreshold;
+	}
+
 	/**
 	 * Setup results file.
 	 */
@@ -221,8 +250,10 @@ public class EvaluatorManager extends ThreadScheduler {
 		File resultsFile;
 		PrintWriter pw;
 		try {
-			resultsFile = new File(prefManager.getPreference(DetectionManager.OUTPUT_FOLDER) + "/voter/results.csv");
-			if(resultsFile.exists())
+			resultsFile = new File(outputFolder + "/results.csv");
+			if(!new File(outputFolder).exists())
+				new File(outputFolder).mkdirs();
+			else if(resultsFile.exists())
 				resultsFile.delete();
 			pw = new PrintWriter(new FileOutputStream(resultsFile, true));
 			pw.append("exp_name,exp_obs,");
@@ -234,6 +265,10 @@ public class EvaluatorManager extends ThreadScheduler {
 		} catch (FileNotFoundException ex) {
 			AppLogger.logException(getClass(), ex, "Unable to find results file");
 		} 		
+	}
+
+	public LinkedList<HashMap<Metric, Double>> getMetricsEvaluations() {
+		return expMetricEvaluations;
 	}
 
 }

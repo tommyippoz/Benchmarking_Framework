@@ -3,6 +3,8 @@
  */
 package ippoz.multilayer.detector.commons.support;
 
+import ippoz.multilayer.commons.support.AppLogger;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -30,18 +32,18 @@ public class AppUtility {
 			reader = new BufferedReader(new FileReader(prefFile));
 			while(reader.ready()){
 				readed = reader.readLine();
-				if(readed != null && readed.length() > 0) {
+				if(readed.length() > 0) {
 					if(readed.contains("=") && readed.split("=").length == 2){
 						tag = readed.split("=")[0];
 						value = readed.split("=")[1];
 						if(tags != null && tags.length > 0){
 							for(String current : tags){
 								if(current.toUpperCase().equals(tag.toUpperCase())){
-									map.put(tag, value);
+									map.put(tag.trim(), value.trim());
 									break;
 								}
 							}
-						} else map.put(tag, value);
+						} else map.put(tag.trim(), value.trim());
 					}
 				}
 			}
@@ -138,5 +140,7 @@ public class AppUtility {
 	public static TreeMap<Double, Double> convertMapSnapshots(TreeMap<Date, Double> resultMap) {
 		return convertMapTimestamps(resultMap.firstKey(), resultMap);
 	}
+
+	
 	
 }

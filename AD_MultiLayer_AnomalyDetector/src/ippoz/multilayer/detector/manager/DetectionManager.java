@@ -11,6 +11,7 @@ import ippoz.multilayer.detector.commons.configuration.HistoricalConfiguration;
 import ippoz.multilayer.detector.commons.configuration.RemoteCallConfiguration;
 import ippoz.multilayer.detector.commons.configuration.SPSConfiguration;
 import ippoz.multilayer.detector.commons.configuration.WesternElectricRulesConfiguration;
+import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.commons.support.PreferencesManager;
@@ -30,8 +31,11 @@ import ippoz.multilayer.detector.reputation.MetricReputation;
 import ippoz.multilayer.detector.reputation.Reputation;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -185,13 +189,69 @@ public class DetectionManager {
 	 */
 	public void evaluate(){
 		EvaluatorManager eManager;
+		Metric[] metList = loadValidationMetrics();
+		LinkedList<ExperimentData> expList = new LoaderManager(readRunIds(VALIDATION_RUN_PREFERENCE), "validation", pManager, prefManager.getPreference(DB_USERNAME), prefManager.getPreference(DB_PASSWORD)).fetch();
+		HashMap<String, HashMap<String, LinkedList<HashMap<Metric, Double>>>> evaluations = new HashMap<String, HashMap<String,LinkedList<HashMap<Metric,Double>>>>();
 		try {
-			eManager = new EvaluatorManager(prefManager, pManager, new LoaderManager(readRunIds(VALIDATION_RUN_PREFERENCE), "validation", pManager, prefManager.getPreference(DB_USERNAME), prefManager.getPreference(DB_PASSWORD)).fetch(), loadValidationMetrics(), detectionManager.getPreference(DM_ANOMALY_TRESHOLD), Double.parseDouble(detectionManager.getPreference(DM_CONVERGENCE_TIME)), Double.parseDouble(detectionManager.getPreference(DM_SCORE_TRESHOLD)));
-			eManager.detectAnomalies();
-			eManager.flush();
+			for(String voterTreshold : parseVoterTresholds()){
+				evaluations.put(voterTreshold.trim(), new HashMap<String, LinkedList<HashMap<Metric,Double>>>());
+				for(String anomalyTreshold : parseAnomalyTresholds()){
+					eManager = new EvaluatorManager(prefManager, pManager, expList, metList, anomalyTreshold.trim(), Double.parseDouble(detectionManager.getPreference(DM_CONVERGENCE_TIME)), voterTreshold.trim());
+					eManager.detectAnomalies();
+					evaluations.get(voterTreshold.trim()).put(anomalyTreshold.trim(), eManager.getMetricsEvaluations());
+					eManager.flush();
+				}
+			}
+			summarizeEvaluations(evaluations, metList, parseAnomalyTresholds());
 		} catch(Exception ex){
 			AppLogger.logException(getClass(), ex, "Unable to evaluate detector");
 		}
+	}
+	
+	private void summarizeEvaluations(HashMap<String, HashMap<String, LinkedList<HashMap<Metric, Double>>>> evaluations, Metric[] metList, String[] anomalyTresholds) {
+		BufferedWriter writer;
+		try {
+			writer = new BufferedWriter(new FileWriter(new File(prefManager.getPreference(DetectionManager.OUTPUT_FOLDER) + "/summary.csv")));
+			writer.write("voter,anomaly,");
+			for(Metric met : metList){
+				writer.write(met.getMetricName() + ",");
+			}
+			writer.write("\n");
+			for(String voterTreshold : evaluations.keySet()){
+				for(String anomalyTreshold : anomalyTresholds){
+					writer.write(voterTreshold + "," + anomalyTreshold.trim() + ",");
+					for(Metric met : metList){
+						writer.write(getAverageMetricValue(evaluations.get(voterTreshold).get(anomalyTreshold.trim()), met) + ",");
+					}
+					writer.write("\n");
+				}
+			}
+			writer.close();
+		} catch(IOException ex){
+			AppLogger.logException(getClass(), ex, "Unable to write summary file");
+		}
+	}
+
+	private String getAverageMetricValue(LinkedList<HashMap<Metric, Double>> list, Metric met) {
+		LinkedList<Double> dataList = new LinkedList<Double>();
+		for(HashMap<Metric, Double> map : list){
+			dataList.add(map.get(met));
+		}
+		return String.valueOf(AppUtility.calcAvg(dataList));
+	}
+
+	private String[] parseAnomalyTresholds() {
+		String prefString = detectionManager.getPreference(DM_ANOMALY_TRESHOLD);
+		if(prefString.contains(","))
+			return prefString.split(",");
+		else return new String[]{prefString};
+	}
+
+	private String[] parseVoterTresholds(){
+		String prefString = detectionManager.getPreference(DM_SCORE_TRESHOLD);
+		if(prefString.contains(","))
+			return prefString.split(",");
+		else return new String[]{prefString};
 	}
 	
 	/**

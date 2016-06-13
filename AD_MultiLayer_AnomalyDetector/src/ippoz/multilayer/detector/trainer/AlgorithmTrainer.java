@@ -57,8 +57,6 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	/** Flag that indicates if the trained algorithm retrieves different values (e.g., not always true / false). */
 	private boolean sameResultFlag;
 	
-	private HashMap<String, LinkedList<Snapshot>> algExpSnapshots;
-	
 	/**
 	 * Instantiates a new algorithm trainer.
 	 *
@@ -77,7 +75,6 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 		this.reputation = reputation;
 		this.configurations = configurations;
 		expList = deepClone(trainData);
-		algExpSnapshots = loadAlgExpSnapshots();
 	}
 	
 		/**
@@ -101,7 +98,6 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 		configurations.put(algTag, new LinkedList<AlgorithmConfiguration>());
 		configurations.get(algTag).add(configuration);
 		bestConf = configuration;
-		algExpSnapshots = loadAlgExpSnapshots();
 	}
 	
 	private HashMap<String, LinkedList<Snapshot>> loadAlgExpSnapshots() {
@@ -143,6 +139,7 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 		Double currentMetricValue;
 		LinkedList<Double> metricResults;
 		DetectionAlgorithm algorithm;
+		HashMap<String, LinkedList<Snapshot>> algExpSnapshots = loadAlgExpSnapshots();
 		for(AlgorithmConfiguration conf : configurations.get(algTag)){
 			metricResults = new LinkedList<Double>();
 			algorithm = DetectionAlgorithm.buildAlgorithm(dataSeries, conf);
@@ -155,8 +152,8 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 				bestConf = conf;
 			}
 		}
-		metricScore = evaluateMetricScore(expList);
-		reputationScore = evaluateReputationScore(expList);
+		metricScore = evaluateMetricScore(expList, algExpSnapshots);
+		reputationScore = evaluateReputationScore(expList, algExpSnapshots);
 		bestConf.addItem(AlgorithmConfiguration.WEIGHT, String.valueOf(reputationScore));
 		bestConf.addItem(AlgorithmConfiguration.SCORE, String.valueOf(metricScore));
 	}
@@ -165,9 +162,10 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	 * Evaluates metric score on a specified set of experiments.
 	 *
 	 * @param trainData the train data
+	 * @param algExpSnapshots 
 	 * @return the metric score
 	 */
-	private double evaluateMetricScore(LinkedList<ExperimentData> trainData){
+	private double evaluateMetricScore(LinkedList<ExperimentData> trainData, HashMap<String, LinkedList<Snapshot>> algExpSnapshots){
 		double[] metricEvaluation = null;
 		LinkedList<Double> metricResults = new LinkedList<Double>();
 		LinkedList<Double> algResults = new LinkedList<Double>();
@@ -187,7 +185,7 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	 * @param trainData the train data
 	 * @return the reputation score
 	 */
-	private double evaluateReputationScore(LinkedList<ExperimentData> trainData){
+	private double evaluateReputationScore(LinkedList<ExperimentData> trainData, HashMap<String, LinkedList<Snapshot>> algExpSnapshots){
 		LinkedList<Double> reputationResults = new LinkedList<Double>();
 		DetectionAlgorithm algorithm = DetectionAlgorithm.buildAlgorithm(dataSeries, bestConf);
 		for(ExperimentData expData : trainData){
