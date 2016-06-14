@@ -8,6 +8,7 @@ import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
 import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.commons.configuration.ConfidenceConfiguration;
 import ippoz.multilayer.detector.commons.configuration.HistoricalConfiguration;
+import ippoz.multilayer.detector.commons.configuration.PearsonIndexConfiguration;
 import ippoz.multilayer.detector.commons.configuration.RemoteCallConfiguration;
 import ippoz.multilayer.detector.commons.configuration.SPSConfiguration;
 import ippoz.multilayer.detector.commons.configuration.WesternElectricRulesConfiguration;
@@ -197,8 +198,8 @@ public class DetectionManager {
 				evaluations.put(voterTreshold.trim(), new HashMap<String, LinkedList<HashMap<Metric,Double>>>());
 				for(String anomalyTreshold : parseAnomalyTresholds()){
 					eManager = new EvaluatorManager(prefManager, pManager, expList, metList, anomalyTreshold.trim(), Double.parseDouble(detectionManager.getPreference(DM_CONVERGENCE_TIME)), voterTreshold.trim());
-					eManager.detectAnomalies();
-					evaluations.get(voterTreshold.trim()).put(anomalyTreshold.trim(), eManager.getMetricsEvaluations());
+					if(eManager.detectAnomalies())
+						evaluations.get(voterTreshold.trim()).put(anomalyTreshold.trim(), eManager.getMetricsEvaluations());
 					eManager.flush();
 				}
 			}
@@ -234,10 +235,12 @@ public class DetectionManager {
 
 	private String getAverageMetricValue(LinkedList<HashMap<Metric, Double>> list, Metric met) {
 		LinkedList<Double> dataList = new LinkedList<Double>();
-		for(HashMap<Metric, Double> map : list){
-			dataList.add(map.get(met));
-		}
-		return String.valueOf(AppUtility.calcAvg(dataList));
+		if(list != null){
+			for(HashMap<Metric, Double> map : list){
+				dataList.add(map.get(met));
+			}
+			return String.valueOf(AppUtility.calcAvg(dataList));
+		} else return String.valueOf(Double.NaN);
 	}
 
 	private String[] parseAnomalyTresholds() {
@@ -342,17 +345,7 @@ public class DetectionManager {
 									header = readed.split(",");
 								} else {
 									i = 0;
-									if(readed.split(",")[0].toUpperCase().equals("SPS")){
-										alConf = new SPSConfiguration();	
-									} else if(readed.split(",")[0].toUpperCase().equals("HIST")){
-										alConf = new HistoricalConfiguration();
-									} else if(readed.split(",")[0].toUpperCase().equals("CONF")){
-										alConf = new ConfidenceConfiguration();
-									} else if(readed.split(",")[0].toUpperCase().equals("RCC")){
-										alConf = new RemoteCallConfiguration();
-									} else if(readed.split(",")[0].toUpperCase().equals("WER")){
-										alConf = new WesternElectricRulesConfiguration();
-									} else alConf = null;
+									alConf = AlgorithmConfiguration.getConfiguration(AlgorithmType.valueOf(readed.split(",")[0].toUpperCase()));
 									for(String element : readed.split(",")){
 										if(i > 0)
 											alConf.addItem(header[i], element);

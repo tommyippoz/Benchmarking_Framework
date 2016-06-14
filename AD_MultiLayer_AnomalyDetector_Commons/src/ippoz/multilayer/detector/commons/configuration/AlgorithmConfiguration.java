@@ -3,6 +3,7 @@
  */
 package ippoz.multilayer.detector.commons.configuration;
 
+import ippoz.multilayer.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
 
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import java.util.HashMap;
  *
  * @author Tommy
  */
-public abstract class AlgorithmConfiguration {
+public abstract class AlgorithmConfiguration implements Cloneable {
 	
 	/** The Constant WEIGHT. */
 	public static final String WEIGHT = "weight";
@@ -35,6 +36,46 @@ public abstract class AlgorithmConfiguration {
 		this.algType = algType;
 	}
 	
+	private void setMap(HashMap<String, String> newMap){
+		confMap = newMap;
+	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		HashMap<String, String> newMap = new HashMap<String, String>();
+		AlgorithmConfiguration newConf = null;
+		try {
+			newConf = getConfiguration(algType);
+			for(String mapKey : confMap.keySet()){
+				newMap.put(mapKey, confMap.get(mapKey));
+			}
+			newConf.setMap(newMap);
+		} catch (Exception ex) {
+			AppLogger.logException(getClass(), ex, "Unable to clone configuration");
+		}
+		return newConf;
+	}
+	
+	public static AlgorithmConfiguration getConfiguration(AlgorithmType algType) {
+		switch(algType){
+			case SPS:
+				return new SPSConfiguration();
+			case CONF:
+				return new ConfidenceConfiguration();
+			case HIST:
+				return new HistoricalConfiguration();
+			case INV:
+				break;
+			case PEA:
+				return new PearsonIndexConfiguration();
+			case RCC:
+				return new RemoteCallConfiguration();
+			case WER:
+				return new WesternElectricRulesConfiguration();
+		}
+		return null;
+	}
+
 	/**
 	 * Adds an item.
 	 *
@@ -85,8 +126,6 @@ public abstract class AlgorithmConfiguration {
 	 * @param complete the complete flag, defines if the description is extended or not.
 	 * @return the file row string
 	 */
-	public abstract String toFileRow(boolean complete);
-	
-	
+	public abstract String toFileRow(boolean complete);	
 	
 }

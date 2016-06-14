@@ -40,7 +40,7 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	private Reputation reputation;
 	
 	/** The possible configurations. */
-	private HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> configurations;
+	private LinkedList<AlgorithmConfiguration> configurations;
 	
 	/** The experiments' list. */
 	private LinkedList<ExperimentData> expList;
@@ -73,10 +73,10 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 		this.dataSeries = dataSeries;
 		this.metric = metric;
 		this.reputation = reputation;
-		this.configurations = configurations;
+		this.configurations = confClone(configurations.get(algTag));
 		expList = deepClone(trainData);
 	}
-	
+
 		/**
 	 * Instantiates a new algorithm trainer.
 	 *
@@ -94,18 +94,38 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 		this.metric = metric;
 		this.reputation = reputation;
 		expList = deepClone(trainData);
-		configurations = new HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>>();
-		configurations.put(algTag, new LinkedList<AlgorithmConfiguration>());
-		configurations.get(algTag).add(configuration);
-		bestConf = configuration;
+		configurations = new LinkedList<AlgorithmConfiguration>();
+		try {
+			configurations.add((AlgorithmConfiguration) configuration.clone());
+			bestConf = configuration;
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private HashMap<String, LinkedList<Snapshot>> loadAlgExpSnapshots() {
+		AlgorithmConfiguration refConf;
+		if(bestConf != null)
+			refConf = bestConf;
+		else refConf = configurations.getFirst();
 		HashMap<String, LinkedList<Snapshot>> expAlgMap = new HashMap<String, LinkedList<Snapshot>>();
 		for(ExperimentData expData : expList){
-			expAlgMap.put(expData.getName(), expData.buildSnapshotsFor(algTag, dataSeries, bestConf));
+			expAlgMap.put(expData.getName(), expData.buildSnapshotsFor(algTag, dataSeries, refConf));
 		}
 		return expAlgMap;
+	}
+	
+	private LinkedList<AlgorithmConfiguration> confClone(LinkedList<AlgorithmConfiguration> inConf) {
+		LinkedList<AlgorithmConfiguration> list = new LinkedList<AlgorithmConfiguration>();
+		try {
+			for(AlgorithmConfiguration conf : inConf){
+				list.add((AlgorithmConfiguration) conf.clone());
+			}
+		} catch (CloneNotSupportedException ex) {
+			AppLogger.logException(getClass(), ex, "Unable to clone Configurations");
+		}
+		return list;
 	}
 	
 	/**
@@ -140,22 +160,26 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 		LinkedList<Double> metricResults;
 		DetectionAlgorithm algorithm;
 		HashMap<String, LinkedList<Snapshot>> algExpSnapshots = loadAlgExpSnapshots();
-		for(AlgorithmConfiguration conf : configurations.get(algTag)){
-			metricResults = new LinkedList<Double>();
-			algorithm = DetectionAlgorithm.buildAlgorithm(dataSeries, conf);
-			for(ExperimentData expData : expList){
-				metricResults.add(metric.evaluateMetric(algorithm, algExpSnapshots.get(expData.getName()))[0]);
+		try {
+			for(AlgorithmConfiguration conf : configurations){
+				metricResults = new LinkedList<Double>();
+				algorithm = DetectionAlgorithm.buildAlgorithm(dataSeries, conf);
+				for(ExperimentData expData : expList){
+					metricResults.add(metric.evaluateMetric(algorithm, algExpSnapshots.get(expData.getName()))[0]);
+				}
+				currentMetricValue = AppUtility.calcAvg(metricResults.toArray(new Double[metricResults.size()]));
+				if(bestMetricValue.isNaN() || metric.compareResults(currentMetricValue, bestMetricValue) == 1){
+					bestMetricValue = currentMetricValue;
+					bestConf = (AlgorithmConfiguration) conf.clone();
+				}
 			}
-			currentMetricValue = AppUtility.calcAvg(metricResults.toArray(new Double[metricResults.size()]));
-			if(bestMetricValue.isNaN() || metric.compareResults(currentMetricValue, bestMetricValue) == 1){
-				bestMetricValue = currentMetricValue;
-				bestConf = conf;
-			}
+			metricScore = evaluateMetricScore(expList, algExpSnapshots);
+			reputationScore = evaluateReputationScore(expList, algExpSnapshots);
+			bestConf.addItem(AlgorithmConfiguration.WEIGHT, String.valueOf(reputationScore));
+			bestConf.addItem(AlgorithmConfiguration.SCORE, String.valueOf(metricScore));
+		} catch (CloneNotSupportedException ex) {
+			AppLogger.logException(getClass(), ex, "Unable to clone configuration");
 		}
-		metricScore = evaluateMetricScore(expList, algExpSnapshots);
-		reputationScore = evaluateReputationScore(expList, algExpSnapshots);
-		bestConf.addItem(AlgorithmConfiguration.WEIGHT, String.valueOf(reputationScore));
-		bestConf.addItem(AlgorithmConfiguration.SCORE, String.valueOf(metricScore));
 	}
 
 	/**

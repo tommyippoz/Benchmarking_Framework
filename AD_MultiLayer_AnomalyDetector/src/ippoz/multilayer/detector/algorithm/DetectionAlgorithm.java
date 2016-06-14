@@ -64,6 +64,8 @@ public abstract class DetectionAlgorithm {
 				return new WesternElectricRulesChecker(dataSeries, conf);
 			case INV:
 				return new InvariantChecker(conf);
+			case PEA:
+				return new PearsonIndexChecker(conf);
 			default:
 				return null;
 		}

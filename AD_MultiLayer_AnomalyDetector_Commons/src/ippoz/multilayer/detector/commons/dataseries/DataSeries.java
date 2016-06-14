@@ -83,11 +83,13 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 	
 	public static DataSeries fromString(String stringValue) {
 		try {
-			String layer = stringValue.substring(stringValue.lastIndexOf("#")+1);
-			String partial = stringValue.substring(0, stringValue.indexOf(layer)-1);
-			String dataType = partial.substring(partial.lastIndexOf("#")+1);
-			String dataSeries = stringValue.substring(0, partial.lastIndexOf("#"));
-			return fromStrings(dataSeries, DataCategory.valueOf(dataType), LayerType.valueOf(layer));
+			if(stringValue != null && stringValue.length() > 0){
+				String layer = stringValue.substring(stringValue.lastIndexOf("#")+1);
+				String partial = stringValue.substring(0, stringValue.indexOf(layer)-1);
+				String dataType = partial.substring(partial.lastIndexOf("#")+1);
+				String dataSeries = stringValue.substring(0, partial.lastIndexOf("#"));
+				return fromStrings(dataSeries, DataCategory.valueOf(dataType), LayerType.valueOf(layer));
+			}
 		} catch(Exception ex){
 			AppLogger.logError(DataSeries.class, "ParseError", "Unable to parse '" + stringValue + "' dataseries");
 		}

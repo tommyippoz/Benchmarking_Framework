@@ -9,6 +9,7 @@ import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.commons.configuration.InvariantConfiguration;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
+import ippoz.multilayer.detector.commons.service.StatPair;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.PreferencesManager;
 import ippoz.multilayer.detector.commons.support.ThreadScheduler;
@@ -25,6 +26,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+
+import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 
 /**
  * The Class TrainerManager.
@@ -85,7 +88,14 @@ public class TrainerManager extends ThreadScheduler {
 	}
 	
 	private HashMap<String, String> readPossibleIndCombinations(){
-		File indCoupleFile = new File(prefManager.getPreference(DetectionManager.SETUP_FILE_FOLDER) + "indicatorCouples.csv");
+		return readIndCombinations("indicatorCouples.csv");	
+	}
+
+	private HashMap<String, String> readIndCombinations(String filename){
+		return readIndCombinations(new File(prefManager.getPreference(DetectionManager.SETUP_FILE_FOLDER) + filename));
+	}
+	
+	private HashMap<String, String> readIndCombinations(File indCoupleFile){
 		HashMap<String, String> comb = new HashMap<String, String>();
 		BufferedReader reader;
 		String readed;
@@ -110,7 +120,8 @@ public class TrainerManager extends ThreadScheduler {
 	}
 
 	private LinkedList<DataSeries> generateDataSeries(DataCategory[] dataTypes) {
-		if(prefManager.getPreference(DetectionManager.INV_DOMAIN).equals("ALL"))
+		String complexDataPreference = prefManager.getPreference(DetectionManager.INV_DOMAIN);
+		if(complexDataPreference.equals("ALL"))
 			return DataSeries.allCombinations(expList.getFirst().getIndicators(), dataTypes);
 		else return DataSeries.selectedCombinations(expList.getFirst().getIndicators(), dataTypes, readPossibleIndCombinations());
 	}
@@ -165,6 +176,14 @@ public class TrainerManager extends ThreadScheduler {
 					iManager = new InvariantManager(seriesList, expList, metric, reputation, readPossibleIndCombinations());
 					trainerList.addAll(iManager.getInvariants(prefManager.getPreference(DetectionManager.INV_DOMAIN).equals("ALL")));
 					break;
+				case PEA:
+					PearsonCombinationManager pcManager;
+					File pearsonFile = new File(prefManager.getPreference(DetectionManager.SETUP_FILE_FOLDER) + "pearsonCombinations.csv");
+					pcManager = new PearsonCombinationManager(pearsonFile, seriesList, expList);
+					pcManager.calculatePearsonIndexes();
+					trainerList.addAll(pcManager.getTrainers(metric, reputation, confList));
+					pcManager.flush();
+					break;
 				default:
 					for(DataSeries dataSeries : seriesList){
 						trainerList.add(new AlgorithmTrainer(algType, dataSeries, metric, reputation, expList, confList));
@@ -218,6 +237,6 @@ public class TrainerManager extends ThreadScheduler {
 		} catch(IOException ex){
 			AppLogger.logException(getClass(), ex, "Unable to write scores");
 		}
-	}
+	}	
 	
 }

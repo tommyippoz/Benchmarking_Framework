@@ -9,8 +9,10 @@ import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.commons.configuration.ConfidenceConfiguration;
 import ippoz.multilayer.detector.commons.configuration.HistoricalConfiguration;
 import ippoz.multilayer.detector.commons.configuration.InvariantConfiguration;
+import ippoz.multilayer.detector.commons.configuration.PearsonIndexConfiguration;
 import ippoz.multilayer.detector.commons.configuration.RemoteCallConfiguration;
 import ippoz.multilayer.detector.commons.configuration.SPSConfiguration;
+import ippoz.multilayer.detector.commons.configuration.WesternElectricRulesConfiguration;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.invariants.Invariant;
@@ -103,19 +105,23 @@ public class EvaluatorManager extends ThreadScheduler {
 	/**
 	 * Detects anomalies.
 	 * This is the core of the evaluation, which ends in the anomaly evaluation of each snapshot of each experiment.
+	 * @return 
 	 */
-	public void detectAnomalies(){
+	public boolean detectAnomalies(){
 		long start = System.currentTimeMillis();
 		try {
 			start();
 			join();
-			pManager.addTiming(TimingsManager.VALIDATION_RUNS, Double.valueOf(expList.size()));
-			pManager.addTiming(TimingsManager.VALIDATION_TIME, (double)(System.currentTimeMillis() - start));
-			pManager.addTiming(TimingsManager.AVG_VALIDATION_TIME, (System.currentTimeMillis() - start)/threadNumber()*1.0);
-			AppLogger.logInfo(getClass(), "Detection executed in " + (System.currentTimeMillis() - start) + " ms");
+			if(getThreadList().size() > 0) {
+				pManager.addTiming(TimingsManager.VALIDATION_RUNS, Double.valueOf(expList.size()));
+				pManager.addTiming(TimingsManager.VALIDATION_TIME, (double)(System.currentTimeMillis() - start));
+				pManager.addTiming(TimingsManager.AVG_VALIDATION_TIME, (System.currentTimeMillis() - start)/threadNumber()*1.0);
+				AppLogger.logInfo(getClass(), "Detection executed in " + (System.currentTimeMillis() - start) + " ms");
+			} else AppLogger.logInfo(getClass(), "Detection not executed");
 		} catch (InterruptedException ex) {
 			AppLogger.logException(getClass(), ex, "Unable to complete evaluation phase");
 		}
+		return getThreadList().size() > 0;
 	}
 	
 	/**
@@ -143,8 +149,10 @@ public class EvaluatorManager extends ThreadScheduler {
 		LinkedList<ExperimentVoter> voterList = new LinkedList<ExperimentVoter>();
 		expMetricEvaluations = new LinkedList<HashMap<Metric,Double>>();
 		setupResultsFile();
-		for(ExperimentData expData : expList){
-			voterList.add(new ExperimentVoter(expData, algVoters));
+		if(algVoters.size() > 0){
+			for(ExperimentData expData : expList){
+				voterList.add(new ExperimentVoter(expData, algVoters));
+			}
 		}
 		setThreadList(voterList);
 		pManager.addTiming(TimingsManager.SELECTED_ANOMALY_CHECKERS, Double.valueOf(voterList.size()));
@@ -180,6 +188,7 @@ public class EvaluatorManager extends ThreadScheduler {
 		String[] splitted;
 		LinkedList<AlgorithmVoter> voterList = new LinkedList<AlgorithmVoter>();
 		String readed;
+		String seriesString;
 		try {
 			if(asFile.exists()){
 				reader = new BufferedReader(new FileReader(asFile));
@@ -195,6 +204,12 @@ public class EvaluatorManager extends ThreadScheduler {
 									case HIST:
 										conf = new HistoricalConfiguration();
 										conf.addItem(HistoricalConfiguration.INTERVAL_WIDTH, splitted[4]);
+										seriesString = splitted[0];
+										break;
+									case WER:
+										conf = new WesternElectricRulesConfiguration();
+										conf.addItem(WesternElectricRulesConfiguration.WER_WEIGHT, splitted[4]);
+										seriesString = splitted[0];
 										break;
 									case SPS:
 										conf = new SPSConfiguration();
@@ -205,26 +220,38 @@ public class EvaluatorManager extends ThreadScheduler {
 										conf.addItem(SPSConfiguration.M, splitted[8]);
 										conf.addItem(SPSConfiguration.N, splitted[9]);
 										conf.addItem(SPSConfiguration.DYN_WEIGHT, splitted[10]);
+										seriesString = splitted[0];
 										break;
 									case CONF:
 										conf = new ConfidenceConfiguration();
 										conf.addItem(ConfidenceConfiguration.ALPHA, splitted[4]);
+										seriesString = splitted[0];
 										break;
 									case RCC:
 										conf = new RemoteCallConfiguration();
 										conf.addItem(RemoteCallConfiguration.RCC_WEIGHT, splitted[4]);
+										seriesString = null;
 										break;
 									case INV:
 										conf = new InvariantConfiguration(new Invariant(splitted[4]));
+										seriesString = null;
+										break;
+									case PEA:
+										conf = new PearsonIndexConfiguration();
+										conf.addItem(PearsonIndexConfiguration.PI_WINDOW, splitted[4]);
+										conf.addItem(PearsonIndexConfiguration.PI_TOLERANCE, splitted[5]);
+										conf.addItem(PearsonIndexConfiguration.PI_DETAIL, splitted[6]);
+										seriesString = null;
 										break;
 									default:
 										conf = null;
+										seriesString = null;
 								}
 								if(conf != null){
 									conf.addItem(AlgorithmConfiguration.WEIGHT, splitted[2]);
 									conf.addItem(AlgorithmConfiguration.SCORE, splitted[3]);
 								}
-								voterList.add(new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(DataSeries.fromString(splitted[0]), conf), Double.parseDouble(splitted[3]), Double.parseDouble(splitted[2])));
+								voterList.add(new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(DataSeries.fromString(seriesString), conf), Double.parseDouble(splitted[3]), Double.parseDouble(splitted[2])));
 							}
 						}
 					}
