@@ -6,12 +6,6 @@ package ippoz.multilayer.detector.manager;
 import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
 import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.commons.configuration.ConfidenceConfiguration;
-import ippoz.multilayer.detector.commons.configuration.HistoricalConfiguration;
-import ippoz.multilayer.detector.commons.configuration.PearsonIndexConfiguration;
-import ippoz.multilayer.detector.commons.configuration.RemoteCallConfiguration;
-import ippoz.multilayer.detector.commons.configuration.SPSConfiguration;
-import ippoz.multilayer.detector.commons.configuration.WesternElectricRulesConfiguration;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.AppUtility;
@@ -194,12 +188,15 @@ public class DetectionManager {
 		LinkedList<ExperimentData> expList = new LoaderManager(readRunIds(VALIDATION_RUN_PREFERENCE), "validation", pManager, prefManager.getPreference(DB_USERNAME), prefManager.getPreference(DB_PASSWORD)).fetch();
 		HashMap<String, HashMap<String, LinkedList<HashMap<Metric, Double>>>> evaluations = new HashMap<String, HashMap<String,LinkedList<HashMap<Metric,Double>>>>();
 		try {
+			pManager.setupExpTimings(new File(prefManager.getPreference(OUTPUT_FOLDER) + "/expTimings.csv"));
 			for(String voterTreshold : parseVoterTresholds()){
 				evaluations.put(voterTreshold.trim(), new HashMap<String, LinkedList<HashMap<Metric,Double>>>());
 				for(String anomalyTreshold : parseAnomalyTresholds()){
 					eManager = new EvaluatorManager(prefManager, pManager, expList, metList, anomalyTreshold.trim(), Double.parseDouble(detectionManager.getPreference(DM_CONVERGENCE_TIME)), voterTreshold.trim());
-					if(eManager.detectAnomalies())
+					if(eManager.detectAnomalies()) {
 						evaluations.get(voterTreshold.trim()).put(anomalyTreshold.trim(), eManager.getMetricsEvaluations());
+						eManager.printTimings(prefManager.getPreference(OUTPUT_FOLDER) + "/expTimings.csv");
+					}
 					eManager.flush();
 				}
 			}
@@ -471,13 +468,6 @@ public class DetectionManager {
 	 */
 	public boolean needTest(){
 		return !prefManager.getPreference(TRAIN_NEEDED_FLAG).equals("0");
-	}
-
-	/**
-	 * Prints the timings details.
-	 */
-	public void printDetails() {
-		pManager.printTimings(prefManager.getPreference(DetectionManager.SCORES_FILE_FOLDER) + "performanceScores.csv");
 	}
 	
 }

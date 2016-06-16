@@ -21,6 +21,7 @@ import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.commons.support.PreferencesManager;
 import ippoz.multilayer.detector.commons.support.ThreadScheduler;
 import ippoz.multilayer.detector.metric.Metric;
+import ippoz.multilayer.detector.performance.EvaluationTiming;
 import ippoz.multilayer.detector.trainer.AlgorithmVoter;
 import ippoz.multilayer.detector.trainer.ExperimentVoter;
 
@@ -58,6 +59,8 @@ public class EvaluatorManager extends ThreadScheduler {
 	
 	private LinkedList<HashMap<Metric, Double>> expMetricEvaluations;
 	
+	private EvaluationTiming eTiming;
+	
 	/** The anomaly threshold. Votings over that threshold raise alarms. */
 	private double anomalyTreshold;
 	
@@ -86,6 +89,7 @@ public class EvaluatorManager extends ThreadScheduler {
 		this.algConvergence = algConvergence;
 		detectorScoreTreshold = getVoterTreshold(voterTreshold);
 		anomalyTreshold = getAnomalyVoterTreshold(anTresholdString, loadTrainScores().size());
+		eTiming = new EvaluationTiming(voterTreshold, anTresholdString, detectorScoreTreshold, anomalyTreshold, loadTrainScores().size());
 		outputFolder = prefManager.getPreference(DetectionManager.OUTPUT_FOLDER) + "/" + voterTreshold + "_" + anTresholdString;
 		AppLogger.logInfo(getClass(), "Evaluating " + expList.size() + " experiments with [" + voterTreshold + " | " + anTresholdString + "]");
 		
@@ -133,8 +137,14 @@ public class EvaluatorManager extends ThreadScheduler {
 	 */
 	private double getAnomalyVoterTreshold(String anTresholdString, int checkers){
 		switch(anTresholdString){
+			case "ALL":
+				return checkers;
 			case "HALF":
-				return checkers/2;
+				return (int)(checkers/2);
+			case "THIRD":
+				return (int)(checkers/3);
+			case "QUARTER":
+				return (int)(checkers/4);
 			default:
 				return Double.parseDouble(anTresholdString);
 		}
@@ -151,7 +161,7 @@ public class EvaluatorManager extends ThreadScheduler {
 		setupResultsFile();
 		if(algVoters.size() > 0){
 			for(ExperimentData expData : expList){
-				voterList.add(new ExperimentVoter(expData, algVoters));
+				voterList.add(new ExperimentVoter(expData, algVoters, eTiming));
 			}
 		}
 		setThreadList(voterList);
@@ -293,9 +303,22 @@ public class EvaluatorManager extends ThreadScheduler {
 			AppLogger.logException(getClass(), ex, "Unable to find results file");
 		} 		
 	}
+	
+	public void printTimings(String filename) {
+		PrintWriter pw;
+		try {
+			pw = new PrintWriter(new FileOutputStream(new File(filename), true));
+			pw.append(eTiming.toFileRow() + "\n");
+			pw.close();
+		} catch (FileNotFoundException ex) {
+			AppLogger.logException(getClass(), ex, "Unable to find experiment timings file");
+		}
+	}
 
 	public LinkedList<HashMap<Metric, Double>> getMetricsEvaluations() {
 		return expMetricEvaluations;
 	}
+
+	
 
 }

@@ -34,7 +34,6 @@ public class DetectorMain {
 			AppLogger.logInfo(DetectorMain.class, "Starting Evaluation Process");
 			dManager.evaluate();
 			AppLogger.logInfo(DetectorMain.class, "Done.");
-			dManager.printDetails();
 		} catch(Exception ex) {
 			AppLogger.logException(DetectorMain.class, ex, "");
 		}

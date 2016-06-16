@@ -79,32 +79,44 @@ public class AppUtility {
 		}
 	}
 	
-	public static double calcAvg(Collection<Double> values) {
-		return calcAvg(values.toArray(new Double[values.size()]));
+	public static double readMillis(){
+		return (double)(1.0*System.nanoTime()/1000000.0);
 	}
 	
-	public static Double calcAvg(LinkedList<Integer> values){
+	public static Double calcAvg(Collection<? extends Number> values){
 		double mean = 0;
-		for(Integer d : values){
-			mean = mean + d;
-		}
-		return mean / values.size();
+		if(values != null && values.size() > 0) {
+			for(Number d : values){
+				if(d instanceof Long)
+					mean = mean + d.longValue();
+				else mean = mean + d.doubleValue();
+			}
+			return mean / values.size();
+		} else return 0.0;
 	}
 	
 	public static Double calcAvg(Double[] values){
+		int count = 0;
 		double mean = 0;
 		for(Double d : values){
-			mean = mean + d;
+			if(d != null){
+				mean = mean + d;
+				count++;
+			}
 		}
-		return mean / values.length;
+		return mean / count;
 	}
 	
 	public static Double calcStd(Double[] values, Double mean){
+		int count = 0;
 		double std = 0;
 		for(Double d : values){
-			std = std + Math.pow(d-mean, 2);
+			if(d != null){
+				std = std + Math.pow(d-mean, 2);
+				count++;
+			}
 		}
-		return std / values.length;
+		return std / count;
 	}
 	
 	public static double calcStd(Collection<Double> values, double mean) {
