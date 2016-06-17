@@ -9,7 +9,6 @@ import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.commons.configuration.InvariantConfiguration;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
-import ippoz.multilayer.detector.commons.service.StatPair;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.PreferencesManager;
 import ippoz.multilayer.detector.commons.support.ThreadScheduler;
@@ -26,8 +25,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-
-import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 
 /**
  * The Class TrainerManager.

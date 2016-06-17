@@ -10,7 +10,6 @@ import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.graphics.HistogramChartDrawer;
-import ippoz.multilayer.detector.manager.TimingsManager;
 import ippoz.multilayer.detector.metric.Metric;
 import ippoz.multilayer.detector.performance.EvaluationTiming;
 import ippoz.multilayer.detector.performance.ExperimentTiming;
