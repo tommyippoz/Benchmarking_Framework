@@ -7,11 +7,13 @@ import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.data.Snapshot;
-import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.graphics.HistogramChartDrawer;
+import ippoz.multilayer.detector.manager.TimingsManager;
 import ippoz.multilayer.detector.metric.Metric;
+import ippoz.multilayer.detector.performance.EvaluationTiming;
+import ippoz.multilayer.detector.performance.ExperimentTiming;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -25,7 +27,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.TreeMap;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ExperimentVoter.
  *
@@ -60,29 +61,30 @@ public class ExperimentVoter extends Thread {
 	/** The list of the snapshots for each voter */
 	private LinkedList<HashMap<AlgorithmVoter, Snapshot>> expSnapMap;
 	
+	private EvaluationTiming eTiming;
+	
 	/**
 	 * Instantiates a new experiment voter.
 	 *
 	 * @param expData the experiment data
 	 * @param algList the algorithm list
+	 * @param pManager 
 	 */
-	public ExperimentVoter(ExperimentData expData, LinkedList<AlgorithmVoter> algList) {
+	public ExperimentVoter(ExperimentData expData, LinkedList<AlgorithmVoter> algList, EvaluationTiming eTiming) {
 		super();
 		this.expName = expData.getName();
 		this.algList = deepClone(algList);
+		this.eTiming = eTiming;
 		expSnapMap = loadExpAlgSnapshots(expData);
 	}
 	
 	private LinkedList<HashMap<AlgorithmVoter, Snapshot>> loadExpAlgSnapshots(ExperimentData expData) {
-		DataSeries dataSeries;
 		HashMap<AlgorithmVoter, Snapshot> newMap;
 		LinkedList<HashMap<AlgorithmVoter, Snapshot>> expAlgMap = new LinkedList<HashMap<AlgorithmVoter, Snapshot>>();
 		for(int i=0;i<expData.getSnapshotNumber();i++){
 			newMap = new HashMap<AlgorithmVoter, Snapshot>();
 			for(AlgorithmVoter aVoter : algList){
-				dataSeries = aVoter.getDataSeries();
-				newMap.put(aVoter, expData.buildSnapshotFor(aVoter.getAlgorithmType(), i, dataSeries, aVoter.getAlgorithmConfiguration()));
-				
+				newMap.put(aVoter, expData.buildSnapshotFor(aVoter.getAlgorithmType(), i, aVoter.getDataSeries(), aVoter.getAlgorithmConfiguration()));
 			}
 			expAlgMap.add(newMap);
 		}
@@ -112,21 +114,28 @@ public class ExperimentVoter extends Thread {
 	 */
 	@Override
 	public void run() {
+		double baseTime;
 		Snapshot snapshot = null;
 		HashMap<AlgorithmVoter, Double> snapVoting;
+		ExperimentTiming expTiming = new ExperimentTiming(expSnapMap.size());
 		partialVoting = new TreeMap<Date, HashMap<AlgorithmVoter, Double>>();
 		voting = new TreeMap<Date, Double>();
 		if(algList.size() > 0) {
 			for(int i=0;i<expSnapMap.size();i++){
 				snapVoting = new HashMap<AlgorithmVoter, Double>();
 				for(AlgorithmVoter aVoter : algList){
+					baseTime = AppUtility.readMillis();
 					snapshot = expSnapMap.get(i).get(aVoter);
 					snapVoting.put(aVoter, aVoter.voteSnapshot(snapshot));
+					expTiming.addExpTiming(aVoter.getAlgorithmType(), AppUtility.readMillis() - baseTime);
 				}
+				baseTime = AppUtility.readMillis();
 				partialVoting.put(snapshot.getTimestamp(), snapVoting);
 				voting.put(snapshot.getTimestamp(), voteResults(snapVoting));
+				expTiming.setVotingTime(AppUtility.readMillis() - baseTime);
 			}
 		}
+		eTiming.addExperimentTiming(expTiming);
 	}
 	
 	/**
