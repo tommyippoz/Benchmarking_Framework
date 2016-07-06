@@ -37,6 +37,11 @@ public class DataSeriesMember extends InvariantMember {
 
 	public DataSeries getDataSeries() {
 		return dataSeries;
+	}
+
+	@Override
+	public boolean contains(DataSeries serie) {
+		return dataSeries.contains(serie);
 	}	
 
 }

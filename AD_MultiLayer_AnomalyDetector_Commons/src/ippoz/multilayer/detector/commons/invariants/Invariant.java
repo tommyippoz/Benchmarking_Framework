@@ -80,6 +80,10 @@ public class Invariant {
 	@Override
 	public String toString() {
 		return firstMember.toString() + " " + operand + " " + secondMember.toString();
+	}
+
+	public boolean contains(DataSeries serie) {
+		return firstMember.contains(serie) || secondMember.contains(serie);
 	}		
 
 }

@@ -47,6 +47,14 @@ public class PearsonIndexChecker extends DetectionAlgorithm {
 		pearsonStd = Double.valueOf(splittedDetail[3]);
 	}
 
+	public DataSeries getDs1() {
+		return ds1;
+	}
+
+	public DataSeries getDs2() {
+		return ds2;
+	}
+
 	@Override
 	protected double evaluateSnapshot(Snapshot sysSnapshot) {
 		double pValue;

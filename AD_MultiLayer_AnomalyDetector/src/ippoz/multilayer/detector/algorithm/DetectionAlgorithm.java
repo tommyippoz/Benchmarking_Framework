@@ -6,6 +6,7 @@ package ippoz.multilayer.detector.algorithm;
 import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
 import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.commons.data.Snapshot;
+import ippoz.multilayer.detector.commons.dataseries.ComplexDataSeries;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.service.StatPair;
 import ippoz.multilayer.detector.commons.support.AppLogger;
@@ -69,6 +70,32 @@ public abstract class DetectionAlgorithm {
 			default:
 				return null;
 		}
+	}
+	
+	private boolean usesSimpleSeries(DataSeries container, DataSeries serie) {
+		if(container == null){
+			if(getAlgorithmType().equals(AlgorithmType.RCC))
+				return false;
+			else if(getAlgorithmType().equals(AlgorithmType.PEA))
+				return ((PearsonIndexChecker)this).getDs1().contains(serie) || ((PearsonIndexChecker)this).getDs2().contains(serie);
+			else if(getAlgorithmType().equals(AlgorithmType.INV))
+				return ((InvariantChecker)this).getInvariant().contains(serie);
+			else return false;
+		} else {
+			return container.contains(serie);
+		}
+	}
+	
+	public boolean usesSeries(DataSeries serie) {
+		boolean out = false;
+		if(serie != null) {
+			for(DataSeries ds : serie.listSubSeries()){
+				if(getDataSeries() instanceof ComplexDataSeries){
+					out = out || usesSimpleSeries(((ComplexDataSeries)getDataSeries()).getFirstOperand(), ds) || usesSimpleSeries(((ComplexDataSeries)getDataSeries()).getSecondOperand(), ds);
+				} else out = out || usesSimpleSeries(getDataSeries(), ds);		
+			}
+		}
+		return out;
 	}
 	
 	/**

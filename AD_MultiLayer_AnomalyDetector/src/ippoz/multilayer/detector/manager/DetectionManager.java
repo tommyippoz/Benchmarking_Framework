@@ -185,6 +185,7 @@ public class DetectionManager {
 	public void evaluate(){
 		EvaluatorManager eManager;
 		Metric[] metList = loadValidationMetrics();
+		HashMap<String, Integer> nVoters = new HashMap<String, Integer>();
 		LinkedList<ExperimentData> expList = new LoaderManager(readRunIds(VALIDATION_RUN_PREFERENCE), "validation", pManager, prefManager.getPreference(DB_USERNAME), prefManager.getPreference(DB_PASSWORD)).fetch();
 		HashMap<String, HashMap<String, LinkedList<HashMap<Metric, Double>>>> evaluations = new HashMap<String, HashMap<String,LinkedList<HashMap<Metric,Double>>>>();
 		try {
@@ -197,36 +198,49 @@ public class DetectionManager {
 						evaluations.get(voterTreshold.trim()).put(anomalyTreshold.trim(), eManager.getMetricsEvaluations());
 						eManager.printTimings(prefManager.getPreference(OUTPUT_FOLDER) + "/expTimings.csv");
 					}
+					nVoters.put(voterTreshold.trim(), eManager.getCheckersNumber());
 					eManager.flush();
 				}
 			}
-			summarizeEvaluations(evaluations, metList, parseAnomalyTresholds());
+			summarizeEvaluations(evaluations, metList, parseAnomalyTresholds(), nVoters);
 		} catch(Exception ex){
 			AppLogger.logException(getClass(), ex, "Unable to evaluate detector");
 		}
 	}
 	
-	private void summarizeEvaluations(HashMap<String, HashMap<String, LinkedList<HashMap<Metric, Double>>>> evaluations, Metric[] metList, String[] anomalyTresholds) {
+	private void summarizeEvaluations(HashMap<String, HashMap<String, LinkedList<HashMap<Metric, Double>>>> evaluations, Metric[] metList, String[] anomalyTresholds, HashMap<String, Integer> nVoters) {
 		BufferedWriter writer;
+		BufferedWriter compactWriter;
 		try {
+			compactWriter = new BufferedWriter(new FileWriter(new File(prefManager.getPreference(DetectionManager.OUTPUT_FOLDER) + "/tableSummary.csv")));
 			writer = new BufferedWriter(new FileWriter(new File(prefManager.getPreference(DetectionManager.OUTPUT_FOLDER) + "/summary.csv")));
+			compactWriter.write("selection_strategy,checkers,");
+			for(String anomalyTreshold : anomalyTresholds){
+				compactWriter.write(anomalyTreshold + ",");
+			}
+			compactWriter.write("\n");
 			writer.write("voter,anomaly,");
 			for(Metric met : metList){
 				writer.write(met.getMetricName() + ",");
 			}
 			writer.write("\n");
 			for(String voterTreshold : evaluations.keySet()){
+				compactWriter.write(voterTreshold + "," + nVoters.get(voterTreshold.trim()) + ",");
 				for(String anomalyTreshold : anomalyTresholds){
 					writer.write(voterTreshold + "," + anomalyTreshold.trim() + ",");
 					for(Metric met : metList){
+						if(met.equals(metric))
+							compactWriter.write(getAverageMetricValue(evaluations.get(voterTreshold).get(anomalyTreshold.trim()), met) + ",");
 						writer.write(getAverageMetricValue(evaluations.get(voterTreshold).get(anomalyTreshold.trim()), met) + ",");
 					}
 					writer.write("\n");
 				}
+				compactWriter.write("\n");
 			}
+			compactWriter.close();
 			writer.close();
 		} catch(IOException ex){
-			AppLogger.logException(getClass(), ex, "Unable to write summary file");
+			AppLogger.logException(getClass(), ex, "Unable to write summary files");
 		}
 	}
 
@@ -342,7 +356,7 @@ public class DetectionManager {
 									header = readed.split(",");
 								} else {
 									i = 0;
-									alConf = AlgorithmConfiguration.getConfiguration(AlgorithmType.valueOf(readed.split(",")[0].toUpperCase()));
+									alConf = AlgorithmConfiguration.getConfiguration(AlgorithmType.valueOf(readed.split(",")[0].toUpperCase()), null);
 									for(String element : readed.split(",")){
 										if(i > 0)
 											alConf.addItem(header[i], element);

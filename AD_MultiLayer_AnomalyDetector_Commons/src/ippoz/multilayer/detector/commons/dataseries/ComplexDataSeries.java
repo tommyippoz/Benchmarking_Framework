@@ -27,6 +27,14 @@ public abstract class ComplexDataSeries extends DataSeries {
 		this.secondOperand = secondOperand;
 	}
 
+	public DataSeries getFirstOperand() {
+		return firstOperand;
+	}
+
+	public DataSeries getSecondOperand() {
+		return secondOperand;
+	}
+
 	@Override
 	public LayerType getLayerType() {
 		return LayerType.COMPOSITION;

@@ -8,6 +8,7 @@ import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.commons.configuration.PearsonIndexConfiguration;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
+import ippoz.multilayer.detector.commons.dataseries.IndicatorDataSeries;
 import ippoz.multilayer.detector.commons.service.StatPair;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.metric.Metric;
@@ -48,11 +49,13 @@ public class PearsonCombinationManager {
 		HashMap<String, double[]> map;
 		seriesExpData = new HashMap<DataSeries, HashMap<String,double[]>>();
 		for(DataSeries ds : seriesList){
-			map = new HashMap<String, double[]>();
-			for(ExperimentData expData : expList){
-				map.put(expData.getName(), expData.getDataSeriesValue(ds));
+			if(ds instanceof IndicatorDataSeries) { 
+				map = new HashMap<String, double[]>();
+				for(ExperimentData expData : expList){
+					map.put(expData.getName(), expData.getDataSeriesValue(ds));
+				}
+				seriesExpData.put(ds, map);
 			}
-			seriesExpData.put(ds, map);
 		}
 	}
 	
@@ -83,16 +86,16 @@ public class PearsonCombinationManager {
 		PearsonResult pr;
 		LinkedList<Double> pExp;
 		pResults = new LinkedList<PearsonResult>();
-		AppLogger.logInfo(getClass(), "Calculating Pearson Indexes");
-		for(DataSeries ds1 : seriesList){
-			for(DataSeries ds2 : seriesList){
+		AppLogger.logInfo(getClass(), "Calculating Indicator Correlations");
+		for(DataSeries ds1 : seriesExpData.keySet()){
+			for(DataSeries ds2 : seriesExpData.keySet()){
 				if(!ds1.equals(ds2)){
 					pExp = new LinkedList<Double>();
 					for(ExperimentData expData : expList){
 						pExp.add(new PearsonsCorrelation().correlation(seriesExpData.get(ds1).get(expData.getName()), seriesExpData.get(ds2).get(expData.getName())));
 					}
 					pr = new PearsonResult(ds1, ds2, pExp);
-					if(pr.isValid())
+					if(pr.isValid(pResults))
 						pResults.add(pr);
 				}
 			}
@@ -105,7 +108,7 @@ public class PearsonCombinationManager {
 		BufferedWriter writer = null;
 		try {
 			writer = new BufferedWriter(new FileWriter(indexesFile));
-			writer.write("data_series,data_series,avg,std");
+			writer.write("data_series,data_series,avg,std\n");
 			for(PearsonResult pr : pResults){
 				writer.write(pr.toFileRow() + "\n");
 			}
@@ -169,12 +172,16 @@ public class PearsonCombinationManager {
 			return prStats.getStd();
 		}
 
-		public boolean isValid(){
-			return Math.abs(prStats.getAvg()) > 0.99 && Math.abs(prStats.getAvg()) < 1; 
+		public boolean isValid(LinkedList<PearsonResult> pResults){
+			for(PearsonResult pR : pResults){
+				if((pR.getDs1().equals(ds1) || pR.getDs2().equals(ds1)) && (pR.getDs1().equals(ds2) || pR.getDs2().equals(ds2)))
+					return false;
+			}
+			return Math.abs(prStats.getAvg()) > 0.9 && Math.abs(prStats.getAvg()) < 1; 
 		}
 		
 		public String toFileRow(){
-			return ds1.getName() + "," + ds2.getName() + "," + prStats.getAvg() + "," + prStats.getStd();
+			return ds1.toString() + "," + ds2.toString() + "," + prStats.getAvg() + "," + prStats.getStd();
 		}	
 		
 	}

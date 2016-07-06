@@ -24,6 +24,10 @@ public class InvariantChecker extends DetectionAlgorithm {
 			invariant = ((InvariantConfiguration)conf).getInvariant();
 	}
 
+	public Invariant getInvariant() {
+		return invariant;
+	}
+
 	@Override
 	protected double evaluateSnapshot(Snapshot sysSnapshot) {
 		if(sysSnapshot instanceof MultipleSnapshot)

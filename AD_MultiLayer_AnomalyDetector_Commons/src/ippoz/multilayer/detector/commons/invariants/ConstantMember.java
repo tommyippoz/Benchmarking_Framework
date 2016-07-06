@@ -4,6 +4,7 @@
 package ippoz.multilayer.detector.commons.invariants;
 
 import ippoz.multilayer.detector.commons.data.MultipleSnapshot;
+import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 
 /**
  * @author Tommy
@@ -26,6 +27,11 @@ public class ConstantMember extends InvariantMember {
 	@Override
 	public String toString() {
 		return baseValue;
+	}
+
+	@Override
+	public boolean contains(DataSeries serie) {
+		return false;
 	}
 
 }

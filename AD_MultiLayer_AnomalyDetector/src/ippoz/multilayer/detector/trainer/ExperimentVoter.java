@@ -163,7 +163,7 @@ public class ExperimentVoter extends Thread {
 	 */
 	public HashMap<Metric, Double> printVoting(String outFormat, String outFolderName, Metric[] validationMetrics, double anomalyTreshold, double algConvergence) {
 		for(AlgorithmVoter aVoter : algList){
-			aVoter.printResults(outFormat, outFolderName, expName);
+			//aVoter.printResults(outFormat, outFolderName, expName);
 		}
 		return printExperimentVoting(outFolderName, validationMetrics, anomalyTreshold, algConvergence);
 	}

@@ -43,6 +43,21 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 	public DataCategory getDataCategory() {
 		return dataCategory;
 	}
+	
+	public LinkedList<DataSeries> listSubSeries(){
+		LinkedList<DataSeries> outList = new LinkedList<DataSeries>();
+		if(this instanceof ComplexDataSeries){
+			outList.addAll(((ComplexDataSeries)this).getFirstOperand().listSubSeries());
+			outList.addAll(((ComplexDataSeries)this).getSecondOperand().listSubSeries());
+		} else outList.add(this); 
+		return outList;
+	}
+	
+	public boolean contains(DataSeries other){
+		if(this instanceof ComplexDataSeries)
+			return ((ComplexDataSeries)this).getFirstOperand().contains(other) || ((ComplexDataSeries)this).getSecondOperand().contains(other);
+		else return compareTo(other) == 0;
+	}
 
 	@Override
 	public int compareTo(DataSeries other) {
@@ -124,6 +139,8 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 			firstDS = DataSeries.fromList(simpleInd, firstString);
 			secondDS = DataSeries.fromList(simpleInd, possibleCouples.get(firstString));
 			for(DataCategory dCat : dataTypes){
+				complexInd.add(new SumDataSeries(firstDS, secondDS, dCat));
+				complexInd.add(new DiffDataSeries(firstDS, secondDS, dCat));
 				complexInd.add(new FractionDataSeries(firstDS, secondDS, dCat));
 			}
 		}
@@ -144,6 +161,8 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 		for(DataSeries firstDS : simpleInd){
 			for(DataSeries secondDS : simpleInd){
 				for(DataCategory dCat : dataTypes){
+					complexInd.add(new SumDataSeries(firstDS, secondDS, dCat));
+					complexInd.add(new DiffDataSeries(firstDS, secondDS, dCat));
 					complexInd.add(new FractionDataSeries(firstDS, secondDS, dCat));
 				}
 			}

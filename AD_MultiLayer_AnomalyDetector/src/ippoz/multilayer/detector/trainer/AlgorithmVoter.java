@@ -126,5 +126,9 @@ public class AlgorithmVoter implements Cloneable {
 	public AlgorithmConfiguration getAlgorithmConfiguration() {
 		return alg.getConfiguration();
 	}
+	
+	public boolean usesSeries(DataSeries serie) {
+		return alg.usesSeries(serie);
+	}
 
 }

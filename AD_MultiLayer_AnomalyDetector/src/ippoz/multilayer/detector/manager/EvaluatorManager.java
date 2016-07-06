@@ -101,6 +101,8 @@ public class EvaluatorManager extends ThreadScheduler {
 				return Double.parseDouble(voterTreshold);
 			else if(voterTreshold.contains("BEST")){
 				return Double.parseDouble(voterTreshold.substring(voterTreshold.indexOf("T")+1).trim());
+			} else if(voterTreshold.contains("FILTERED")){
+				return -1.0*Double.parseDouble(voterTreshold.substring(voterTreshold.indexOf("D")+1).trim());
 			}
 		}
 		return Double.NaN;
@@ -261,7 +263,7 @@ public class EvaluatorManager extends ThreadScheduler {
 									conf.addItem(AlgorithmConfiguration.WEIGHT, splitted[2]);
 									conf.addItem(AlgorithmConfiguration.SCORE, splitted[3]);
 								}
-								voterList.add(new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(DataSeries.fromString(seriesString), conf), Double.parseDouble(splitted[3]), Double.parseDouble(splitted[2])));
+								addVoter(new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(DataSeries.fromString(seriesString), conf), Double.parseDouble(splitted[3]), Double.parseDouble(splitted[2])), voterList);
 							}
 						}
 					}
@@ -274,9 +276,25 @@ public class EvaluatorManager extends ThreadScheduler {
 		return voterList;
 	}
 	
+	private void addVoter(AlgorithmVoter newVoter, LinkedList<AlgorithmVoter> voterList){
+		boolean found = false;
+		if(detectorScoreTreshold >= 0)
+			voterList.add(newVoter);
+		else {
+			for(AlgorithmVoter aVoter : voterList){
+				if(aVoter.usesSeries(newVoter.getDataSeries())){
+					found = true;
+					break;
+				}
+			}
+			if(!found)
+				voterList.add(newVoter);
+		}
+	}
+	
 	private boolean checkAnomalyTreshold(Double newMetricValue, LinkedList<AlgorithmVoter> voterList) {
-		if(detectorScoreTreshold > 1)
-			return voterList.size() < detectorScoreTreshold;
+		if(Math.abs(detectorScoreTreshold) > 1)
+			return voterList.size() < Math.abs(detectorScoreTreshold);
 		else return newMetricValue >= detectorScoreTreshold;
 	}
 
@@ -318,7 +336,10 @@ public class EvaluatorManager extends ThreadScheduler {
 	public LinkedList<HashMap<Metric, Double>> getMetricsEvaluations() {
 		return expMetricEvaluations;
 	}
-
+	
+	public Integer getCheckersNumber() {
+		return loadTrainScores().size();
+	}
 	
 
 }

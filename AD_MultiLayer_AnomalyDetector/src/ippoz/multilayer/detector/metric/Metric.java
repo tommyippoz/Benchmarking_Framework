@@ -39,6 +39,15 @@ public abstract class Metric {
 		return new double[]{evaluateAnomalyResults(snapList, anomalyEvaluations), average, AppUtility.calcStd(anomalyEvaluations.values(), average)};
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof Metric)
+			return ((Metric)obj).getMetricName().equals(getMetricName());
+		else return super.equals(obj);
+	}
+
+
+
 	/**
 	 * Evaluates anomaly results coming from evaluations of all the snapshot of an experiment.
 	 *
