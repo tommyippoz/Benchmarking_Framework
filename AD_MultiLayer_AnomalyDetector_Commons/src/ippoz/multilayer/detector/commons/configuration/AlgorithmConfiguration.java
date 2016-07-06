@@ -45,7 +45,7 @@ public abstract class AlgorithmConfiguration implements Cloneable {
 		HashMap<String, String> newMap = new HashMap<String, String>();
 		AlgorithmConfiguration newConf = null;
 		try {
-			newConf = getConfiguration(algType);
+			newConf = getConfiguration(algType, this);
 			for(String mapKey : confMap.keySet()){
 				newMap.put(mapKey, confMap.get(mapKey));
 			}
@@ -56,7 +56,7 @@ public abstract class AlgorithmConfiguration implements Cloneable {
 		return newConf;
 	}
 	
-	public static AlgorithmConfiguration getConfiguration(AlgorithmType algType) {
+	public static AlgorithmConfiguration getConfiguration(AlgorithmType algType, AlgorithmConfiguration oldConf) {
 		switch(algType){
 			case SPS:
 				return new SPSConfiguration();
@@ -65,7 +65,7 @@ public abstract class AlgorithmConfiguration implements Cloneable {
 			case HIST:
 				return new HistoricalConfiguration();
 			case INV:
-				break;
+				return new InvariantConfiguration(((InvariantConfiguration)oldConf).getInvariant());
 			case PEA:
 				return new PearsonIndexConfiguration();
 			case RCC:
