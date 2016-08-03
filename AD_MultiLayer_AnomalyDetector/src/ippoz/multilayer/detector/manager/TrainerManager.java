@@ -6,7 +6,6 @@ package ippoz.multilayer.detector.manager;
 import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
 import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.commons.configuration.InvariantConfiguration;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.support.AppLogger;
@@ -148,7 +147,7 @@ public class TrainerManager extends ThreadScheduler {
 		LinkedList<AlgorithmTrainer> invList = new LinkedList<AlgorithmTrainer>();
 		if(iManager != null){
 			for(Thread t : trainerList){
-				if(((AlgorithmTrainer)t).getBestConfiguration() instanceof InvariantConfiguration)
+				if(((AlgorithmTrainer)t).getBestConfiguration().getAlgorithmType().equals(AlgorithmType.INV))
 					invList.add((AlgorithmTrainer)t);
 			}
 			trainerList.removeAll(iManager.filterInvType(invList));

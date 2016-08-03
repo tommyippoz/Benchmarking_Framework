@@ -4,7 +4,7 @@
 package ippoz.multilayer.detector.manager;
 
 import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
-import ippoz.multilayer.detector.commons.configuration.InvariantConfiguration;
+import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.invariants.DataSeriesMember;
@@ -42,7 +42,7 @@ public class InvariantManager {
 		Invariant invariant;
 		LinkedList<AlgorithmTrainer> filtered = new LinkedList<AlgorithmTrainer>();
 		for(AlgorithmTrainer invTrainer : allInv){
-			invariant = ((InvariantConfiguration)(invTrainer.getBestConfiguration())).getInvariant();
+			invariant = (Invariant)invTrainer.getBestConfiguration().getRawItem(AlgorithmConfiguration.INVARIANT);
 			if(!invariant.getFirstMember().getMemberName().equals(invariant.getSecondMember().getMemberName())){	
 				filtered.add(invTrainer);
 			}
@@ -55,7 +55,7 @@ public class InvariantManager {
 		LinkedList<AlgorithmTrainer> toRemove = new LinkedList<AlgorithmTrainer>();
 		LinkedList<String> foundMembers = new LinkedList<String>();
 		for(AlgorithmTrainer invTrainer : allInv){
-			invariant = ((InvariantConfiguration)invTrainer.getBestConfiguration()).getInvariant();
+			invariant = (Invariant)invTrainer.getBestConfiguration().getRawItem(AlgorithmConfiguration.INVARIANT);
 			if(invariant.getFirstMember() instanceof DataSeriesMember){
 				if(!foundMembers.contains(invariant.getFirstMember().toString()))
 					foundMembers.add(invariant.getFirstMember().toString());
@@ -66,11 +66,14 @@ public class InvariantManager {
 	}
 	
 	private LinkedList<AlgorithmTrainer> generateAllInvariants() {
+		AlgorithmConfiguration conf;
 		LinkedList<AlgorithmTrainer> allInv = new LinkedList<AlgorithmTrainer>();
 		for(DataSeries firstDS : seriesList){
 			for(DataSeries secondDS : seriesList){
 				for(String operand : invariantOperandList){
-					allInv.add(new AlgorithmTrainer(AlgorithmType.INV, null, metric, reputation, expList, new InvariantConfiguration(new Invariant(new DataSeriesMember(firstDS), new DataSeriesMember(secondDS), operand))));
+					conf = new AlgorithmConfiguration(AlgorithmType.INV);
+					conf.addRawItem(AlgorithmConfiguration.INVARIANT, new Invariant(new DataSeriesMember(firstDS), new DataSeriesMember(secondDS), operand));
+					allInv.add(new AlgorithmTrainer(AlgorithmType.INV, null, metric, reputation, expList, conf));
 				}
 			}			
 		}
@@ -79,12 +82,15 @@ public class InvariantManager {
 	
 	private LinkedList<AlgorithmTrainer> generateInvariants() {
 		DataSeries firstDS, secondDS;
+		AlgorithmConfiguration conf;
 		LinkedList<AlgorithmTrainer> allInv = new LinkedList<AlgorithmTrainer>();
 		for(String firstString : invCombinations.keySet()){
 			firstDS = DataSeries.fromList(seriesList, firstString);
 			secondDS = DataSeries.fromList(seriesList, invCombinations.get(firstString));
 			for(String operand : invariantOperandList){
-				allInv.add(new AlgorithmTrainer(AlgorithmType.INV, null, metric, reputation, expList, new InvariantConfiguration(new Invariant(new DataSeriesMember(firstDS), new DataSeriesMember(secondDS), operand))));
+				conf = new AlgorithmConfiguration(AlgorithmType.INV);
+				conf.addRawItem(AlgorithmConfiguration.INVARIANT, new Invariant(new DataSeriesMember(firstDS), new DataSeriesMember(secondDS), operand));
+				allInv.add(new AlgorithmTrainer(AlgorithmType.INV, null, metric, reputation, expList, conf));
 			}
 		}
 		return allInv;

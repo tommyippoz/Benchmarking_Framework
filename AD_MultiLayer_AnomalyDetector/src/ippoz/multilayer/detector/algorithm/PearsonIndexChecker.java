@@ -9,7 +9,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 
 import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.commons.configuration.PearsonIndexConfiguration;
 import ippoz.multilayer.detector.commons.data.MultipleSnapshot;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
@@ -38,9 +37,9 @@ public class PearsonIndexChecker extends DetectionAlgorithm {
 	}
 
 	private void parseVars(AlgorithmConfiguration conf) {
-		String[] splittedDetail = conf.getItem(PearsonIndexConfiguration.PI_DETAIL).split(";");
-		times = Double.parseDouble(conf.getItem(PearsonIndexConfiguration.PI_TOLERANCE));
-		windowSize = Integer.parseInt(conf.getItem(PearsonIndexConfiguration.PI_WINDOW));
+		String[] splittedDetail = conf.getItem(AlgorithmConfiguration.PEARSON_DETAIL).split(";");
+		times = Double.parseDouble(conf.getItem(AlgorithmConfiguration.PEARSON_TOLERANCE));
+		windowSize = Integer.parseInt(conf.getItem(AlgorithmConfiguration.PEARSON_WINDOW));
 		ds1 = DataSeries.fromString(splittedDetail[0]);
 		ds2 = DataSeries.fromString(splittedDetail[1]);
 		pearsonAvg = Double.valueOf(splittedDetail[2]);

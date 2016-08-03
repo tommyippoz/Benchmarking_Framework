@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.Socket;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -52,6 +53,21 @@ public class AppUtility {
 			AppLogger.logInfo(AppUtility.class, "Unexisting preference file: " + prefFile.getAbsolutePath());
 		}
 		return map;
+	}
+	
+	public static boolean isServerUp(int port) {
+	    return isServerUp("127.0.0.1", port);
+	}
+	
+	public static boolean isServerUp(String address, int port) {
+	    boolean isUp = false;
+	    try {
+	        Socket socket = new Socket(address, port);
+	        isUp = true;
+	        socket.close();
+	    }
+	    catch (IOException e) {}
+	    return isUp;
 	}
 	
 	public static String formatMillis(long dateMillis){

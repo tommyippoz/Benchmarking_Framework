@@ -7,8 +7,6 @@ import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
 import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.commons.configuration.InvariantConfiguration;
-import ippoz.multilayer.detector.commons.configuration.PearsonIndexConfiguration;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.failure.InjectedElement;
 import ippoz.multilayer.detector.commons.invariants.DataSeriesMember;
@@ -232,10 +230,10 @@ public class ExperimentData implements Cloneable {
 			case RCC:
 				return getSnapshot(index);
 			case INV:
-				inv = ((InvariantConfiguration)conf).getInvariant();
+				inv = (Invariant)conf.getRawItem(AlgorithmConfiguration.INVARIANT);
 				return getMultipleSnapshot(index, inv);
 			case PEA:
-				return getMultipleSnapshot(index, conf.getItem(PearsonIndexConfiguration.PI_DETAIL));
+				return getMultipleSnapshot(index, conf.getItem(AlgorithmConfiguration.PEARSON_DETAIL));
 			default:
 				return getDataSeriesSnapshot(dataSeries, index);
 		}

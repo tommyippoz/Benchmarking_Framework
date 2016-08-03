@@ -4,7 +4,6 @@
 package ippoz.multilayer.detector.algorithm;
 
 import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.commons.configuration.HistoricalConfiguration;
 import ippoz.multilayer.detector.commons.data.DataSeriesSnapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.service.ServiceCall;
@@ -51,7 +50,7 @@ public class HistoricalIndicatorChecker extends DataSeriesDetectionAlgorithm {
 	 */
 	private double analyzeCall(Double value, ServiceCall sCall, StatPair stat) {
 		if(stat != null)
-			return evaluateAbsDiffRate(value, stat, Double.valueOf(conf.getItem(HistoricalConfiguration.INTERVAL_WIDTH)));
+			return evaluateAbsDiffRate(value, stat, Double.valueOf(conf.getItem(AlgorithmConfiguration.HIST_INTERVAL)));
 		else AppLogger.logError(getClass(), "StatError", "Unable to find Stat for " + sCall.getServiceName() + ":" + dataSeries.getName());
 		return 0.0;
 	}

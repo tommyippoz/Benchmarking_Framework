@@ -18,7 +18,7 @@ import ippoz.multilayer.detector.commons.support.AppLogger;
  */
 public abstract class DetectionAlgorithm {
 	
-	/** The conf. */
+	/** The configuration. */
 	protected AlgorithmConfiguration conf;
 	
 	/**
@@ -45,9 +45,7 @@ public abstract class DetectionAlgorithm {
 	/**
 	 * Builds a DetectionAlgorithm.
 	 *
-	 * @param algTag the algorithm tag
-	 * @param dataType the data type
-	 * @param indicator the indicator
+	 * @param dataSeries the data series
 	 * @param conf the configuration
 	 * @return the detection algorithm
 	 */
@@ -70,6 +68,18 @@ public abstract class DetectionAlgorithm {
 			default:
 				return null;
 		}
+	}
+	
+	/**
+	 * Builds a DetectionAlgorithm.
+	 *
+	 * @param dataSeries the data series
+	 * @param conf the configuration
+	 * @return the detection algorithm
+	 */
+	public static DetectionAlgorithm buildAlgorithm(DataSeries dataSeries, AlgorithmType algType, String[] splitted) {
+		AlgorithmConfiguration conf = new AlgorithmConfiguration(algType);
+		return buildAlgorithm(dataSeries, conf);
 	}
 	
 	private boolean usesSimpleSeries(DataSeries container, DataSeries serie) {

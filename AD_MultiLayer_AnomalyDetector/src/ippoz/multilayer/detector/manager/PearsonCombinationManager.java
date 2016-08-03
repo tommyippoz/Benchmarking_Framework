@@ -5,7 +5,6 @@ package ippoz.multilayer.detector.manager;
 
 import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
 import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.commons.configuration.PearsonIndexConfiguration;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.dataseries.IndicatorDataSeries;
@@ -128,7 +127,7 @@ public class PearsonCombinationManager {
 	
 	private HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> adaptConf(HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> confList, PearsonResult pr) {
 		for(AlgorithmConfiguration ac : confList.get(AlgorithmType.PEA)){
-			ac.addItem(PearsonIndexConfiguration.PI_DETAIL, pr.getDs1().toString() + ";" + pr.getDs2().toString() + ";" + String.valueOf(pr.getAvg()) + ";" + String.valueOf(pr.getStd()));
+			ac.addItem(AlgorithmConfiguration.PEARSON_DETAIL, pr.getDs1().toString() + ";" + pr.getDs2().toString() + ";" + String.valueOf(pr.getAvg()) + ";" + String.valueOf(pr.getStd()));
 		}
 		return confList;
 	}

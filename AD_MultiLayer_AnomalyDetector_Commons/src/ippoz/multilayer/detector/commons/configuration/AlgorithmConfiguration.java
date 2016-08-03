@@ -5,6 +5,7 @@ package ippoz.multilayer.detector.commons.configuration;
 
 import ippoz.multilayer.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
+import ippoz.multilayer.detector.commons.invariants.Invariant;
 
 import java.util.HashMap;
 
@@ -14,7 +15,7 @@ import java.util.HashMap;
  *
  * @author Tommy
  */
-public abstract class AlgorithmConfiguration implements Cloneable {
+public class AlgorithmConfiguration implements Cloneable {
 	
 	/** The Constant WEIGHT. */
 	public static final String WEIGHT = "weight";
@@ -22,8 +23,34 @@ public abstract class AlgorithmConfiguration implements Cloneable {
 	/** The Constant SCORE. */
 	public static final String SCORE = "metric_score";
 
+	public static final String INVARIANT = "invariant";
+	
+	public static final String PEARSON_DETAIL = "pi_detail";
+
+	public static final String HIST_INTERVAL = "interval_width";
+
+	public static final String CONFIDENCE_ALPHA = "alpha";
+
+	public static final String PEARSON_TOLERANCE = "pi_tolerance";
+
+	public static final String PEARSON_WINDOW = "pi_window";
+	
+	public static final String SPS_PDV = "pdv";
+	
+	public static final String SPS_POV = "pov";
+	
+	public static final String SPS_PDS = "pds";
+	
+	public static final String SPS_POS = "pos";
+	
+	public static final String SPS_M = "m";
+	
+	public static final String SPS_N = "n";
+	
+	public static final String SPS_DYN_WEIGHT = "dweight";
+
 	/** The configuration map. */
-	private HashMap<String, String> confMap;
+	private HashMap<String, Object> confMap;
 	
 	/** The algorithm type */
 	private AlgorithmType algType;
@@ -32,17 +59,17 @@ public abstract class AlgorithmConfiguration implements Cloneable {
 	 * Instantiates a new algorithm configuration.
 	 */
 	public AlgorithmConfiguration(AlgorithmType algType){
-		confMap = new HashMap<String, String>();
+		confMap = new HashMap<String, Object>();
 		this.algType = algType;
 	}
 	
-	private void setMap(HashMap<String, String> newMap){
+	private void setMap(HashMap<String, Object> newMap){
 		confMap = newMap;
 	}
 	
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		HashMap<String, String> newMap = new HashMap<String, String>();
+		HashMap<String, Object> newMap = new HashMap<String, Object>();
 		AlgorithmConfiguration newConf = null;
 		try {
 			newConf = getConfiguration(algType, this);
@@ -57,23 +84,10 @@ public abstract class AlgorithmConfiguration implements Cloneable {
 	}
 	
 	public static AlgorithmConfiguration getConfiguration(AlgorithmType algType, AlgorithmConfiguration oldConf) {
-		switch(algType){
-			case SPS:
-				return new SPSConfiguration();
-			case CONF:
-				return new ConfidenceConfiguration();
-			case HIST:
-				return new HistoricalConfiguration();
-			case INV:
-				return new InvariantConfiguration(((InvariantConfiguration)oldConf).getInvariant());
-			case PEA:
-				return new PearsonIndexConfiguration();
-			case RCC:
-				return new RemoteCallConfiguration();
-			case WER:
-				return new WesternElectricRulesConfiguration();
-		}
-		return null;
+		AlgorithmConfiguration conf = new AlgorithmConfiguration(algType);
+		if(algType.equals(AlgorithmType.INV))
+			conf.addRawItem("invariant", oldConf.getRawItem("invariant"));
+		return conf;
 	}
 
 	/**
@@ -87,13 +101,40 @@ public abstract class AlgorithmConfiguration implements Cloneable {
 	}
 	
 	/**
+	 * Adds a raw item.
+	 *
+	 * @param item the item tag
+	 * @param value the item value
+	 */
+	public void addRawItem(String item, Object value){
+		confMap.put(item, value);
+	}
+	
+	/**
 	 * Gets the item.
 	 *
 	 * @param tag the item tag
 	 * @return the item
 	 */
 	public String getItem(String tag){
-		return confMap.get(tag);
+		if(!confMap.containsKey(tag)){
+			if(!tag.equals("weight"))
+				AppLogger.logError(getClass(), "TagNotFound", "Unable to find tag '" + tag + "'");
+			return null;
+		} else return confMap.get(tag).toString();
+	}
+	
+	/**
+	 * Gets the raw item.
+	 *
+	 * @param tag the item tag
+	 * @return the item
+	 */
+	public Object getRawItem(String tag){
+		if(!confMap.containsKey(tag)){
+			AppLogger.logError(getClass(), "TagNotFound", "Unable to find tag '" + tag + "'");
+			return null;
+		} else return confMap.get(tag);
 	}
 	
 	/**
@@ -110,15 +151,8 @@ public abstract class AlgorithmConfiguration implements Cloneable {
 	 */
 	@Override
 	public String toString() {
-		return confMap.size() + " configuration parameters found";
+		return algType + ":[" + getSpecificItems() + "]";
 	}
-
-	/**
-	 * Gets the file header.
-	 *
-	 * @return the file header
-	 */
-	public abstract String getFileHeader();
 
 	/**
 	 * Converts to a file row.
@@ -126,6 +160,35 @@ public abstract class AlgorithmConfiguration implements Cloneable {
 	 * @param complete the complete flag, defines if the description is extended or not.
 	 * @return the file row string
 	 */
-	public abstract String toFileRow(boolean complete);	
+	public String toFileRow(boolean complete){
+		if(complete)
+			return getItem(WEIGHT) + ", " + getItem(SCORE) + ", " + getSpecificItems();
+		else return getSpecificItems();
+	}
+
+	private String getSpecificItems() {
+		String all = "";
+		for(String itemTag : confMap.keySet()){
+			if(!itemTag.equals(SCORE) && !itemTag.equals(WEIGHT)){
+				all = all + itemTag + "=" + getRawItem(itemTag).toString() + "&";
+			}
+		}
+		return all;
+	}	
+	
+	public static AlgorithmConfiguration buildConfiguration(AlgorithmType algType, String descRow){
+		String tag, value;
+		AlgorithmConfiguration conf = new AlgorithmConfiguration(algType);
+		for(String splitted : descRow.split("&")){
+			if(splitted.contains("=")){
+				tag = splitted.split("=")[0].trim();
+				value = splitted.split("=")[1].trim();
+				if(algType.equals(AlgorithmType.INV))
+					conf.addRawItem(tag, new Invariant(value));
+				else conf.addItem(tag, value);
+			}
+		}
+		return conf;
+	}
 	
 }

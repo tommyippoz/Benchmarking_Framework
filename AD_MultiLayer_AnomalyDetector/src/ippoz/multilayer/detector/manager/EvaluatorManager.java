@@ -6,16 +6,8 @@ package ippoz.multilayer.detector.manager;
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
 import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
 import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.commons.configuration.ConfidenceConfiguration;
-import ippoz.multilayer.detector.commons.configuration.HistoricalConfiguration;
-import ippoz.multilayer.detector.commons.configuration.InvariantConfiguration;
-import ippoz.multilayer.detector.commons.configuration.PearsonIndexConfiguration;
-import ippoz.multilayer.detector.commons.configuration.RemoteCallConfiguration;
-import ippoz.multilayer.detector.commons.configuration.SPSConfiguration;
-import ippoz.multilayer.detector.commons.configuration.WesternElectricRulesConfiguration;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
-import ippoz.multilayer.detector.commons.invariants.Invariant;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.commons.support.PreferencesManager;
@@ -212,52 +204,20 @@ public class EvaluatorManager extends ThreadScheduler {
 						if(readed.length() > 0 && readed.indexOf(",") != -1){
 							splitted = readed.split(",");
 							if(splitted.length > 3 && checkAnomalyTreshold(Double.valueOf(splitted[3]), voterList)){
+								conf = AlgorithmConfiguration.buildConfiguration(AlgorithmType.valueOf(splitted[1]), splitted[4]);
 								switch(AlgorithmType.valueOf(splitted[1])){
-									case HIST:
-										conf = new HistoricalConfiguration();
-										conf.addItem(HistoricalConfiguration.INTERVAL_WIDTH, splitted[4]);
-										seriesString = splitted[0];
-										break;
-									case WER:
-										conf = new WesternElectricRulesConfiguration();
-										conf.addItem(WesternElectricRulesConfiguration.WER_WEIGHT, splitted[4]);
-										seriesString = splitted[0];
-										break;
-									case SPS:
-										conf = new SPSConfiguration();
-										conf.addItem(SPSConfiguration.PDV, splitted[4]);
-										conf.addItem(SPSConfiguration.PDS, splitted[5]);
-										conf.addItem(SPSConfiguration.POV, splitted[6]);
-										conf.addItem(SPSConfiguration.POS, splitted[7]);
-										conf.addItem(SPSConfiguration.M, splitted[8]);
-										conf.addItem(SPSConfiguration.N, splitted[9]);
-										conf.addItem(SPSConfiguration.DYN_WEIGHT, splitted[10]);
-										seriesString = splitted[0];
-										break;
-									case CONF:
-										conf = new ConfidenceConfiguration();
-										conf.addItem(ConfidenceConfiguration.ALPHA, splitted[4]);
-										seriesString = splitted[0];
-										break;
 									case RCC:
-										conf = new RemoteCallConfiguration();
-										conf.addItem(RemoteCallConfiguration.RCC_WEIGHT, splitted[4]);
-										seriesString = null;
-										break;
 									case INV:
-										conf = new InvariantConfiguration(new Invariant(splitted[4]));
-										seriesString = null;
-										break;
 									case PEA:
-										conf = new PearsonIndexConfiguration();
-										conf.addItem(PearsonIndexConfiguration.PI_WINDOW, splitted[4]);
-										conf.addItem(PearsonIndexConfiguration.PI_TOLERANCE, splitted[5]);
-										conf.addItem(PearsonIndexConfiguration.PI_DETAIL, splitted[6]);
 										seriesString = null;
 										break;
+									case HIST:
+									case WER:
+									case SPS:
+									case CONF:
 									default:
-										conf = null;
-										seriesString = null;
+										seriesString = splitted[0];
+										break;
 								}
 								if(conf != null){
 									conf.addItem(AlgorithmConfiguration.WEIGHT, splitted[2]);

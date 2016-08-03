@@ -134,6 +134,19 @@ public class DetectionManager {
 	}
 	
 	/**
+	 * Check premises for the execution, such as MySQL server status.
+	 *
+	 * @return true, if premises are satisfied
+	 */
+	public boolean checkPremises(){
+		if(!AppUtility.isServerUp(3306)){
+			AppLogger.logError(getClass(), "MySQLException", "MySQL is not running. Please activate it");
+			return false;
+		}
+		return true;
+	}
+	
+	/**
 	 * Loads the validation metrics, used to score the final result.
 	 *
 	 * @return the list of metrics
