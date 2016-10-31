@@ -7,7 +7,6 @@ import ippoz.multilayer.commons.indicator.Indicator;
 import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
 import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.commons.configuration.InvariantConfiguration;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.failure.InjectedElement;
 import ippoz.multilayer.detector.commons.invariants.DataSeriesMember;
@@ -193,6 +192,13 @@ public class ExperimentData implements Cloneable {
 		return obsList.get(0).getIndicators();
 	}
 	
+	private MultipleSnapshot getMultipleSnapshot(int index, String textItem) {
+		LinkedList<DataSeries> sList = new LinkedList<DataSeries>();
+		sList.add(DataSeries.fromString(textItem.split(";")[0], true));
+		sList.add(DataSeries.fromString(textItem.split(";")[1], true));
+		return new MultipleSnapshot(obsList.get(index), callList, snapList.get(index).getInjectedElement(), ssList, sList.toArray(new DataSeries[sList.size()]));
+	}
+	
 	private MultipleSnapshot getMultipleSnapshot(int index, Invariant inv) {
 		LinkedList<DataSeries> sList = new LinkedList<DataSeries>();
 		if(inv.getFirstMember() instanceof DataSeriesMember)
@@ -224,11 +230,23 @@ public class ExperimentData implements Cloneable {
 			case RCC:
 				return getSnapshot(index);
 			case INV:
-				inv = ((InvariantConfiguration)conf).getInvariant();
+				inv = (Invariant)conf.getRawItem(AlgorithmConfiguration.INVARIANT);
 				return getMultipleSnapshot(index, inv);
+			case PEA:
+				return getMultipleSnapshot(index, conf.getItem(AlgorithmConfiguration.PEARSON_DETAIL));
 			default:
 				return getDataSeriesSnapshot(dataSeries, index);
 		}
+	}
+	
+	
+
+	public double[] getDataSeriesValue(DataSeries ds){
+		double[] outList = new double[obsList.size()];
+		for(int i=0;i<obsList.size();i++){
+			outList[i] = ds.getSeriesValue(obsList.get(i));
+		}
+		return outList;
 	}
 	
 }

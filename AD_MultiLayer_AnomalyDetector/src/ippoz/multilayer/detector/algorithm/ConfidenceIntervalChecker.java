@@ -4,7 +4,6 @@
 package ippoz.multilayer.detector.algorithm;
 
 import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.commons.configuration.ConfidenceConfiguration;
 import ippoz.multilayer.detector.commons.data.DataSeriesSnapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.service.ServiceCall;
@@ -95,7 +94,7 @@ public class ConfidenceIntervalChecker extends DataSeriesDetectionAlgorithm {
 	 * @return the alpha
 	 */
 	private double getAlpha(){
-		return ((ConfidenceConfiguration)conf).getAlpha();
+		return Double.valueOf(conf.getItem(AlgorithmConfiguration.CONFIDENCE_ALPHA));
 	}
 
 	/* (non-Javadoc)

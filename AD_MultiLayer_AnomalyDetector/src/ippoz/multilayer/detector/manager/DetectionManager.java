@@ -6,11 +6,7 @@ package ippoz.multilayer.detector.manager;
 import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
 import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.commons.configuration.ConfidenceConfiguration;
-import ippoz.multilayer.detector.commons.configuration.HistoricalConfiguration;
-import ippoz.multilayer.detector.commons.configuration.RemoteCallConfiguration;
-import ippoz.multilayer.detector.commons.configuration.SPSConfiguration;
-import ippoz.multilayer.detector.commons.configuration.WesternElectricRulesConfiguration;
+import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.commons.support.PreferencesManager;
@@ -30,8 +26,11 @@ import ippoz.multilayer.detector.reputation.MetricReputation;
 import ippoz.multilayer.detector.reputation.Reputation;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -135,6 +134,19 @@ public class DetectionManager {
 	}
 	
 	/**
+	 * Check premises for the execution, such as MySQL server status.
+	 *
+	 * @return true, if premises are satisfied
+	 */
+	public boolean checkPremises(){
+		if(!AppUtility.isServerUp(3306)){
+			AppLogger.logError(getClass(), "MySQLException", "MySQL is not running. Please activate it");
+			return false;
+		}
+		return true;
+	}
+	
+	/**
 	 * Loads the validation metrics, used to score the final result.
 	 *
 	 * @return the list of metrics
@@ -185,13 +197,88 @@ public class DetectionManager {
 	 */
 	public void evaluate(){
 		EvaluatorManager eManager;
+		Metric[] metList = loadValidationMetrics();
+		HashMap<String, Integer> nVoters = new HashMap<String, Integer>();
+		LinkedList<ExperimentData> expList = new LoaderManager(readRunIds(VALIDATION_RUN_PREFERENCE), "validation", pManager, prefManager.getPreference(DB_USERNAME), prefManager.getPreference(DB_PASSWORD)).fetch();
+		HashMap<String, HashMap<String, LinkedList<HashMap<Metric, Double>>>> evaluations = new HashMap<String, HashMap<String,LinkedList<HashMap<Metric,Double>>>>();
 		try {
-			eManager = new EvaluatorManager(prefManager, pManager, new LoaderManager(readRunIds(VALIDATION_RUN_PREFERENCE), "validation", pManager, prefManager.getPreference(DB_USERNAME), prefManager.getPreference(DB_PASSWORD)).fetch(), loadValidationMetrics(), detectionManager.getPreference(DM_ANOMALY_TRESHOLD), Double.parseDouble(detectionManager.getPreference(DM_CONVERGENCE_TIME)), Double.parseDouble(detectionManager.getPreference(DM_SCORE_TRESHOLD)));
-			eManager.detectAnomalies();
-			eManager.flush();
+			pManager.setupExpTimings(new File(prefManager.getPreference(OUTPUT_FOLDER) + "/expTimings.csv"));
+			for(String voterTreshold : parseVoterTresholds()){
+				evaluations.put(voterTreshold.trim(), new HashMap<String, LinkedList<HashMap<Metric,Double>>>());
+				for(String anomalyTreshold : parseAnomalyTresholds()){
+					eManager = new EvaluatorManager(prefManager, pManager, expList, metList, anomalyTreshold.trim(), Double.parseDouble(detectionManager.getPreference(DM_CONVERGENCE_TIME)), voterTreshold.trim());
+					if(eManager.detectAnomalies()) {
+						evaluations.get(voterTreshold.trim()).put(anomalyTreshold.trim(), eManager.getMetricsEvaluations());
+						eManager.printTimings(prefManager.getPreference(OUTPUT_FOLDER) + "/expTimings.csv");
+					}
+					nVoters.put(voterTreshold.trim(), eManager.getCheckersNumber());
+					eManager.flush();
+				}
+			}
+			summarizeEvaluations(evaluations, metList, parseAnomalyTresholds(), nVoters);
 		} catch(Exception ex){
 			AppLogger.logException(getClass(), ex, "Unable to evaluate detector");
 		}
+	}
+	
+	private void summarizeEvaluations(HashMap<String, HashMap<String, LinkedList<HashMap<Metric, Double>>>> evaluations, Metric[] metList, String[] anomalyTresholds, HashMap<String, Integer> nVoters) {
+		BufferedWriter writer;
+		BufferedWriter compactWriter;
+		try {
+			compactWriter = new BufferedWriter(new FileWriter(new File(prefManager.getPreference(DetectionManager.OUTPUT_FOLDER) + "/tableSummary.csv")));
+			writer = new BufferedWriter(new FileWriter(new File(prefManager.getPreference(DetectionManager.OUTPUT_FOLDER) + "/summary.csv")));
+			compactWriter.write("selection_strategy,checkers,");
+			for(String anomalyTreshold : anomalyTresholds){
+				compactWriter.write(anomalyTreshold + ",");
+			}
+			compactWriter.write("\n");
+			writer.write("voter,anomaly,");
+			for(Metric met : metList){
+				writer.write(met.getMetricName() + ",");
+			}
+			writer.write("\n");
+			for(String voterTreshold : evaluations.keySet()){
+				compactWriter.write(voterTreshold + "," + nVoters.get(voterTreshold.trim()) + ",");
+				for(String anomalyTreshold : anomalyTresholds){
+					writer.write(voterTreshold + "," + anomalyTreshold.trim() + ",");
+					for(Metric met : metList){
+						if(met.equals(metric))
+							compactWriter.write(getAverageMetricValue(evaluations.get(voterTreshold).get(anomalyTreshold.trim()), met) + ",");
+						writer.write(getAverageMetricValue(evaluations.get(voterTreshold).get(anomalyTreshold.trim()), met) + ",");
+					}
+					writer.write("\n");
+				}
+				compactWriter.write("\n");
+			}
+			compactWriter.close();
+			writer.close();
+		} catch(IOException ex){
+			AppLogger.logException(getClass(), ex, "Unable to write summary files");
+		}
+	}
+
+	private String getAverageMetricValue(LinkedList<HashMap<Metric, Double>> list, Metric met) {
+		LinkedList<Double> dataList = new LinkedList<Double>();
+		if(list != null){
+			for(HashMap<Metric, Double> map : list){
+				dataList.add(map.get(met));
+			}
+			return String.valueOf(AppUtility.calcAvg(dataList));
+		} else return String.valueOf(Double.NaN);
+	}
+
+	private String[] parseAnomalyTresholds() {
+		String prefString = detectionManager.getPreference(DM_ANOMALY_TRESHOLD);
+		if(prefString.contains(","))
+			return prefString.split(",");
+		else return new String[]{prefString};
+	}
+
+	private String[] parseVoterTresholds(){
+		String prefString = detectionManager.getPreference(DM_SCORE_TRESHOLD);
+		if(prefString.contains(","))
+			return prefString.split(",");
+		else return new String[]{prefString};
 	}
 	
 	/**
@@ -259,7 +346,7 @@ public class DetectionManager {
 	 *
 	 * @return the map of the configurations
 	 */
-	private HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> loadConfigurations() {
+	/*private HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> loadConfigurations() {
 		File confFile = new File(prefManager.getPreference(DetectionManager.CONF_FILE_FOLDER) + "conf.csv");
 		HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> confList = new HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>>();
 		AlgorithmConfiguration alConf;
@@ -282,17 +369,7 @@ public class DetectionManager {
 									header = readed.split(",");
 								} else {
 									i = 0;
-									if(readed.split(",")[0].toUpperCase().equals("SPS")){
-										alConf = new SPSConfiguration();	
-									} else if(readed.split(",")[0].toUpperCase().equals("HIST")){
-										alConf = new HistoricalConfiguration();
-									} else if(readed.split(",")[0].toUpperCase().equals("CONF")){
-										alConf = new ConfidenceConfiguration();
-									} else if(readed.split(",")[0].toUpperCase().equals("RCC")){
-										alConf = new RemoteCallConfiguration();
-									} else if(readed.split(",")[0].toUpperCase().equals("WER")){
-										alConf = new WesternElectricRulesConfiguration();
-									} else alConf = null;
+									alConf = AlgorithmConfiguration.getConfiguration(AlgorithmType.valueOf(readed.split(",")[0].toUpperCase()), null);
 									for(String element : readed.split(",")){
 										if(i > 0)
 											alConf.addItem(header[i], element);
@@ -308,6 +385,55 @@ public class DetectionManager {
 				}
 				reader.close();
 			} 
+		} catch(Exception ex){
+			AppLogger.logException(getClass(), ex, "Unable to read configurations");
+		}
+		return confList;
+	}*/
+	
+	/**
+	 * Loads the possible configurations for all the algorithms.
+	 *
+	 * @return the map of the configurations
+	 */
+	private HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> loadConfigurations() {
+		File confFolder = new File(prefManager.getPreference(DetectionManager.CONF_FILE_FOLDER));
+		HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> confList = new HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>>();
+		AlgorithmConfiguration alConf;
+		AlgorithmType algType;
+		BufferedReader reader;
+		String[] header;
+		String readed;
+		int i;
+		try {
+			for(File confFile : confFolder.listFiles()){
+				if(confFile.exists() && confFile.getName().endsWith(".conf")){
+					algType = AlgorithmType.valueOf(confFile.getName().substring(0,  confFile.getName().indexOf(".")));
+					reader = new BufferedReader(new FileReader(confFile));
+					readed = reader.readLine();
+					if(readed != null){
+						header = readed.split(",");
+						while(reader.ready()){
+							readed = reader.readLine();
+							if(readed != null){
+								readed = readed.trim();
+								if(readed.length() > 0){
+									i = 0;
+									alConf = AlgorithmConfiguration.getConfiguration(algType, null);
+									for(String element : readed.split(",")){
+										alConf.addItem(header[i++], element);
+									}
+									if(confList.get(algType) == null)
+										confList.put(algType, new LinkedList<AlgorithmConfiguration>());
+									confList.get(algType).add(alConf);
+								}
+							}
+						}
+						AppLogger.logInfo(getClass(), "Found " + confList.get(algType).size() + " configuration for " + algType + " algorithm");
+					}
+					reader.close();
+				} 
+			}
 		} catch(Exception ex){
 			AppLogger.logException(getClass(), ex, "Unable to read configurations");
 		}
@@ -418,13 +544,6 @@ public class DetectionManager {
 	 */
 	public boolean needTest(){
 		return !prefManager.getPreference(TRAIN_NEEDED_FLAG).equals("0");
-	}
-
-	/**
-	 * Prints the timings details.
-	 */
-	public void printDetails() {
-		pManager.printTimings(prefManager.getPreference(DetectionManager.SCORES_FILE_FOLDER) + "performanceScores.csv");
 	}
 	
 }

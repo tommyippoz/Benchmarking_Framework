@@ -25,7 +25,7 @@ import java.util.LinkedList;
  *
  * @author Tommy
  */
-public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrainer> {
+public abstract class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrainer> {
 	
 	/** The algorithm tag. */
 	private AlgorithmType algTag;	
@@ -38,9 +38,6 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	
 	/** The used reputation metric. */
 	private Reputation reputation;
-	
-	/** The possible configurations. */
-	private HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> configurations;
 	
 	/** The experiments' list. */
 	private LinkedList<ExperimentData> expList;
@@ -57,8 +54,6 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	/** Flag that indicates if the trained algorithm retrieves different values (e.g., not always true / false). */
 	private boolean sameResultFlag;
 	
-	private HashMap<String, LinkedList<Snapshot>> algExpSnapshots;
-	
 	/**
 	 * Instantiates a new algorithm trainer.
 	 *
@@ -68,46 +63,27 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	 * @param metric the used metric
 	 * @param reputation the used reputation metric
 	 * @param trainData the considered train data
-	 * @param configurations the possible configurations
 	 */
-	public AlgorithmTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData, HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> configurations) {
-		this.algTag = algTag;
-		this.dataSeries = dataSeries;
-		this.metric = metric;
-		this.reputation = reputation;
-		this.configurations = configurations;
-		expList = deepClone(trainData);
-		algExpSnapshots = loadAlgExpSnapshots();
-	}
-	
-		/**
-	 * Instantiates a new algorithm trainer.
-	 *
-	 * @param algTag the algorithm tag
-	 * @param indicator the involved indicator
-	 * @param categoryTag the data category tag
-	 * @param metric the used metric
-	 * @param reputation the used reputation metric
-	 * @param trainData the considered train data
-	 * @param configurations the possible configurations
-	 */
-	public AlgorithmTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData, AlgorithmConfiguration configuration) {
+	public AlgorithmTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData) {
 		this.algTag = algTag;
 		this.dataSeries = dataSeries;
 		this.metric = metric;
 		this.reputation = reputation;
 		expList = deepClone(trainData);
-		configurations = new HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>>();
-		configurations.put(algTag, new LinkedList<AlgorithmConfiguration>());
-		configurations.get(algTag).add(configuration);
-		bestConf = configuration;
-		algExpSnapshots = loadAlgExpSnapshots();
 	}
 	
 	private HashMap<String, LinkedList<Snapshot>> loadAlgExpSnapshots() {
+		AlgorithmConfiguration refConf = null;
+		if(bestConf != null)
+			refConf = bestConf;
+		else {
+			// TODO
+			// refConf = configurations.getFirst();
+		}
 		HashMap<String, LinkedList<Snapshot>> expAlgMap = new HashMap<String, LinkedList<Snapshot>>();
 		for(ExperimentData expData : expList){
-			expAlgMap.put(expData.getName(), expData.buildSnapshotsFor(algTag, dataSeries, bestConf));
+			//System.out.println(expData.getName());
+			expAlgMap.put(expData.getName(), expData.buildSnapshotsFor(algTag, dataSeries, refConf));
 		}
 		return expAlgMap;
 	}
@@ -139,39 +115,28 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	 */
 	@Override
 	public void run() {
-		Double bestMetricValue = Double.NaN;
-		Double currentMetricValue;
-		LinkedList<Double> metricResults;
-		DetectionAlgorithm algorithm;
-		for(AlgorithmConfiguration conf : configurations.get(algTag)){
-			metricResults = new LinkedList<Double>();
-			algorithm = DetectionAlgorithm.buildAlgorithm(dataSeries, conf);
-			for(ExperimentData expData : expList){
-				metricResults.add(metric.evaluateMetric(algorithm, algExpSnapshots.get(expData.getName()))[0]);
-			}
-			currentMetricValue = AppUtility.calcAvg(metricResults.toArray(new Double[metricResults.size()]));
-			if(bestMetricValue.isNaN() || metric.compareResults(currentMetricValue, bestMetricValue) == 1){
-				bestMetricValue = currentMetricValue;
-				bestConf = conf;
-			}
-		}
-		metricScore = evaluateMetricScore(expList);
-		reputationScore = evaluateReputationScore(expList);
-		bestConf.addItem(AlgorithmConfiguration.WEIGHT, String.valueOf(reputationScore));
-		bestConf.addItem(AlgorithmConfiguration.SCORE, String.valueOf(metricScore));
+		HashMap<String, LinkedList<Snapshot>> algExpSnapshots = loadAlgExpSnapshots();
+		bestConf = lookForBestConfiguration(algExpSnapshots);
+		metricScore = evaluateMetricScore(getExpList(), algExpSnapshots);
+		reputationScore = evaluateReputationScore(getExpList(), algExpSnapshots);
+		bestConf.addItem(AlgorithmConfiguration.WEIGHT, String.valueOf(getReputationScore()));
+		bestConf.addItem(AlgorithmConfiguration.SCORE, String.valueOf(getMetricScore()));
 	}
+	
+	protected abstract AlgorithmConfiguration lookForBestConfiguration(HashMap<String, LinkedList<Snapshot>> algExpSnapshots);
 
 	/**
 	 * Evaluates metric score on a specified set of experiments.
 	 *
 	 * @param trainData the train data
+	 * @param algExpSnapshots 
 	 * @return the metric score
 	 */
-	private double evaluateMetricScore(LinkedList<ExperimentData> trainData){
+	private double evaluateMetricScore(LinkedList<ExperimentData> trainData, HashMap<String, LinkedList<Snapshot>> algExpSnapshots){
 		double[] metricEvaluation = null;
 		LinkedList<Double> metricResults = new LinkedList<Double>();
 		LinkedList<Double> algResults = new LinkedList<Double>();
-		DetectionAlgorithm algorithm = DetectionAlgorithm.buildAlgorithm(dataSeries, bestConf);
+		DetectionAlgorithm algorithm = DetectionAlgorithm.buildAlgorithm(getAlgType(), dataSeries, bestConf);
 		for(ExperimentData expData : trainData){
 			metricEvaluation = metric.evaluateMetric(algorithm, algExpSnapshots.get(expData.getName()));
 			metricResults.add(metricEvaluation[0]);
@@ -187,13 +152,29 @@ public class AlgorithmTrainer extends Thread implements Comparable<AlgorithmTrai
 	 * @param trainData the train data
 	 * @return the reputation score
 	 */
-	private double evaluateReputationScore(LinkedList<ExperimentData> trainData){
+	private double evaluateReputationScore(LinkedList<ExperimentData> trainData, HashMap<String, LinkedList<Snapshot>> algExpSnapshots){
 		LinkedList<Double> reputationResults = new LinkedList<Double>();
-		DetectionAlgorithm algorithm = DetectionAlgorithm.buildAlgorithm(dataSeries, bestConf);
+		DetectionAlgorithm algorithm = DetectionAlgorithm.buildAlgorithm(getAlgType(), dataSeries, bestConf);
 		for(ExperimentData expData : trainData){
 			reputationResults.add(reputation.evaluateReputation(algorithm, algExpSnapshots.get(expData.getName())));
 		}
 		return AppUtility.calcAvg(reputationResults.toArray(new Double[reputationResults.size()]));
+	}
+
+	public DataSeries getDataSeries() {
+		return dataSeries;
+	}
+
+	public Metric getMetric() {
+		return metric;
+	}
+
+	public Reputation getReputation() {
+		return reputation;
+	}
+
+	public LinkedList<ExperimentData> getExpList() {
+		return expList;
 	}
 
 	/**

@@ -4,7 +4,6 @@
 package ippoz.multilayer.detector.algorithm;
 
 import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.commons.configuration.InvariantConfiguration;
 import ippoz.multilayer.detector.commons.data.MultipleSnapshot;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
@@ -20,8 +19,11 @@ public class InvariantChecker extends DetectionAlgorithm {
 
 	public InvariantChecker(AlgorithmConfiguration conf) {
 		super(conf);
-		if(conf instanceof InvariantConfiguration)
-			invariant = ((InvariantConfiguration)conf).getInvariant();
+		invariant = (Invariant)conf.getRawItem(AlgorithmConfiguration.INVARIANT);
+	}
+
+	public Invariant getInvariant() {
+		return invariant;
 	}
 
 	@Override

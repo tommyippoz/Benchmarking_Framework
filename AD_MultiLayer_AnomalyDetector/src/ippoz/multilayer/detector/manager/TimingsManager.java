@@ -3,10 +3,12 @@
  */
 package ippoz.multilayer.detector.manager;
 
+import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -73,6 +75,8 @@ public class TimingsManager {
 	
 	/**
 	 * Instantiates a new performance manager.
+	 * @param anomalyTreshold 
+	 * @param voterTreshold 
 	 */
 	public TimingsManager(){
 		timingMap = new HashMap<String, Object>();
@@ -103,18 +107,49 @@ public class TimingsManager {
 	 *
 	 * @param filename the filename
 	 */
-	public void printTimings(String filename){
+	public void printTimings(String outFolder){
+		printGeneralTimings(new File(outFolder + "/generalTimings.preferences"));
+	}
+	
+	private void printGeneralTimings(File gtFile){
 		BufferedWriter writer;
 		try {
-			writer = new BufferedWriter(new FileWriter(new File(filename)));
-			writer.write("performance_metric,value\n");
-			for(String label : timingMap.keySet()){
-				writer.write(label + "," + timingMap.get(label) + "\n");
+			writer = new BufferedWriter(new FileWriter(gtFile));
+			for(String key : timingMap.keySet()){
+				writer.write(key + " = " + timingMap.get(key) + "\n");
 			}
 			writer.close();
-		} catch(IOException ex){
-			AppLogger.logException(getClass(), ex, "Unable to write scores");
+		} catch (FileNotFoundException ex) {
+			AppLogger.logException(getClass(), ex, "Unable to find results file");
+		} catch (IOException ex) {
+			AppLogger.logException(getClass(), ex, "Write error");
 		}
+	}
+	
+	public void setupExpTimings(File etFile){
+		BufferedWriter writer;
+		try {
+			writer = new BufferedWriter(new FileWriter(etFile));
+			writer.write(getExpFileHeader() + "\n");
+			writer.close();
+		} catch (FileNotFoundException ex) {
+			AppLogger.logException(getClass(), ex, "Unable to find results file");
+		} catch (IOException ex) {
+			AppLogger.logException(getClass(), ex, "Write error");
+		}
+	}
+	
+	@SuppressWarnings("unused")
+	private static String getExpFileHeader() {
+		String bigH = "checkers,,,treshold,,voting,,";
+		String smallH = "text,selected,all,text,value,avg,std,";
+		for(AlgorithmType at : AlgorithmType.values()){
+			bigH = bigH + at.toString() + ",,,";
+		}
+		for(AlgorithmType at : AlgorithmType.values()){
+			smallH = smallH + "checkers,avg_time,std_time,";
+		}
+		return bigH + "\n" + smallH;
 	}
 
 }

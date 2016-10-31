@@ -4,7 +4,6 @@
 package ippoz.multilayer.detector.algorithm;
 
 import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
-import ippoz.multilayer.detector.commons.configuration.SPSConfiguration;
 import ippoz.multilayer.detector.commons.data.DataSeriesSnapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.support.AppUtility;
@@ -195,13 +194,13 @@ public class SPSDetector extends DataSeriesDetectionAlgorithm {
 		 */
 		public SPSCalculator(){
 			observedValues = new LinkedList<SPSBlock>();
-			pdv = Double.parseDouble(conf.getItem(SPSConfiguration.PDV));
-			pov = Double.parseDouble(conf.getItem(SPSConfiguration.POV));
-			pds = Double.parseDouble(conf.getItem(SPSConfiguration.PDS));
-			pos = Double.parseDouble(conf.getItem(SPSConfiguration.POS));
-			m = Double.parseDouble(conf.getItem(SPSConfiguration.M));
-			n = Double.parseDouble(conf.getItem(SPSConfiguration.N));
-			dynamicWeights = (Double.parseDouble(conf.getItem(SPSConfiguration.DYN_WEIGHT)) == 1.0);		
+			pdv = Double.parseDouble(conf.getItem(AlgorithmConfiguration.SPS_PDV));
+			pov = Double.parseDouble(conf.getItem(AlgorithmConfiguration.SPS_POV));
+			pds = Double.parseDouble(conf.getItem(AlgorithmConfiguration.SPS_PDS));
+			pos = Double.parseDouble(conf.getItem(AlgorithmConfiguration.SPS_POS));
+			m = Double.parseDouble(conf.getItem(AlgorithmConfiguration.SPS_M));
+			n = Double.parseDouble(conf.getItem(AlgorithmConfiguration.SPS_N));
+			dynamicWeights = (Double.parseDouble(conf.getItem(AlgorithmConfiguration.SPS_DYN_WEIGHT)) == 1.0);		
 		}
 		
 		/**

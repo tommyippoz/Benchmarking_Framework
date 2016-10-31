@@ -6,6 +6,7 @@ package ippoz.multilayer.detector.algorithm;
 import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
 import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.commons.data.Snapshot;
+import ippoz.multilayer.detector.commons.dataseries.ComplexDataSeries;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.service.StatPair;
 import ippoz.multilayer.detector.commons.support.AppLogger;
@@ -17,7 +18,7 @@ import ippoz.multilayer.detector.commons.support.AppLogger;
  */
 public abstract class DetectionAlgorithm {
 	
-	/** The conf. */
+	/** The configuration. */
 	protected AlgorithmConfiguration conf;
 	
 	/**
@@ -44,14 +45,12 @@ public abstract class DetectionAlgorithm {
 	/**
 	 * Builds a DetectionAlgorithm.
 	 *
-	 * @param algTag the algorithm tag
-	 * @param dataType the data type
-	 * @param indicator the indicator
+	 * @param dataSeries the data series
 	 * @param conf the configuration
 	 * @return the detection algorithm
 	 */
-	public static DetectionAlgorithm buildAlgorithm(DataSeries dataSeries, AlgorithmConfiguration conf) {
-		switch(conf.getAlgorithmType()){
+	public static DetectionAlgorithm buildAlgorithm(AlgorithmType algType, DataSeries dataSeries, AlgorithmConfiguration conf) {
+		switch(algType){
 			case SPS:
 				return new SPSDetector(dataSeries, conf);
 			case HIST:
@@ -64,9 +63,49 @@ public abstract class DetectionAlgorithm {
 				return new WesternElectricRulesChecker(dataSeries, conf);
 			case INV:
 				return new InvariantChecker(conf);
+			case PEA:
+				return new PearsonIndexChecker(conf);
 			default:
 				return null;
 		}
+	}
+	
+	/**
+	 * Builds a DetectionAlgorithm.
+	 *
+	 * @param dataSeries the data series
+	 * @param conf the configuration
+	 * @return the detection algorithm
+	 */
+	public static DetectionAlgorithm buildAlgorithm(DataSeries dataSeries, AlgorithmType algType, String[] splitted) {
+		AlgorithmConfiguration conf = new AlgorithmConfiguration(algType);
+		return buildAlgorithm(algType, dataSeries, conf);
+	}
+	
+	private boolean usesSimpleSeries(DataSeries container, DataSeries serie) {
+		if(container == null){
+			if(getAlgorithmType().equals(AlgorithmType.RCC))
+				return false;
+			else if(getAlgorithmType().equals(AlgorithmType.PEA))
+				return ((PearsonIndexChecker)this).getDs1().contains(serie) || ((PearsonIndexChecker)this).getDs2().contains(serie);
+			else if(getAlgorithmType().equals(AlgorithmType.INV))
+				return ((InvariantChecker)this).getInvariant().contains(serie);
+			else return false;
+		} else {
+			return container.contains(serie);
+		}
+	}
+	
+	public boolean usesSeries(DataSeries serie) {
+		boolean out = false;
+		if(serie != null) {
+			for(DataSeries ds : serie.listSubSeries()){
+				if(getDataSeries() instanceof ComplexDataSeries){
+					out = out || usesSimpleSeries(((ComplexDataSeries)getDataSeries()).getFirstOperand(), ds) || usesSimpleSeries(((ComplexDataSeries)getDataSeries()).getSecondOperand(), ds);
+				} else out = out || usesSimpleSeries(getDataSeries(), ds);		
+			}
+		}
+		return out;
 	}
 	
 	/**

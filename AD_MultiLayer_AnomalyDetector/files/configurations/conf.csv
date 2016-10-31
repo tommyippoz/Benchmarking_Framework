@@ -37,3 +37,11 @@ RCC,10.0
 
 type,wer_weight
 WER,1.0
+
+type,pi_window,pi_tolerance
+PEA,10,1.0
+PEA,10,2.0
+PEA,10,3.0
+PEA,20,1.0
+PEA,20,2.0
+PEA,20,3.0

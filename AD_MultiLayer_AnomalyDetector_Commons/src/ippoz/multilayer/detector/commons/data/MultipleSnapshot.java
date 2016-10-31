@@ -33,7 +33,14 @@ public class MultipleSnapshot extends Snapshot {
 	}
 	
 	public DataSeriesSnapshot getSnapshot(DataSeries dataSeries){
-		return dsMap.get(dataSeries);
+		DataSeriesSnapshot out = dsMap.get(dataSeries);
+		if(out == null){
+			for(DataSeries ds : dsMap.keySet()){
+				if(ds.toString().equals(dataSeries.toString()))
+					return dsMap.get(ds);
+			}
+		} else return out;
+		return null;
 	}
 
 }

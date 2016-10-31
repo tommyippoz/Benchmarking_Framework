@@ -42,7 +42,7 @@ public class Invariant {
 		if(AppUtility.isNumber(mString))
 			return new ConstantMember(Double.class, mString);
 		else {
-			return new DataSeriesMember(DataSeries.fromString(mString));
+			return new DataSeriesMember(DataSeries.fromString(mString, false));
 		}
 	}
 
@@ -80,6 +80,10 @@ public class Invariant {
 	@Override
 	public String toString() {
 		return firstMember.toString() + " " + operand + " " + secondMember.toString();
+	}
+
+	public boolean contains(DataSeries serie) {
+		return firstMember.contains(serie) || secondMember.contains(serie);
 	}		
 
 }

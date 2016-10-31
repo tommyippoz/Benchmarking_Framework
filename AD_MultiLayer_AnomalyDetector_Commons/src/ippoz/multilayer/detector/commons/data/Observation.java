@@ -83,7 +83,7 @@ public class Observation {
 	 */
 	public String getValue(String indicatorName, DataCategory categoryTag) {
 		for(Indicator ind : getIndicators()){
-			if(ind.getName().equals(indicatorName))
+			if(ind.getName().equals(indicatorName.trim()))
 				return getValue(ind, categoryTag);
 		}
 		AppLogger.logError(getClass(), "NoSuchIndicator", "Unable to find Indicator '" + indicatorName + "'");

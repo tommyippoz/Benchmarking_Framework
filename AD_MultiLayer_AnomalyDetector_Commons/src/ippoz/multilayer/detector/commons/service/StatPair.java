@@ -3,6 +3,10 @@
  */
 package ippoz.multilayer.detector.commons.service;
 
+import ippoz.multilayer.detector.commons.support.AppUtility;
+
+import java.util.LinkedList;
+
 /**
  * The Class StatPair.
  * Represents an (avg,std) pair for statistic storage purposes.
@@ -43,6 +47,11 @@ public class StatPair {
 		this.std = std;
 	}
 	
+	public StatPair(LinkedList<Double> pCalc) {
+		avg = AppUtility.calcAvg(pCalc);
+		std = AppUtility.calcStd(pCalc, avg);
+	}
+
 	/**
 	 * Gets the average.
 	 *

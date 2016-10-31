@@ -3,10 +3,13 @@
  */
 package ippoz.multilayer.detector.commons.support;
 
+import ippoz.multilayer.commons.support.AppLogger;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.Socket;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,18 +33,18 @@ public class AppUtility {
 			reader = new BufferedReader(new FileReader(prefFile));
 			while(reader.ready()){
 				readed = reader.readLine();
-				if(readed != null && readed.length() > 0) {
+				if(readed.length() > 0) {
 					if(readed.contains("=") && readed.split("=").length == 2){
 						tag = readed.split("=")[0];
 						value = readed.split("=")[1];
 						if(tags != null && tags.length > 0){
 							for(String current : tags){
 								if(current.toUpperCase().equals(tag.toUpperCase())){
-									map.put(tag, value);
+									map.put(tag.trim(), value.trim());
 									break;
 								}
 							}
-						} else map.put(tag, value);
+						} else map.put(tag.trim(), value.trim());
 					}
 				}
 			}
@@ -50,6 +53,21 @@ public class AppUtility {
 			AppLogger.logInfo(AppUtility.class, "Unexisting preference file: " + prefFile.getAbsolutePath());
 		}
 		return map;
+	}
+	
+	public static boolean isServerUp(int port) {
+	    return isServerUp("127.0.0.1", port);
+	}
+	
+	public static boolean isServerUp(String address, int port) {
+	    boolean isUp = false;
+	    try {
+	        Socket socket = new Socket(address, port);
+	        isUp = true;
+	        socket.close();
+	    }
+	    catch (IOException e) {}
+	    return isUp;
 	}
 	
 	public static String formatMillis(long dateMillis){
@@ -77,32 +95,44 @@ public class AppUtility {
 		}
 	}
 	
-	public static double calcAvg(Collection<Double> values) {
-		return calcAvg(values.toArray(new Double[values.size()]));
+	public static double readMillis(){
+		return (double)(1.0*System.nanoTime()/1000000.0);
 	}
 	
-	public static Double calcAvg(LinkedList<Integer> values){
+	public static Double calcAvg(Collection<? extends Number> values){
 		double mean = 0;
-		for(Integer d : values){
-			mean = mean + d;
-		}
-		return mean / values.size();
+		if(values != null && values.size() > 0) {
+			for(Number d : values){
+				if(d instanceof Long)
+					mean = mean + d.longValue();
+				else mean = mean + d.doubleValue();
+			}
+			return mean / values.size();
+		} else return 0.0;
 	}
 	
 	public static Double calcAvg(Double[] values){
+		int count = 0;
 		double mean = 0;
 		for(Double d : values){
-			mean = mean + d;
+			if(d != null){
+				mean = mean + d;
+				count++;
+			}
 		}
-		return mean / values.length;
+		return mean / count;
 	}
 	
 	public static Double calcStd(Double[] values, Double mean){
+		int count = 0;
 		double std = 0;
 		for(Double d : values){
-			std = std + Math.pow(d-mean, 2);
+			if(d != null){
+				std = std + Math.pow(d-mean, 2);
+				count++;
+			}
 		}
-		return std / values.length;
+		return std / count;
 	}
 	
 	public static double calcStd(Collection<Double> values, double mean) {
@@ -138,5 +168,7 @@ public class AppUtility {
 	public static TreeMap<Double, Double> convertMapSnapshots(TreeMap<Date, Double> resultMap) {
 		return convertMapTimestamps(resultMap.firstKey(), resultMap);
 	}
+
+	
 	
 }

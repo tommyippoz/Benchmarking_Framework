@@ -43,6 +43,21 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 	public DataCategory getDataCategory() {
 		return dataCategory;
 	}
+	
+	public LinkedList<DataSeries> listSubSeries(){
+		LinkedList<DataSeries> outList = new LinkedList<DataSeries>();
+		if(this instanceof ComplexDataSeries){
+			outList.addAll(((ComplexDataSeries)this).getFirstOperand().listSubSeries());
+			outList.addAll(((ComplexDataSeries)this).getSecondOperand().listSubSeries());
+		} else outList.add(this); 
+		return outList;
+	}
+	
+	public boolean contains(DataSeries other){
+		if(this instanceof ComplexDataSeries)
+			return ((ComplexDataSeries)this).getFirstOperand().contains(other) || ((ComplexDataSeries)this).getSecondOperand().contains(other);
+		else return compareTo(other) == 0;
+	}
 
 	@Override
 	public int compareTo(DataSeries other) {
@@ -81,15 +96,18 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 		return null;
 	}
 	
-	public static DataSeries fromString(String stringValue) {
+	public static DataSeries fromString(String stringValue, boolean show) {
 		try {
-			String layer = stringValue.substring(stringValue.lastIndexOf("#")+1);
-			String partial = stringValue.substring(0, stringValue.indexOf(layer)-1);
-			String dataType = partial.substring(partial.lastIndexOf("#")+1);
-			String dataSeries = stringValue.substring(0, partial.lastIndexOf("#"));
-			return fromStrings(dataSeries, DataCategory.valueOf(dataType), LayerType.valueOf(layer));
+			if(stringValue != null && stringValue.length() > 0){
+				String layer = stringValue.substring(stringValue.lastIndexOf("#")+1);
+				String partial = stringValue.substring(0, stringValue.indexOf(layer)-1);
+				String dataType = partial.substring(partial.lastIndexOf("#")+1);
+				String dataSeries = stringValue.substring(0, partial.lastIndexOf("#"));
+				return fromStrings(dataSeries, DataCategory.valueOf(dataType), LayerType.valueOf(layer));
+			}
 		} catch(Exception ex){
-			AppLogger.logError(DataSeries.class, "ParseError", "Unable to parse '" + stringValue + "' dataseries");
+			if(show)
+				AppLogger.logError(DataSeries.class, "ParseError", "Unable to parse '" + stringValue + "' dataseries");
 		}
 		return null;
 	}
@@ -97,13 +115,13 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 	public static DataSeries fromStrings(String seriesName, DataCategory dataType, LayerType layerType) {
 		if(layerType.equals(LayerType.COMPOSITION)){
 			if(seriesName.contains(")*(")){
-				return new ProductDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")*(")).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")*(")+3, seriesName.length()-1).trim()), dataType);
-			} else if(seriesName.contains("/")){
-				return new FractionDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")/(")).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")/(")+3, seriesName.length()-1).trim()), dataType);
-			} else if(seriesName.contains("+")){
-				return new SumDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")+(")).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")+(")+3, seriesName.length()-1).trim()), dataType);
-			} else if(seriesName.contains("-")){
-				return new DiffDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")-(")).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")-(")+3, seriesName.length()-1).trim()), dataType);
+				return new ProductDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")*(")).trim(), true), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")*(")+3, seriesName.length()-1).trim(), true), dataType);
+			} else if(seriesName.contains(")/(")){
+				return new FractionDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")/(")).trim(), true), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")/(")+3, seriesName.length()-1).trim(), true), dataType);
+			} else if(seriesName.contains(")+(")){
+				return new SumDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")+(")).trim(), true), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")+(")+3, seriesName.length()-1).trim(), true), dataType);
+			} else if(seriesName.contains(")-(")){
+				return new DiffDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")-(")).trim(), true), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")-(")+3, seriesName.length()-1).trim(), true), dataType);
 			} else return null;
 		} else return new IndicatorDataSeries(new Indicator(seriesName, layerType, Double.class), dataType);
 	}
@@ -122,6 +140,8 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 			firstDS = DataSeries.fromList(simpleInd, firstString);
 			secondDS = DataSeries.fromList(simpleInd, possibleCouples.get(firstString));
 			for(DataCategory dCat : dataTypes){
+				complexInd.add(new SumDataSeries(firstDS, secondDS, dCat));
+				complexInd.add(new DiffDataSeries(firstDS, secondDS, dCat));
 				complexInd.add(new FractionDataSeries(firstDS, secondDS, dCat));
 			}
 		}
@@ -142,6 +162,8 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 		for(DataSeries firstDS : simpleInd){
 			for(DataSeries secondDS : simpleInd){
 				for(DataCategory dCat : dataTypes){
+					complexInd.add(new SumDataSeries(firstDS, secondDS, dCat));
+					complexInd.add(new DiffDataSeries(firstDS, secondDS, dCat));
 					complexInd.add(new FractionDataSeries(firstDS, secondDS, dCat));
 				}
 			}
