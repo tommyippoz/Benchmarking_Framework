@@ -12,6 +12,7 @@ import ippoz.multilayer.detector.commons.invariants.Invariant;
 import ippoz.multilayer.detector.metric.Metric;
 import ippoz.multilayer.detector.reputation.Reputation;
 import ippoz.multilayer.detector.trainer.AlgorithmTrainer;
+import ippoz.multilayer.detector.trainer.FixedConfigurationTrainer;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -73,7 +74,7 @@ public class InvariantManager {
 				for(String operand : invariantOperandList){
 					conf = new AlgorithmConfiguration(AlgorithmType.INV);
 					conf.addRawItem(AlgorithmConfiguration.INVARIANT, new Invariant(new DataSeriesMember(firstDS), new DataSeriesMember(secondDS), operand));
-					allInv.add(new AlgorithmTrainer(AlgorithmType.INV, null, metric, reputation, expList, conf));
+					allInv.add(new FixedConfigurationTrainer(AlgorithmType.INV, null, metric, reputation, expList, conf));
 				}
 			}			
 		}
@@ -90,7 +91,7 @@ public class InvariantManager {
 			for(String operand : invariantOperandList){
 				conf = new AlgorithmConfiguration(AlgorithmType.INV);
 				conf.addRawItem(AlgorithmConfiguration.INVARIANT, new Invariant(new DataSeriesMember(firstDS), new DataSeriesMember(secondDS), operand));
-				allInv.add(new AlgorithmTrainer(AlgorithmType.INV, null, metric, reputation, expList, conf));
+				allInv.add(new FixedConfigurationTrainer(AlgorithmType.INV, null, metric, reputation, expList, conf));
 			}
 		}
 		return allInv;

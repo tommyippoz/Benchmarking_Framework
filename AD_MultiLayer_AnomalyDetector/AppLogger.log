@@ -1,2 +1,2 @@
-Aug 03, 2016 12:52:48 PM ippoz.multilayer.commons.support.AppLogger log
-SEVERE: [Error][TagNotFound@ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration] Unable to find tag 'weight'
+Oct 31, 2016 1:20:16 PM ippoz.multilayer.commons.support.AppLogger log
+SEVERE: [Error][TagNotFound@ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration] Unable to find tag 'pdv'

@@ -13,6 +13,7 @@ import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.metric.Metric;
 import ippoz.multilayer.detector.reputation.Reputation;
 import ippoz.multilayer.detector.trainer.AlgorithmTrainer;
+import ippoz.multilayer.detector.trainer.ConfigurationSelectorTrainer;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -120,7 +121,7 @@ public class PearsonCombinationManager {
 	public LinkedList<AlgorithmTrainer> getTrainers(Metric metric, Reputation reputation, HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> confList) {
 		LinkedList<AlgorithmTrainer> trainerList = new LinkedList<AlgorithmTrainer>();
 		for(PearsonResult pr : pResults){
-			trainerList.add(new AlgorithmTrainer(AlgorithmType.PEA, null, metric, reputation, expList, adaptConf(confList, pr)));
+			trainerList.add(new ConfigurationSelectorTrainer(AlgorithmType.PEA, null, metric, reputation, expList, adaptConf(confList, pr).get(AlgorithmType.PEA)));
 		}
 		return trainerList;
 	}

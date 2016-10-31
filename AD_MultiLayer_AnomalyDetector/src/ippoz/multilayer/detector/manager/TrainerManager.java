@@ -14,6 +14,9 @@ import ippoz.multilayer.detector.commons.support.ThreadScheduler;
 import ippoz.multilayer.detector.metric.Metric;
 import ippoz.multilayer.detector.reputation.Reputation;
 import ippoz.multilayer.detector.trainer.AlgorithmTrainer;
+import ippoz.multilayer.detector.trainer.ConfigurationFinderTrainer;
+import ippoz.multilayer.detector.trainer.ConfigurationSelectorTrainer;
+import ippoz.multilayer.detector.trainer.FixedConfigurationTrainer;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -164,28 +167,38 @@ public class TrainerManager extends ThreadScheduler {
 		AppLogger.logInfo(getClass(), "Train Started");
 		LinkedList<AlgorithmTrainer> trainerList = new LinkedList<AlgorithmTrainer>();
 		for(AlgorithmType algType : algTypes){
-			switch(algType){
-				case RCC:
-					trainerList.add(new AlgorithmTrainer(algType, null, metric, reputation, expList, confList));
-					break;
-				case INV:
-					iManager = new InvariantManager(seriesList, expList, metric, reputation, readPossibleIndCombinations());
-					trainerList.addAll(iManager.getInvariants(prefManager.getPreference(DetectionManager.INV_DOMAIN).equals("ALL")));
-					break;
-				case PEA:
-					PearsonCombinationManager pcManager;
-					File pearsonFile = new File(prefManager.getPreference(DetectionManager.SETUP_FILE_FOLDER) + "pearsonCombinations.csv");
-					pcManager = new PearsonCombinationManager(pearsonFile, seriesList, expList);
-					pcManager.calculatePearsonIndexes();
-					trainerList.addAll(pcManager.getTrainers(metric, reputation, confList));
-					pcManager.flush();
-					break;
-				default:
-					for(DataSeries dataSeries : seriesList){
-						trainerList.add(new AlgorithmTrainer(algType, dataSeries, metric, reputation, expList, confList));
-					}
-					break;
-			}
+			if(confList.get(algType) != null){
+				switch(algType){
+					case RCC:
+						trainerList.add(new FixedConfigurationTrainer(algType, null, metric, reputation, expList, confList.get(algType).getFirst()));
+						break;
+					case PEA:
+						PearsonCombinationManager pcManager;
+						File pearsonFile = new File(prefManager.getPreference(DetectionManager.SETUP_FILE_FOLDER) + "pearsonCombinations.csv");
+						pcManager = new PearsonCombinationManager(pearsonFile, seriesList, expList);
+						pcManager.calculatePearsonIndexes();
+						trainerList.addAll(pcManager.getTrainers(metric, reputation, confList));
+						pcManager.flush();
+						break;
+					default:
+						for(DataSeries dataSeries : seriesList){
+							trainerList.add(new ConfigurationSelectorTrainer(algType, dataSeries, metric, reputation, expList, confList.get(algType)));
+						}
+						break;
+				}
+			} else {
+				switch(algType){
+					case INV:
+						iManager = new InvariantManager(seriesList, expList, metric, reputation, readPossibleIndCombinations());
+						trainerList.addAll(iManager.getInvariants(prefManager.getPreference(DetectionManager.INV_DOMAIN).equals("ALL")));
+						break;
+					default:
+						for(DataSeries dataSeries : seriesList){
+							trainerList.add(new ConfigurationFinderTrainer(algType, dataSeries, metric, reputation, expList));
+						}
+						break;
+				}
+			}	
 		}
 		setThreadList(trainerList);
 		pManager.addTiming(TimingsManager.TRAIN_INIT_TIME, Double.valueOf(System.currentTimeMillis() - initStartTime));

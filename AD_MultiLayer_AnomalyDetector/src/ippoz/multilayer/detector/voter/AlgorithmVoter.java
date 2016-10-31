@@ -47,8 +47,8 @@ public class AlgorithmVoter implements Cloneable {
 	@Override
 	protected AlgorithmVoter clone() throws CloneNotSupportedException {
 		if(alg instanceof DataSeriesDetectionAlgorithm)
-			return new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(((DataSeriesDetectionAlgorithm)alg).getDataSeries(), alg.getConfiguration()), metricScore, reputationScore);
-		else return new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(null, alg.getConfiguration()), metricScore, reputationScore);
+			return new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(alg.getAlgorithmType(), ((DataSeriesDetectionAlgorithm)alg).getDataSeries(), alg.getConfiguration()), metricScore, reputationScore);
+		else return new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(alg.getAlgorithmType(), null, alg.getConfiguration()), metricScore, reputationScore);
 		
 	}
 

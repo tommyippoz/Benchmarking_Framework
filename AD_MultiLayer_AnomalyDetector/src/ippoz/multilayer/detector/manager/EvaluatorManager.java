@@ -224,7 +224,7 @@ public class EvaluatorManager extends ThreadScheduler {
 									conf.addItem(AlgorithmConfiguration.WEIGHT, splitted[2]);
 									conf.addItem(AlgorithmConfiguration.SCORE, splitted[3]);
 								}
-								addVoter(new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(DataSeries.fromString(seriesString, conf.getAlgorithmType() != AlgorithmType.INV), conf), Double.parseDouble(splitted[3]), Double.parseDouble(splitted[2])), voterList);
+								addVoter(new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(conf.getAlgorithmType(), DataSeries.fromString(seriesString, conf.getAlgorithmType() != AlgorithmType.INV), conf), Double.parseDouble(splitted[3]), Double.parseDouble(splitted[2])), voterList);
 							}
 						}
 					}

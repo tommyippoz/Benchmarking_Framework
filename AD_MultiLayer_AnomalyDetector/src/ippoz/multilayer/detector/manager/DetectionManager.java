@@ -346,7 +346,7 @@ public class DetectionManager {
 	 *
 	 * @return the map of the configurations
 	 */
-	private HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> loadConfigurations() {
+	/*private HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> loadConfigurations() {
 		File confFile = new File(prefManager.getPreference(DetectionManager.CONF_FILE_FOLDER) + "conf.csv");
 		HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> confList = new HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>>();
 		AlgorithmConfiguration alConf;
@@ -385,6 +385,55 @@ public class DetectionManager {
 				}
 				reader.close();
 			} 
+		} catch(Exception ex){
+			AppLogger.logException(getClass(), ex, "Unable to read configurations");
+		}
+		return confList;
+	}*/
+	
+	/**
+	 * Loads the possible configurations for all the algorithms.
+	 *
+	 * @return the map of the configurations
+	 */
+	private HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> loadConfigurations() {
+		File confFolder = new File(prefManager.getPreference(DetectionManager.CONF_FILE_FOLDER));
+		HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> confList = new HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>>();
+		AlgorithmConfiguration alConf;
+		AlgorithmType algType;
+		BufferedReader reader;
+		String[] header;
+		String readed;
+		int i;
+		try {
+			for(File confFile : confFolder.listFiles()){
+				if(confFile.exists() && confFile.getName().endsWith(".conf")){
+					algType = AlgorithmType.valueOf(confFile.getName().substring(0,  confFile.getName().indexOf(".")));
+					reader = new BufferedReader(new FileReader(confFile));
+					readed = reader.readLine();
+					if(readed != null){
+						header = readed.split(",");
+						while(reader.ready()){
+							readed = reader.readLine();
+							if(readed != null){
+								readed = readed.trim();
+								if(readed.length() > 0){
+									i = 0;
+									alConf = AlgorithmConfiguration.getConfiguration(algType, null);
+									for(String element : readed.split(",")){
+										alConf.addItem(header[i++], element);
+									}
+									if(confList.get(algType) == null)
+										confList.put(algType, new LinkedList<AlgorithmConfiguration>());
+									confList.get(algType).add(alConf);
+								}
+							}
+						}
+						AppLogger.logInfo(getClass(), "Found " + confList.get(algType).size() + " configuration for " + algType + " algorithm");
+					}
+					reader.close();
+				} 
+			}
 		} catch(Exception ex){
 			AppLogger.logException(getClass(), ex, "Unable to read configurations");
 		}

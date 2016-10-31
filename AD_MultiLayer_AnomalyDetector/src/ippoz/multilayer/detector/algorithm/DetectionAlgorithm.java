@@ -49,8 +49,8 @@ public abstract class DetectionAlgorithm {
 	 * @param conf the configuration
 	 * @return the detection algorithm
 	 */
-	public static DetectionAlgorithm buildAlgorithm(DataSeries dataSeries, AlgorithmConfiguration conf) {
-		switch(conf.getAlgorithmType()){
+	public static DetectionAlgorithm buildAlgorithm(AlgorithmType algType, DataSeries dataSeries, AlgorithmConfiguration conf) {
+		switch(algType){
 			case SPS:
 				return new SPSDetector(dataSeries, conf);
 			case HIST:
@@ -65,8 +65,6 @@ public abstract class DetectionAlgorithm {
 				return new InvariantChecker(conf);
 			case PEA:
 				return new PearsonIndexChecker(conf);
-			case TEST:
-				return new Test(dataSeries, conf);
 			default:
 				return null;
 		}
@@ -81,7 +79,7 @@ public abstract class DetectionAlgorithm {
 	 */
 	public static DetectionAlgorithm buildAlgorithm(DataSeries dataSeries, AlgorithmType algType, String[] splitted) {
 		AlgorithmConfiguration conf = new AlgorithmConfiguration(algType);
-		return buildAlgorithm(dataSeries, conf);
+		return buildAlgorithm(algType, dataSeries, conf);
 	}
 	
 	private boolean usesSimpleSeries(DataSeries container, DataSeries serie) {
