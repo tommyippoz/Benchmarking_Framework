@@ -78,7 +78,6 @@ public abstract class AlgorithmTrainer extends Thread implements Comparable<Algo
 			refConf = bestConf;
 		else {
 			// TODO
-			int a = 0;
 			// refConf = configurations.getFirst();
 		}
 		HashMap<String, LinkedList<Snapshot>> expAlgMap = new HashMap<String, LinkedList<Snapshot>>();
