@@ -70,7 +70,7 @@ public class PearsonCombinationManager {
 					if(readed != null){
 						readed = readed.trim();
 						if(readed.length() > 0 && !readed.trim().startsWith("*") && readed.contains(";")){
-							pResults.add(new PearsonResult(DataSeries.fromString(readed.split(",")[0]), DataSeries.fromString(readed.split(",")[1]), Double.parseDouble(readed.split(",")[2]), Double.parseDouble(readed.split(",")[3])));
+							pResults.add(new PearsonResult(DataSeries.fromString(readed.split(",")[0], true), DataSeries.fromString(readed.split(",")[1], true), Double.parseDouble(readed.split(",")[2]), Double.parseDouble(readed.split(",")[3])));
 						}
 					}
 				}

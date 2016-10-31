@@ -194,8 +194,8 @@ public class ExperimentData implements Cloneable {
 	
 	private MultipleSnapshot getMultipleSnapshot(int index, String textItem) {
 		LinkedList<DataSeries> sList = new LinkedList<DataSeries>();
-		sList.add(DataSeries.fromString(textItem.split(";")[0]));
-		sList.add(DataSeries.fromString(textItem.split(";")[1]));
+		sList.add(DataSeries.fromString(textItem.split(";")[0], true));
+		sList.add(DataSeries.fromString(textItem.split(";")[1], true));
 		return new MultipleSnapshot(obsList.get(index), callList, snapList.get(index).getInjectedElement(), ssList, sList.toArray(new DataSeries[sList.size()]));
 	}
 	

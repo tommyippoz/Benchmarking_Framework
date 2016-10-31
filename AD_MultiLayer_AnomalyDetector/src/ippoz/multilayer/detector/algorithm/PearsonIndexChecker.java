@@ -40,8 +40,8 @@ public class PearsonIndexChecker extends DetectionAlgorithm {
 		String[] splittedDetail = conf.getItem(AlgorithmConfiguration.PEARSON_DETAIL).split(";");
 		times = Double.parseDouble(conf.getItem(AlgorithmConfiguration.PEARSON_TOLERANCE));
 		windowSize = Integer.parseInt(conf.getItem(AlgorithmConfiguration.PEARSON_WINDOW));
-		ds1 = DataSeries.fromString(splittedDetail[0]);
-		ds2 = DataSeries.fromString(splittedDetail[1]);
+		ds1 = DataSeries.fromString(splittedDetail[0], true);
+		ds2 = DataSeries.fromString(splittedDetail[1], true);
 		pearsonAvg = Double.valueOf(splittedDetail[2]);
 		pearsonStd = Double.valueOf(splittedDetail[3]);
 	}

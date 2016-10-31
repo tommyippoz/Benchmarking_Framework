@@ -3,7 +3,7 @@
  */
 package ippoz.multilayer.detector.graphics;
 
-import ippoz.multilayer.detector.trainer.ExperimentVoter;
+import ippoz.multilayer.detector.voter.ExperimentVoter;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

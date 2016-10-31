@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ippoz.multilayer.detector.trainer;
+package ippoz.multilayer.detector.voter;
 
 import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;

@@ -96,7 +96,7 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 		return null;
 	}
 	
-	public static DataSeries fromString(String stringValue) {
+	public static DataSeries fromString(String stringValue, boolean show) {
 		try {
 			if(stringValue != null && stringValue.length() > 0){
 				String layer = stringValue.substring(stringValue.lastIndexOf("#")+1);
@@ -106,7 +106,8 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 				return fromStrings(dataSeries, DataCategory.valueOf(dataType), LayerType.valueOf(layer));
 			}
 		} catch(Exception ex){
-			AppLogger.logError(DataSeries.class, "ParseError", "Unable to parse '" + stringValue + "' dataseries");
+			if(show)
+				AppLogger.logError(DataSeries.class, "ParseError", "Unable to parse '" + stringValue + "' dataseries");
 		}
 		return null;
 	}
@@ -114,13 +115,13 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 	public static DataSeries fromStrings(String seriesName, DataCategory dataType, LayerType layerType) {
 		if(layerType.equals(LayerType.COMPOSITION)){
 			if(seriesName.contains(")*(")){
-				return new ProductDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")*(")).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")*(")+3, seriesName.length()-1).trim()), dataType);
-			} else if(seriesName.contains("/")){
-				return new FractionDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")/(")).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")/(")+3, seriesName.length()-1).trim()), dataType);
-			} else if(seriesName.contains("+")){
-				return new SumDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")+(")).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")+(")+3, seriesName.length()-1).trim()), dataType);
-			} else if(seriesName.contains("-")){
-				return new DiffDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")-(")).trim()), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")-(")+3, seriesName.length()-1).trim()), dataType);
+				return new ProductDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")*(")).trim(), true), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")*(")+3, seriesName.length()-1).trim(), true), dataType);
+			} else if(seriesName.contains(")/(")){
+				return new FractionDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")/(")).trim(), true), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")/(")+3, seriesName.length()-1).trim(), true), dataType);
+			} else if(seriesName.contains(")+(")){
+				return new SumDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")+(")).trim(), true), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")+(")+3, seriesName.length()-1).trim(), true), dataType);
+			} else if(seriesName.contains(")-(")){
+				return new DiffDataSeries(DataSeries.fromString(seriesName.substring(1,  seriesName.indexOf(")-(")).trim(), true), DataSeries.fromString(seriesName.substring(seriesName.indexOf(")-(")+3, seriesName.length()-1).trim(), true), dataType);
 			} else return null;
 		} else return new IndicatorDataSeries(new Indicator(seriesName, layerType, Double.class), dataType);
 	}

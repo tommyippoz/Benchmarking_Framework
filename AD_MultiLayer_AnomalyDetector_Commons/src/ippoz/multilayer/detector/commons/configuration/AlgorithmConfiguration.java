@@ -179,13 +179,15 @@ public class AlgorithmConfiguration implements Cloneable {
 	public static AlgorithmConfiguration buildConfiguration(AlgorithmType algType, String descRow){
 		String tag, value;
 		AlgorithmConfiguration conf = new AlgorithmConfiguration(algType);
-		for(String splitted : descRow.split("&")){
-			if(splitted.contains("=")){
-				tag = splitted.split("=")[0].trim();
-				value = splitted.split("=")[1].trim();
-				if(algType.equals(AlgorithmType.INV))
-					conf.addRawItem(tag, new Invariant(value));
-				else conf.addItem(tag, value);
+		if(descRow != null){
+			for(String splitted : descRow.split("&")){
+				if(splitted.contains("=")){
+					tag = splitted.split("=")[0].trim();
+					value = splitted.split("=")[1].trim();
+					if(algType.equals(AlgorithmType.INV))
+						conf.addRawItem(tag, new Invariant(value));
+					else conf.addItem(tag, value);
+				}
 			}
 		}
 		return conf;

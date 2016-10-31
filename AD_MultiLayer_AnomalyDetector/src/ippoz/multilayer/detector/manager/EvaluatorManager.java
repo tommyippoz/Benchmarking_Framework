@@ -14,8 +14,8 @@ import ippoz.multilayer.detector.commons.support.PreferencesManager;
 import ippoz.multilayer.detector.commons.support.ThreadScheduler;
 import ippoz.multilayer.detector.metric.Metric;
 import ippoz.multilayer.detector.performance.EvaluationTiming;
-import ippoz.multilayer.detector.trainer.AlgorithmVoter;
-import ippoz.multilayer.detector.trainer.ExperimentVoter;
+import ippoz.multilayer.detector.voter.AlgorithmVoter;
+import ippoz.multilayer.detector.voter.ExperimentVoter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -204,7 +204,7 @@ public class EvaluatorManager extends ThreadScheduler {
 						if(readed.length() > 0 && readed.indexOf(",") != -1){
 							splitted = readed.split(",");
 							if(splitted.length > 3 && checkAnomalyTreshold(Double.valueOf(splitted[3]), voterList)){
-								conf = AlgorithmConfiguration.buildConfiguration(AlgorithmType.valueOf(splitted[1]), splitted[4]);
+								conf = AlgorithmConfiguration.buildConfiguration(AlgorithmType.valueOf(splitted[1]), (splitted.length > 4 ? splitted[4] : null));
 								switch(AlgorithmType.valueOf(splitted[1])){
 									case RCC:
 									case INV:
@@ -215,6 +215,7 @@ public class EvaluatorManager extends ThreadScheduler {
 									case WER:
 									case SPS:
 									case CONF:
+									case TEST:
 									default:
 										seriesString = splitted[0];
 										break;
@@ -223,7 +224,7 @@ public class EvaluatorManager extends ThreadScheduler {
 									conf.addItem(AlgorithmConfiguration.WEIGHT, splitted[2]);
 									conf.addItem(AlgorithmConfiguration.SCORE, splitted[3]);
 								}
-								addVoter(new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(DataSeries.fromString(seriesString), conf), Double.parseDouble(splitted[3]), Double.parseDouble(splitted[2])), voterList);
+								addVoter(new AlgorithmVoter(DetectionAlgorithm.buildAlgorithm(DataSeries.fromString(seriesString, conf.getAlgorithmType() != AlgorithmType.INV), conf), Double.parseDouble(splitted[3]), Double.parseDouble(splitted[2])), voterList);
 							}
 						}
 					}
