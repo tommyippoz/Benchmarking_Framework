@@ -12,6 +12,7 @@ import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.metric.Metric;
+import ippoz.multilayer.detector.performance.TrainingTiming;
 import ippoz.multilayer.detector.reputation.Reputation;
 
 import java.util.HashMap;
@@ -36,8 +37,8 @@ public class ConfigurationSelectorTrainer extends AlgorithmTrainer {
 	 * @param reputation the used reputation metric
 	 * @param trainData the considered train data
 	 */
-	public ConfigurationSelectorTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData, LinkedList<AlgorithmConfiguration> basicConfigurations) {
-		super(algTag, dataSeries, metric, reputation, trainData);
+	public ConfigurationSelectorTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, TrainingTiming tTiming, LinkedList<ExperimentData> trainData, LinkedList<AlgorithmConfiguration> basicConfigurations) {
+		super(algTag, dataSeries, metric, reputation, tTiming, trainData);
 		configurations = confClone(basicConfigurations);
 	}
 	
@@ -54,12 +55,13 @@ public class ConfigurationSelectorTrainer extends AlgorithmTrainer {
 	}
 
 	@Override
-	protected AlgorithmConfiguration lookForBestConfiguration(HashMap<String, LinkedList<Snapshot>> algExpSnapshots) {
+	protected AlgorithmConfiguration lookForBestConfiguration(HashMap<String, LinkedList<Snapshot>> algExpSnapshots, TrainingTiming tTiming) {
 		Double bestMetricValue = Double.NaN;
 		Double currentMetricValue;
 		LinkedList<Double> metricResults;
 		DetectionAlgorithm algorithm;
 		AlgorithmConfiguration bestConf = null;
+		long startTime = System.currentTimeMillis();
 		try {
 			for(AlgorithmConfiguration conf : configurations){
 				metricResults = new LinkedList<Double>();
@@ -73,6 +75,7 @@ public class ConfigurationSelectorTrainer extends AlgorithmTrainer {
 					bestConf = (AlgorithmConfiguration) conf.clone();
 				}
 			}
+			tTiming.addTrainingTime(getAlgType(), System.currentTimeMillis() - startTime, configurations.size());
 			
 		} catch (CloneNotSupportedException ex) {
 			AppLogger.logException(getClass(), ex, "Unable to clone configuration");

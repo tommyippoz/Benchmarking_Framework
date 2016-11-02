@@ -14,6 +14,7 @@ import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.metric.Metric;
+import ippoz.multilayer.detector.performance.TrainingTiming;
 import ippoz.multilayer.detector.reputation.Reputation;
 
 import java.util.HashMap;
@@ -51,6 +52,8 @@ public abstract class AlgorithmTrainer extends Thread implements Comparable<Algo
 	/** The reputation score. */
 	private double reputationScore;
 	
+	private TrainingTiming tTiming;
+	
 	/** Flag that indicates if the trained algorithm retrieves different values (e.g., not always true / false). */
 	private boolean sameResultFlag;
 	
@@ -64,11 +67,12 @@ public abstract class AlgorithmTrainer extends Thread implements Comparable<Algo
 	 * @param reputation the used reputation metric
 	 * @param trainData the considered train data
 	 */
-	public AlgorithmTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData) {
+	public AlgorithmTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, TrainingTiming tTiming, LinkedList<ExperimentData> trainData) {
 		this.algTag = algTag;
 		this.dataSeries = dataSeries;
 		this.metric = metric;
 		this.reputation = reputation;
+		this.tTiming = tTiming;
 		expList = deepClone(trainData);
 	}
 	
@@ -116,14 +120,14 @@ public abstract class AlgorithmTrainer extends Thread implements Comparable<Algo
 	@Override
 	public void run() {
 		HashMap<String, LinkedList<Snapshot>> algExpSnapshots = loadAlgExpSnapshots();
-		bestConf = lookForBestConfiguration(algExpSnapshots);
+		bestConf = lookForBestConfiguration(algExpSnapshots, tTiming);
 		metricScore = evaluateMetricScore(getExpList(), algExpSnapshots);
 		reputationScore = evaluateReputationScore(getExpList(), algExpSnapshots);
 		bestConf.addItem(AlgorithmConfiguration.WEIGHT, String.valueOf(getReputationScore()));
 		bestConf.addItem(AlgorithmConfiguration.SCORE, String.valueOf(getMetricScore()));
 	}
 	
-	protected abstract AlgorithmConfiguration lookForBestConfiguration(HashMap<String, LinkedList<Snapshot>> algExpSnapshots);
+	protected abstract AlgorithmConfiguration lookForBestConfiguration(HashMap<String, LinkedList<Snapshot>> algExpSnapshots, TrainingTiming tTiming);
 
 	/**
 	 * Evaluates metric score on a specified set of experiments.

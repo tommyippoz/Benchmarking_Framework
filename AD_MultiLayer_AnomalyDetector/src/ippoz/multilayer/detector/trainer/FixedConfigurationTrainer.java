@@ -9,6 +9,7 @@ import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.metric.Metric;
+import ippoz.multilayer.detector.performance.TrainingTiming;
 import ippoz.multilayer.detector.reputation.Reputation;
 
 import java.util.HashMap;
@@ -33,8 +34,8 @@ public class FixedConfigurationTrainer extends AlgorithmTrainer {
 	 * @param trainData the considered train data
 	 * @param configurations the possible configurations
 	 */
-	public FixedConfigurationTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData, AlgorithmConfiguration configuration) {
-		super(algTag, dataSeries, metric, reputation, trainData);
+	public FixedConfigurationTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, TrainingTiming tTiming, LinkedList<ExperimentData> trainData, AlgorithmConfiguration configuration) {
+		super(algTag, dataSeries, metric, reputation, tTiming, trainData);
 		try {
 			fixConf = (AlgorithmConfiguration) configuration.clone();
 		} catch (CloneNotSupportedException e) {
@@ -44,7 +45,8 @@ public class FixedConfigurationTrainer extends AlgorithmTrainer {
 	}
 
 	@Override
-	protected AlgorithmConfiguration lookForBestConfiguration(HashMap<String, LinkedList<Snapshot>> algExpSnapshots) {
+	protected AlgorithmConfiguration lookForBestConfiguration(HashMap<String, LinkedList<Snapshot>> algExpSnapshots,  TrainingTiming tTiming) {
+		tTiming.addTrainingTime(getAlgType(), 0, 1);
 		return fixConf;
 	}
 	

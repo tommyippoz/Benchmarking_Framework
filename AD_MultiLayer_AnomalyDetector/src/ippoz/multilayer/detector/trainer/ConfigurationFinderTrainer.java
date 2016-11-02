@@ -12,6 +12,7 @@ import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.metric.Metric;
+import ippoz.multilayer.detector.performance.TrainingTiming;
 import ippoz.multilayer.detector.reputation.Reputation;
 
 import java.util.HashMap;
@@ -23,19 +24,23 @@ import java.util.LinkedList;
  */
 public class ConfigurationFinderTrainer extends AlgorithmTrainer {
 
-	public ConfigurationFinderTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData) {
-		super(algTag, dataSeries, metric, reputation, trainData);
+	public ConfigurationFinderTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, TrainingTiming tTiming, LinkedList<ExperimentData> trainData) {
+		super(algTag, dataSeries, metric, reputation, tTiming, trainData);
 	}
 
 	@Override
-	protected AlgorithmConfiguration lookForBestConfiguration(HashMap<String, LinkedList<Snapshot>> algExpSnapshots) {
+	protected AlgorithmConfiguration lookForBestConfiguration(HashMap<String, LinkedList<Snapshot>> algExpSnapshots, TrainingTiming tTiming) {
+		AlgorithmConfiguration bestConf;
 		DetectionAlgorithm da = DetectionAlgorithm.buildAlgorithm(getAlgType(), getDataSeries(), null);
+		long trainTime = System.currentTimeMillis();
 		if(da instanceof AutomaticTrainingAlgorithm)
-			return ((AutomaticTrainingAlgorithm)da).automaticTraining();
+			bestConf = ((AutomaticTrainingAlgorithm)da).automaticTraining();
 		else {
 			AppLogger.logError(getClass(), "TrainingError", "Algorithm " + getAlgType() + " is not an automatic training algorithm");
-			return null;
+			bestConf = null;
 		}
+		tTiming.addTrainingTime(getAlgType(), System.currentTimeMillis() - trainTime, 0);
+		return bestConf;
 	}
 
 }
