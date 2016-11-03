@@ -19,11 +19,23 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
- * @author Tommy
+ * The Class ConfigurationFinderTrainer.
+ * This is used for finding the best configuration for algorithms which does not have a static set of configurations to try.
  *
+ * @author Tommy
  */
 public class ConfigurationFinderTrainer extends AlgorithmTrainer {
 
+	/**
+	 * Instantiates a new configuration finder trainer.
+	 *
+	 * @param algTag the algorithm tag
+	 * @param dataSeries the chosen data series
+	 * @param metric the scoring metric
+	 * @param reputation the scoring reputation
+	 * @param tTiming the training timing manager
+	 * @param trainData the training data
+	 */
 	public ConfigurationFinderTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, TrainingTiming tTiming, LinkedList<ExperimentData> trainData) {
 		super(algTag, dataSeries, metric, reputation, tTiming, trainData);
 	}
@@ -34,7 +46,7 @@ public class ConfigurationFinderTrainer extends AlgorithmTrainer {
 		DetectionAlgorithm da = DetectionAlgorithm.buildAlgorithm(getAlgType(), getDataSeries(), null);
 		long trainTime = System.currentTimeMillis();
 		if(da instanceof AutomaticTrainingAlgorithm)
-			bestConf = ((AutomaticTrainingAlgorithm)da).automaticTraining();
+			bestConf = ((AutomaticTrainingAlgorithm)da).automaticTraining(algExpSnapshots);
 		else {
 			AppLogger.logError(getClass(), "TrainingError", "Algorithm " + getAlgType() + " is not an automatic training algorithm");
 			bestConf = null;
