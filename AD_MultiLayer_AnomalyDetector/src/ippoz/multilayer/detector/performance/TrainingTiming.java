@@ -17,7 +17,7 @@ import java.util.LinkedList;
  */
 public class TrainingTiming {
 	
-	private static final String[] trainingAttr = {TrainingStat.AVERAGE, TrainingStat.MEDIAN, TrainingStat.STD, TrainingStat.CONFIGURATIONS, TrainingStat.AVERAGE_TOT, TrainingStat.MEDIAN_TOT, TrainingStat.STD_TOT};
+	private static final String[] trainingAttr = {TrainingStat.AVERAGE, TrainingStat.MEDIAN, TrainingStat.STD, TrainingStat.CONFIGURATIONS, TrainingStat.AVERAGE_TOT, TrainingStat.MEDIAN_TOT, TrainingStat.STD_TOT, TrainingStat.EXPERIMENTS, TrainingStat.AVERAGE_EXP, TrainingStat.MEDIAN_EXP, TrainingStat.STD_EXP, TrainingStat.AVERAGE_EXP_TOT, TrainingStat.MEDIAN_EXP_TOT, TrainingStat.STD_EXP_TOT};
 	private static final String[] scoresAttr = {TrainingStat.RATING_POSITION, TrainingStat.RATING_SCORE, TrainingStat.PRESENCE_FIRST_10, TrainingStat.PRESENCE_FIRST_30, TrainingStat.PRESENCE_FIRST_50, TrainingStat.PRESENCE_FIRST_100};
 	
 	private LinkedList<TrainingResult> resList;
@@ -42,7 +42,7 @@ public class TrainingTiming {
 			resList.add(new TrainingResult(trainer.getAlgType(), trainer.getMetricScore()));
 		}
 		Collections.sort(resList);
-		computeStats();
+		computeStats(((AlgorithmTrainer)list.getFirst()).getExpList().size());
 	}
 	
 	public String getHeader() {
@@ -71,9 +71,9 @@ public class TrainingTiming {
 		return row;
 	}
 	
-	private void computeStats(){
+	private void computeStats(int nExp){
 		statMap = new HashMap<AlgorithmType, TrainingStat>();
-		calculateTrainingStats();
+		calculateTrainingStats(nExp);
 		calculateScoresStats();
 	}
 	
@@ -117,15 +117,21 @@ public class TrainingTiming {
 		}
 	}
 
-	private void calculateTrainingStats() {
+	private void calculateTrainingStats(int nExp) {
 		int n;
+		Double[] timeSingleExp;
+		Double[] timeTotExp;
 		Double[] timeSingle;
 		Double[] timeTot;
 		for(AlgorithmType algType : algTrainingTimes.keySet()){
 			n = algTrainingTimes.get(algType).size();
+			timeSingleExp = new Double[n];
+			timeTotExp = new Double[n];
 			timeSingle = new Double[n];
 			timeTot = new Double[n];
 			for(int i=0;i<n;i++){
+				timeSingleExp[i] = algTrainingTimes.get(algType).get(i).getSingleExpTime(nExp);
+				timeTotExp[i] = algTrainingTimes.get(algType).get(i).getExpTime(nExp);
 				timeSingle[i] = algTrainingTimes.get(algType).get(i).getSingleTime();
 				timeTot[i] = algTrainingTimes.get(algType).get(i).getTime();
 			}
@@ -137,6 +143,13 @@ public class TrainingTiming {
 			statMap.get(algType).addStat(TrainingStat.AVERAGE_TOT, AppUtility.calcAvg(timeTot));
 			statMap.get(algType).addStat(TrainingStat.STD_TOT, AppUtility.calcStd(timeTot, Double.valueOf(statMap.get(algType).getStat(TrainingStat.AVERAGE_TOT))));
 			statMap.get(algType).addStat(TrainingStat.MEDIAN_TOT, AppUtility.calcMedian(timeTot));
+			statMap.get(algType).addStat(TrainingStat.EXPERIMENTS, (double)nExp);
+			statMap.get(algType).addStat(TrainingStat.AVERAGE_EXP, AppUtility.calcAvg(timeSingleExp));
+			statMap.get(algType).addStat(TrainingStat.STD_EXP, AppUtility.calcStd(timeSingleExp, Double.valueOf(statMap.get(algType).getStat(TrainingStat.AVERAGE_EXP))));
+			statMap.get(algType).addStat(TrainingStat.MEDIAN_EXP, AppUtility.calcMedian(timeSingleExp));
+			statMap.get(algType).addStat(TrainingStat.AVERAGE_EXP_TOT, AppUtility.calcAvg(timeTotExp));
+			statMap.get(algType).addStat(TrainingStat.STD_EXP_TOT, AppUtility.calcStd(timeTotExp, Double.valueOf(statMap.get(algType).getStat(TrainingStat.AVERAGE_EXP_TOT))));
+			statMap.get(algType).addStat(TrainingStat.MEDIAN_EXP_TOT, AppUtility.calcMedian(timeTotExp));
 		}
 	}
 
@@ -175,6 +188,13 @@ public class TrainingTiming {
 		public static final String AVERAGE_TOT = "avg_tot"; 
 		public static final String MEDIAN_TOT = "med_tot"; 
 		public static final String STD_TOT = "std_tot"; 
+		public static final String EXPERIMENTS = "train_experiments"; 
+		public static final String AVERAGE_EXP = "avg_exp"; 
+		public static final String MEDIAN_EXP = "med_exp"; 
+		public static final String STD_EXP = "std_exp"; 
+		public static final String AVERAGE_EXP_TOT = "avg_exp_tot"; 
+		public static final String MEDIAN_EXP_TOT = "med_exp_tot"; 
+		public static final String STD_EXP_TOT = "std_exp_tot"; 
 		public static final String PRESENCE_FIRST_10 = "pr10"; 
 		public static final String PRESENCE_FIRST_30 = "pr30";
 		public static final String PRESENCE_FIRST_50 = "pr50"; 
@@ -208,6 +228,14 @@ public class TrainingTiming {
 			this.time = time;
 		}
 		
+		public Double getSingleExpTime(int nExp) {
+			return getSingleTime()/nExp;
+		}
+
+		public Double getExpTime(int nExp) {
+			return getTime()/nExp;
+		}
+
 		public Double getSingleTime() {
 			if(nConfigurations > 1)
 				return getTime()/nConfigurations;

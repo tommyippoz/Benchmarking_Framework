@@ -19,6 +19,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
+ * The Class ConfigurationSelectorTrainer.
+ * This is used from algorithms which can select the best configuration out of a set of possible ones.
+ * 
  * @author Tommy
  *
  */
@@ -31,8 +34,7 @@ public class ConfigurationSelectorTrainer extends AlgorithmTrainer {
 	 * Instantiates a new algorithm trainer.
 	 *
 	 * @param algTag the algorithm tag
-	 * @param indicator the involved indicator
-	 * @param categoryTag the data category tag
+	 * @param dataSeries the chosen data series
 	 * @param metric the used metric
 	 * @param reputation the used reputation metric
 	 * @param trainData the considered train data
@@ -42,6 +44,12 @@ public class ConfigurationSelectorTrainer extends AlgorithmTrainer {
 		configurations = confClone(basicConfigurations);
 	}
 	
+	/**
+	 * Clones the configurations to avoid updating the same Java structures.
+	 *
+	 * @param inConf the configurations to clone
+	 * @return the cloned list of configuration
+	 */
 	private LinkedList<AlgorithmConfiguration> confClone(LinkedList<AlgorithmConfiguration> inConf) {
 		LinkedList<AlgorithmConfiguration> list = new LinkedList<AlgorithmConfiguration>();
 		try {

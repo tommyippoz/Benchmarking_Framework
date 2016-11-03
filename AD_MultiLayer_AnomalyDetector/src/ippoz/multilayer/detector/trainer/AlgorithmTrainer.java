@@ -22,7 +22,7 @@ import java.util.LinkedList;
 
 /**
  * The Class AlgorithmTrainer.
- * Base class for each algorithm scorer. Extends Thread.
+ * Base class to train each algorithm. Extends Thread.
  *
  * @author Tommy
  */
@@ -52,6 +52,7 @@ public abstract class AlgorithmTrainer extends Thread implements Comparable<Algo
 	/** The reputation score. */
 	private double reputationScore;
 	
+	/** The training timing. */
 	private TrainingTiming tTiming;
 	
 	/** Flag that indicates if the trained algorithm retrieves different values (e.g., not always true / false). */
@@ -61,10 +62,10 @@ public abstract class AlgorithmTrainer extends Thread implements Comparable<Algo
 	 * Instantiates a new algorithm trainer.
 	 *
 	 * @param algTag the algorithm tag
-	 * @param indicator the involved indicator
-	 * @param categoryTag the data category tag
+	 * @param dataSeries the data series
 	 * @param metric the used metric
 	 * @param reputation the used reputation metric
+	 * @param tTiming the t timing
 	 * @param trainData the considered train data
 	 */
 	public AlgorithmTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, TrainingTiming tTiming, LinkedList<ExperimentData> trainData) {
@@ -76,18 +77,15 @@ public abstract class AlgorithmTrainer extends Thread implements Comparable<Algo
 		expList = deepClone(trainData);
 	}
 	
+	/**
+	 * Loads the snapshots of all the training experiments.
+	 *
+	 * @return the hash map of the snapshots
+	 */
 	private HashMap<String, LinkedList<Snapshot>> loadAlgExpSnapshots() {
-		AlgorithmConfiguration refConf = null;
-		if(bestConf != null)
-			refConf = bestConf;
-		else {
-			// TODO
-			// refConf = configurations.getFirst();
-		}
 		HashMap<String, LinkedList<Snapshot>> expAlgMap = new HashMap<String, LinkedList<Snapshot>>();
 		for(ExperimentData expData : expList){
-			//System.out.println(expData.getName());
-			expAlgMap.put(expData.getName(), expData.buildSnapshotsFor(algTag, dataSeries, refConf));
+			expAlgMap.put(expData.getName(), expData.buildSnapshotsFor(algTag, dataSeries, bestConf));
 		}
 		return expAlgMap;
 	}
@@ -110,6 +108,11 @@ public abstract class AlgorithmTrainer extends Thread implements Comparable<Algo
 		return list;
 	}
 	
+	/**
+	 * Checks if is valid train.
+	 *
+	 * @return true, if is valid train
+	 */
 	public boolean isValidTrain(){
 		return !sameResultFlag;
 	}
@@ -127,13 +130,20 @@ public abstract class AlgorithmTrainer extends Thread implements Comparable<Algo
 		bestConf.addItem(AlgorithmConfiguration.SCORE, String.valueOf(getMetricScore()));
 	}
 	
+	/**
+	 * Look for best configuration.
+	 *
+	 * @param algExpSnapshots the alg exp snapshots
+	 * @param tTiming the t timing
+	 * @return the algorithm configuration
+	 */
 	protected abstract AlgorithmConfiguration lookForBestConfiguration(HashMap<String, LinkedList<Snapshot>> algExpSnapshots, TrainingTiming tTiming);
 
 	/**
 	 * Evaluates metric score on a specified set of experiments.
 	 *
 	 * @param trainData the train data
-	 * @param algExpSnapshots 
+	 * @param algExpSnapshots the alg exp snapshots
 	 * @return the metric score
 	 */
 	private double evaluateMetricScore(LinkedList<ExperimentData> trainData, HashMap<String, LinkedList<Snapshot>> algExpSnapshots){
@@ -154,6 +164,7 @@ public abstract class AlgorithmTrainer extends Thread implements Comparable<Algo
 	 * Evaluate reputation score on a specified set of experiments.
 	 *
 	 * @param trainData the train data
+	 * @param algExpSnapshots the alg exp snapshots
 	 * @return the reputation score
 	 */
 	private double evaluateReputationScore(LinkedList<ExperimentData> trainData, HashMap<String, LinkedList<Snapshot>> algExpSnapshots){
@@ -165,18 +176,38 @@ public abstract class AlgorithmTrainer extends Thread implements Comparable<Algo
 		return AppUtility.calcAvg(reputationResults.toArray(new Double[reputationResults.size()]));
 	}
 
+	/**
+	 * Gets the data series.
+	 *
+	 * @return the data series
+	 */
 	public DataSeries getDataSeries() {
 		return dataSeries;
 	}
 
+	/**
+	 * Gets the metric.
+	 *
+	 * @return the metric
+	 */
 	public Metric getMetric() {
 		return metric;
 	}
 
+	/**
+	 * Gets the reputation.
+	 *
+	 * @return the reputation
+	 */
 	public Reputation getReputation() {
 		return reputation;
 	}
 
+	/**
+	 * Gets the exp list.
+	 *
+	 * @return the exp list
+	 */
 	public LinkedList<ExperimentData> getExpList() {
 		return expList;
 	}
@@ -258,6 +289,11 @@ public abstract class AlgorithmTrainer extends Thread implements Comparable<Algo
 		return Double.compare(other.getMetricScore(), getMetricScore());
 	}
 
+	/**
+	 * Gets the series description.
+	 *
+	 * @return the series description
+	 */
 	public String getSeriesDescription() {
 		if(dataSeries != null)
 			return dataSeries.toString();

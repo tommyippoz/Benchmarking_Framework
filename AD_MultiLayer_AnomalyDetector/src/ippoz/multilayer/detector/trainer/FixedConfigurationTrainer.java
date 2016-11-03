@@ -8,6 +8,7 @@ import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
+import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.metric.Metric;
 import ippoz.multilayer.detector.performance.TrainingTiming;
 import ippoz.multilayer.detector.reputation.Reputation;
@@ -16,19 +17,21 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
- * @author Tommy
+ * The Class FixedConfigurationTrainer.
+ * Used by algorithms which accept only one configuration.
  *
+ * @author Tommy
  */
 public class FixedConfigurationTrainer extends AlgorithmTrainer {
 
+	/** The fixed (unique) configuration. */
 	private AlgorithmConfiguration fixConf;
 	
 	/**
 	 * Instantiates a new algorithm trainer.
 	 *
 	 * @param algTag the algorithm tag
-	 * @param indicator the involved indicator
-	 * @param categoryTag the data category tag
+	 * @param dataSeries the chosen data series
 	 * @param metric the used metric
 	 * @param reputation the used reputation metric
 	 * @param trainData the considered train data
@@ -38,9 +41,8 @@ public class FixedConfigurationTrainer extends AlgorithmTrainer {
 		super(algTag, dataSeries, metric, reputation, tTiming, trainData);
 		try {
 			fixConf = (AlgorithmConfiguration) configuration.clone();
-		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (CloneNotSupportedException ex) {
+			AppLogger.logException(getClass(), ex, "Unable to train '" + algTag + "' algorithm");
 		}
 	}
 
