@@ -206,7 +206,7 @@ public class DetectionManager {
 			for(String voterTreshold : parseVoterTresholds()){
 				evaluations.put(voterTreshold.trim(), new HashMap<String, LinkedList<HashMap<Metric,Double>>>());
 				for(String anomalyTreshold : parseAnomalyTresholds()){
-					eManager = new EvaluatorManager(prefManager, pManager, expList, metList, anomalyTreshold.trim(), Double.parseDouble(detectionManager.getPreference(DM_CONVERGENCE_TIME)), voterTreshold.trim());
+					eManager = new EvaluatorManager(prefManager, pManager, expList, metList, anomalyTreshold.trim(), Double.parseDouble(detectionManager.getPreference(DM_CONVERGENCE_TIME)), voterTreshold.trim(), false);
 					if(eManager.detectAnomalies()) {
 						evaluations.get(voterTreshold.trim()).put(anomalyTreshold.trim(), eManager.getMetricsEvaluations());
 						eManager.printTimings(prefManager.getPreference(OUTPUT_FOLDER) + "/evaluationTimings.csv");
