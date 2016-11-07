@@ -27,9 +27,29 @@ public class AlgorithmConfiguration implements Cloneable {
 	
 	public static final String PEARSON_DETAIL = "pi_detail";
 
+	public static final String HIST_INTERVAL = "interval_width";
+
+	public static final String CONFIDENCE_ALPHA = "alpha";
+
 	public static final String PEARSON_TOLERANCE = "pi_tolerance";
 
 	public static final String PEARSON_WINDOW = "pi_window";
+	
+	public static final String SPS_PDV = "pdv";
+	
+	public static final String SPS_POV = "pov";
+	
+	public static final String SPS_PDS = "pds";
+	
+	public static final String SPS_POS = "pos";
+	
+	public static final String SPS_M = "m";
+	
+	public static final String SPS_N = "n";
+	
+	public static final String SPS_DYN_WEIGHT = "dweight";
+	
+	
 
 	/** The configuration map. */
 	private HashMap<String, Object> confMap;

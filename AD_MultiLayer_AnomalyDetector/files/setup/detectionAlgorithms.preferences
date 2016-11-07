@@ -1,9 +1,10 @@
 * Algorithms involved in the detection phase
 
-SPS
-HIST
-CONF
-RCC
+ KMEANS
+* SPS
+* HIST
+* CONF
+* RCC
 * WER
 * INV
 * PEA

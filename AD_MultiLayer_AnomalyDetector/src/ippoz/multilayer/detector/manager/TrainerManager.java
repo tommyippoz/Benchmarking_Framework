@@ -12,7 +12,6 @@ import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.PreferencesManager;
 import ippoz.multilayer.detector.commons.support.ThreadScheduler;
 import ippoz.multilayer.detector.metric.Metric;
-import ippoz.multilayer.detector.performance.TrainingTiming;
 import ippoz.multilayer.detector.reputation.Reputation;
 import ippoz.multilayer.detector.trainer.AlgorithmTrainer;
 import ippoz.multilayer.detector.trainer.ConfigurationFinderTrainer;
@@ -61,8 +60,6 @@ public class TrainerManager extends ThreadScheduler {
 	/** The algorithm types. */
 	private AlgorithmType[] algTypes;
 	
-	private TrainingTiming tTiming;
-	
 	private InvariantManager iManager;
 	
 	/**
@@ -86,7 +83,6 @@ public class TrainerManager extends ThreadScheduler {
 		this.metric = metric;
 		this.reputation = reputation;
 		this.algTypes = algTypes;
-		tTiming = new TrainingTiming();
 		seriesList = generateDataSeries(dataTypes);
 	}
 	
@@ -140,13 +136,11 @@ public class TrainerManager extends ThreadScheduler {
 			start();
 			join();
 			Collections.sort((LinkedList<AlgorithmTrainer>)getThreadList());
+			saveScores(filterTrainers(getThreadList()));
 			pManager.addTiming(TimingsManager.TRAIN_RUNS, Double.valueOf(expList.size()));
 			pManager.addTiming(TimingsManager.TRAIN_TIME, (double)(System.currentTimeMillis() - start));
 			pManager.addTiming(TimingsManager.AVG_TRAIN_TIME, ((System.currentTimeMillis() - start)/threadNumber()*1.0));
 			AppLogger.logInfo(getClass(), "Training executed in " + (System.currentTimeMillis() - start) + "ms");
-			saveTrainingTimes(filterTrainers(getThreadList()));
-			saveScores(filterTrainers(getThreadList()));
-			AppLogger.logInfo(getClass(), "Training scores saved");
 		} catch (InterruptedException ex) {
 			AppLogger.logException(getClass(), ex, "Unable to complete training phase");
 		}
@@ -156,7 +150,7 @@ public class TrainerManager extends ThreadScheduler {
 		LinkedList<AlgorithmTrainer> invList = new LinkedList<AlgorithmTrainer>();
 		if(iManager != null){
 			for(Thread t : trainerList){
-				if(((AlgorithmTrainer)t).getAlgType().equals(AlgorithmType.INV))
+				if(((AlgorithmTrainer)t).getBestConfiguration().getAlgorithmType().equals(AlgorithmType.INV))
 					invList.add((AlgorithmTrainer)t);
 			}
 			trainerList.removeAll(iManager.filterInvType(invList));
@@ -176,31 +170,31 @@ public class TrainerManager extends ThreadScheduler {
 			if(confList.get(algType) != null){
 				switch(algType){
 					case RCC:
-						trainerList.add(new FixedConfigurationTrainer(algType, null, metric, reputation, tTiming, expList, confList.get(algType).getFirst()));
+						trainerList.add(new FixedConfigurationTrainer(algType, null, metric, reputation, expList, confList.get(algType).getFirst()));
 						break;
 					case PEA:
 						PearsonCombinationManager pcManager;
 						File pearsonFile = new File(prefManager.getPreference(DetectionManager.SETUP_FILE_FOLDER) + "pearsonCombinations.csv");
-						pcManager = new PearsonCombinationManager(pearsonFile, seriesList, tTiming, expList);
+						pcManager = new PearsonCombinationManager(pearsonFile, seriesList, expList);
 						pcManager.calculatePearsonIndexes();
 						trainerList.addAll(pcManager.getTrainers(metric, reputation, confList));
 						pcManager.flush();
 						break;
 					default:
 						for(DataSeries dataSeries : seriesList){
-							trainerList.add(new ConfigurationSelectorTrainer(algType, dataSeries, metric, reputation, tTiming, expList, confList.get(algType)));
+							trainerList.add(new ConfigurationSelectorTrainer(algType, dataSeries, metric, reputation, expList, confList.get(algType)));
 						}
 						break;
 				}
 			} else {
 				switch(algType){
 					case INV:
-						iManager = new InvariantManager(seriesList, tTiming, expList, metric, reputation, readPossibleIndCombinations());
+						iManager = new InvariantManager(seriesList, expList, metric, reputation, readPossibleIndCombinations());
 						trainerList.addAll(iManager.getInvariants(prefManager.getPreference(DetectionManager.INV_DOMAIN).equals("ALL")));
 						break;
 					default:
 						for(DataSeries dataSeries : seriesList){
-							trainerList.add(new ConfigurationFinderTrainer(algType, dataSeries, metric, reputation, tTiming, expList));
+							trainerList.add(new ConfigurationFinderTrainer(algType, dataSeries, metric, reputation, expList));
 						}
 						break;
 				}
@@ -225,21 +219,6 @@ public class TrainerManager extends ThreadScheduler {
 	@Override
 	protected void threadComplete(Thread t, int tIndex) {
 		AppLogger.logInfo(getClass(), "[" + tIndex + "/" + threadNumber() + "] Found: " + ((AlgorithmTrainer)t).getBestConfiguration().toString());						
-	}
-	
-	private void saveTrainingTimes(LinkedList<? extends Thread> list) {
-		BufferedWriter writer;
-		try {
-			tTiming.addAlgorithmScores(list);
-			writer = new BufferedWriter(new FileWriter(new File(prefManager.getPreference(DetectionManager.OUTPUT_FOLDER) + "/trainingTimings.csv")));
-			writer.write(tTiming.getHeader() + "\n");
-			for(AlgorithmType algType : algTypes){
-				writer.write(tTiming.toFileRow(algType) + "\n");
-			}
-			writer.close();
-		} catch(IOException ex){
-			AppLogger.logException(getClass(), ex, "Unable to write scores");
-		}
 	}
 	
 	/**

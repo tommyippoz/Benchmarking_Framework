@@ -12,16 +12,12 @@ import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.AppUtility;
 import ippoz.multilayer.detector.metric.Metric;
-import ippoz.multilayer.detector.performance.TrainingTiming;
 import ippoz.multilayer.detector.reputation.Reputation;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
- * The Class ConfigurationSelectorTrainer.
- * This is used from algorithms which can select the best configuration out of a set of possible ones.
- * 
  * @author Tommy
  *
  */
@@ -34,22 +30,17 @@ public class ConfigurationSelectorTrainer extends AlgorithmTrainer {
 	 * Instantiates a new algorithm trainer.
 	 *
 	 * @param algTag the algorithm tag
-	 * @param dataSeries the chosen data series
+	 * @param indicator the involved indicator
+	 * @param categoryTag the data category tag
 	 * @param metric the used metric
 	 * @param reputation the used reputation metric
 	 * @param trainData the considered train data
 	 */
-	public ConfigurationSelectorTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, TrainingTiming tTiming, LinkedList<ExperimentData> trainData, LinkedList<AlgorithmConfiguration> basicConfigurations) {
-		super(algTag, dataSeries, metric, reputation, tTiming, trainData);
+	public ConfigurationSelectorTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData, LinkedList<AlgorithmConfiguration> basicConfigurations) {
+		super(algTag, dataSeries, metric, reputation, trainData);
 		configurations = confClone(basicConfigurations);
 	}
 	
-	/**
-	 * Clones the configurations to avoid updating the same Java structures.
-	 *
-	 * @param inConf the configurations to clone
-	 * @return the cloned list of configuration
-	 */
 	private LinkedList<AlgorithmConfiguration> confClone(LinkedList<AlgorithmConfiguration> inConf) {
 		LinkedList<AlgorithmConfiguration> list = new LinkedList<AlgorithmConfiguration>();
 		try {
@@ -63,13 +54,12 @@ public class ConfigurationSelectorTrainer extends AlgorithmTrainer {
 	}
 
 	@Override
-	protected AlgorithmConfiguration lookForBestConfiguration(HashMap<String, LinkedList<Snapshot>> algExpSnapshots, TrainingTiming tTiming) {
+	protected AlgorithmConfiguration lookForBestConfiguration(HashMap<String, LinkedList<Snapshot>> algExpSnapshots) {
 		Double bestMetricValue = Double.NaN;
 		Double currentMetricValue;
 		LinkedList<Double> metricResults;
 		DetectionAlgorithm algorithm;
 		AlgorithmConfiguration bestConf = null;
-		long startTime = System.currentTimeMillis();
 		try {
 			for(AlgorithmConfiguration conf : configurations){
 				metricResults = new LinkedList<Double>();
@@ -83,7 +73,6 @@ public class ConfigurationSelectorTrainer extends AlgorithmTrainer {
 					bestConf = (AlgorithmConfiguration) conf.clone();
 				}
 			}
-			tTiming.addTrainingTime(getAlgType(), System.currentTimeMillis() - startTime, configurations.size());
 			
 		} catch (CloneNotSupportedException ex) {
 			AppLogger.logException(getClass(), ex, "Unable to clone configuration");

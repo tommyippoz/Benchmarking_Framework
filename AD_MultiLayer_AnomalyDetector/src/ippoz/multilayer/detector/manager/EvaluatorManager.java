@@ -62,8 +62,6 @@ public class EvaluatorManager extends ThreadScheduler {
 	/** The detector score threshold. Used to filter the available anomaly checkers by score. */
 	private double detectorScoreTreshold;
 	
-	private boolean printOutput;
-	
 	/**
 	 * Instantiates a new evaluator manager.
 	 *
@@ -75,13 +73,12 @@ public class EvaluatorManager extends ThreadScheduler {
 	 * @param algConvergence the algorithm convergence
 	 * @param detectorScoreTreshold the detector score threshold
 	 */
-	public EvaluatorManager(PreferencesManager prefManager, TimingsManager pManager, LinkedList<ExperimentData> expList, Metric[] validationMetrics, String anTresholdString, double algConvergence, String voterTreshold, boolean printOutput) {
+	public EvaluatorManager(PreferencesManager prefManager, TimingsManager pManager, LinkedList<ExperimentData> expList, Metric[] validationMetrics, String anTresholdString, double algConvergence, String voterTreshold) {
 		this.prefManager = prefManager;
 		this.pManager = pManager;
 		this.expList = expList;
 		this.validationMetrics = validationMetrics;
 		this.algConvergence = algConvergence;
-		this.printOutput = printOutput;
 		detectorScoreTreshold = getVoterTreshold(voterTreshold);
 		anomalyTreshold = getAnomalyVoterTreshold(anTresholdString, loadTrainScores().size());
 		eTiming = new EvaluationTiming(voterTreshold, anTresholdString, detectorScoreTreshold, anomalyTreshold, loadTrainScores().size());
@@ -155,9 +152,7 @@ public class EvaluatorManager extends ThreadScheduler {
 		LinkedList<AlgorithmVoter> algVoters = loadTrainScores();
 		LinkedList<ExperimentVoter> voterList = new LinkedList<ExperimentVoter>();
 		expMetricEvaluations = new LinkedList<HashMap<Metric,Double>>();
-		if(printOutput){
-			setupResultsFile();
-		}
+		setupResultsFile();
 		if(algVoters.size() > 0){
 			for(ExperimentData expData : expList){
 				voterList.add(new ExperimentVoter(expData, algVoters, eTiming));
@@ -180,7 +175,8 @@ public class EvaluatorManager extends ThreadScheduler {
 	 */
 	@Override
 	protected void threadComplete(Thread t, int tIndex) {
-		expMetricEvaluations.add(((ExperimentVoter)t).printVoting(prefManager.getPreference(DetectionManager.OUTPUT_FORMAT), outputFolder, validationMetrics, anomalyTreshold, algConvergence, printOutput));
+		ExperimentVoter myVoter = ((ExperimentVoter)t);
+		expMetricEvaluations.add(myVoter.printVoting(prefManager.getPreference(DetectionManager.OUTPUT_FORMAT), outputFolder, validationMetrics, anomalyTreshold, algConvergence));
 	}
 	
 	/**
@@ -220,6 +216,7 @@ public class EvaluatorManager extends ThreadScheduler {
 									case SPS:
 									case CONF:
 									case TEST:
+									case KMEANS:
 									default:
 										seriesString = splitted[0];
 										break;

@@ -137,7 +137,11 @@ public class DatabaseManager {
 	public LinkedList<InjectedElement> getInjections() {
 		LinkedList<InjectedElement> injList = new LinkedList<InjectedElement>();
 		for(HashMap<String, String> injInfo : connector.executeCustomQuery(null, "select * from failure natural join failure_type where run_id = " + runId + " order by fa_time")){
-			injList.add(new InjectedElement(AppUtility.convertStringToDate(injInfo.get("fa_time")), injInfo.get("fa_description"), Integer.parseInt(injInfo.get("fa_duration"))));
+			int faDuration = 0;
+			if(injInfo.get("fa_duration") != null){
+				faDuration = Integer.parseInt(injInfo.get("fa_duration"));
+			}
+			injList.add(new InjectedElement(AppUtility.convertStringToDate(injInfo.get("fa_time")), injInfo.get("fa_description"), faDuration));
 		}
 		return injList;
 	}
