@@ -12,30 +12,47 @@ import ippoz.multilayer.detector.commons.data.ExperimentData;
 import ippoz.multilayer.detector.commons.data.Snapshot;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.metric.Metric;
+import ippoz.multilayer.detector.performance.TrainingTiming;
 import ippoz.multilayer.detector.reputation.Reputation;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
- * @author Tommy
+ * The Class ConfigurationFinderTrainer.
+ * This is used for finding the best configuration for algorithms which does not have a static set of configurations to try.
  *
+ * @author Tommy
  */
 public class ConfigurationFinderTrainer extends AlgorithmTrainer {
 
-	public ConfigurationFinderTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, LinkedList<ExperimentData> trainData) {
-		super(algTag, dataSeries, metric, reputation, trainData);
+	/**
+	 * Instantiates a new configuration finder trainer.
+	 *
+	 * @param algTag the algorithm tag
+	 * @param dataSeries the chosen data series
+	 * @param metric the scoring metric
+	 * @param reputation the scoring reputation
+	 * @param tTiming the training timing manager
+	 * @param trainData the training data
+	 */
+	public ConfigurationFinderTrainer(AlgorithmType algTag, DataSeries dataSeries, Metric metric, Reputation reputation, TrainingTiming tTiming, LinkedList<ExperimentData> trainData) {
+		super(algTag, dataSeries, metric, reputation, tTiming, trainData);
 	}
 
 	@Override
-	protected AlgorithmConfiguration lookForBestConfiguration(HashMap<String, LinkedList<Snapshot>> algExpSnapshots) {
+	protected AlgorithmConfiguration lookForBestConfiguration(HashMap<String, LinkedList<Snapshot>> algExpSnapshots, TrainingTiming tTiming) {
+		AlgorithmConfiguration bestConf;
 		DetectionAlgorithm da = DetectionAlgorithm.buildAlgorithm(getAlgType(), getDataSeries(), null);
+		long trainTime = System.currentTimeMillis();
 		if(da instanceof AutomaticTrainingAlgorithm)
-			return ((AutomaticTrainingAlgorithm)da).automaticTraining();
+			bestConf = ((AutomaticTrainingAlgorithm)da).automaticTraining(algExpSnapshots);
 		else {
 			AppLogger.logError(getClass(), "TrainingError", "Algorithm " + getAlgType() + " is not an automatic training algorithm");
-			return null;
+			bestConf = null;
 		}
+		tTiming.addTrainingTime(getAlgType(), System.currentTimeMillis() - trainTime, 0);
+		return bestConf;
 	}
 
 }

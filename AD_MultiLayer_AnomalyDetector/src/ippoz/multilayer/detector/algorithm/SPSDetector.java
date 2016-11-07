@@ -48,6 +48,20 @@ public class SPSDetector extends DataSeriesDetectionAlgorithm {
 	/** The Constant IMG_HEIGHT. */
 	private static final int IMG_HEIGHT = 1000;
 	
+	public static final String SPS_PDV = "pdv";
+	
+	public static final String SPS_POV = "pov";
+	
+	public static final String SPS_PDS = "pds";
+	
+	public static final String SPS_POS = "pos";
+	
+	public static final String SPS_M = "m";
+	
+	public static final String SPS_N = "n";
+	
+	public static final String SPS_DYN_WEIGHT = "dweight";
+	
 	/** The SPS calculator. */
 	private SPSCalculator calculator;
 	
@@ -194,13 +208,13 @@ public class SPSDetector extends DataSeriesDetectionAlgorithm {
 		 */
 		public SPSCalculator(){
 			observedValues = new LinkedList<SPSBlock>();
-			pdv = Double.parseDouble(conf.getItem(AlgorithmConfiguration.SPS_PDV));
-			pov = Double.parseDouble(conf.getItem(AlgorithmConfiguration.SPS_POV));
-			pds = Double.parseDouble(conf.getItem(AlgorithmConfiguration.SPS_PDS));
-			pos = Double.parseDouble(conf.getItem(AlgorithmConfiguration.SPS_POS));
-			m = Double.parseDouble(conf.getItem(AlgorithmConfiguration.SPS_M));
-			n = Double.parseDouble(conf.getItem(AlgorithmConfiguration.SPS_N));
-			dynamicWeights = (Double.parseDouble(conf.getItem(AlgorithmConfiguration.SPS_DYN_WEIGHT)) == 1.0);		
+			pdv = Double.parseDouble(conf.getItem(SPS_PDV));
+			pov = Double.parseDouble(conf.getItem(SPS_POV));
+			pds = Double.parseDouble(conf.getItem(SPS_PDS));
+			pos = Double.parseDouble(conf.getItem(SPS_POS));
+			m = Double.parseDouble(conf.getItem(SPS_M));
+			n = Double.parseDouble(conf.getItem(SPS_N));
+			dynamicWeights = (Double.parseDouble(conf.getItem(SPS_DYN_WEIGHT)) == 1.0);		
 		}
 		
 		/**

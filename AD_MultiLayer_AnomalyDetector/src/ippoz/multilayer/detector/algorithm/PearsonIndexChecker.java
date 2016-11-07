@@ -19,6 +19,10 @@ import ippoz.multilayer.detector.commons.dataseries.DataSeries;
  */
 public class PearsonIndexChecker extends DetectionAlgorithm {
 	
+	public static final String PEARSON_TOLERANCE = "pi_tolerance";
+
+	public static final String PEARSON_WINDOW = "pi_window";
+	
 	private DataSeries ds1;
 	private DataSeries ds2;
 	private double pearsonAvg;

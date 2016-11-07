@@ -13,6 +13,7 @@ import java.net.Socket;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -167,6 +168,11 @@ public class AppUtility {
 
 	public static TreeMap<Double, Double> convertMapSnapshots(TreeMap<Date, Double> resultMap) {
 		return convertMapTimestamps(resultMap.firstKey(), resultMap);
+	}
+
+	public static Double calcMedian(Double[] timeSingle) {
+		Arrays.sort(timeSingle);
+		return timeSingle[(int)(timeSingle.length/2)];
 	}
 
 	
