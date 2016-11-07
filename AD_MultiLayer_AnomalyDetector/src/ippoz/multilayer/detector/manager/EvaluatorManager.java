@@ -1,6 +1,3 @@
-/**
- * 
- */
 package ippoz.multilayer.detector.manager;
 
 import ippoz.multilayer.detector.algorithm.DetectionAlgorithm;
@@ -62,6 +59,8 @@ public class EvaluatorManager extends ThreadScheduler {
 	/** The detector score threshold. Used to filter the available anomaly checkers by score. */
 	private double detectorScoreTreshold;
 	
+	private boolean printOutput;
+	
 	/**
 	 * Instantiates a new evaluator manager.
 	 *
@@ -73,12 +72,13 @@ public class EvaluatorManager extends ThreadScheduler {
 	 * @param algConvergence the algorithm convergence
 	 * @param detectorScoreTreshold the detector score threshold
 	 */
-	public EvaluatorManager(PreferencesManager prefManager, TimingsManager pManager, LinkedList<ExperimentData> expList, Metric[] validationMetrics, String anTresholdString, double algConvergence, String voterTreshold) {
+	public EvaluatorManager(PreferencesManager prefManager, TimingsManager pManager, LinkedList<ExperimentData> expList, Metric[] validationMetrics, String anTresholdString, double algConvergence, String voterTreshold, boolean printOutput) {
 		this.prefManager = prefManager;
 		this.pManager = pManager;
 		this.expList = expList;
 		this.validationMetrics = validationMetrics;
 		this.algConvergence = algConvergence;
+		this.printOutput = printOutput;
 		detectorScoreTreshold = getVoterTreshold(voterTreshold);
 		anomalyTreshold = getAnomalyVoterTreshold(anTresholdString, loadTrainScores().size());
 		eTiming = new EvaluationTiming(voterTreshold, anTresholdString, detectorScoreTreshold, anomalyTreshold, loadTrainScores().size());
@@ -152,7 +152,9 @@ public class EvaluatorManager extends ThreadScheduler {
 		LinkedList<AlgorithmVoter> algVoters = loadTrainScores();
 		LinkedList<ExperimentVoter> voterList = new LinkedList<ExperimentVoter>();
 		expMetricEvaluations = new LinkedList<HashMap<Metric,Double>>();
-		setupResultsFile();
+		if(printOutput){
+			setupResultsFile();
+		}
 		if(algVoters.size() > 0){
 			for(ExperimentData expData : expList){
 				voterList.add(new ExperimentVoter(expData, algVoters, eTiming));
@@ -175,8 +177,7 @@ public class EvaluatorManager extends ThreadScheduler {
 	 */
 	@Override
 	protected void threadComplete(Thread t, int tIndex) {
-		ExperimentVoter myVoter = ((ExperimentVoter)t);
-		expMetricEvaluations.add(myVoter.printVoting(prefManager.getPreference(DetectionManager.OUTPUT_FORMAT), outputFolder, validationMetrics, anomalyTreshold, algConvergence));
+		expMetricEvaluations.add(((ExperimentVoter)t).printVoting(prefManager.getPreference(DetectionManager.OUTPUT_FORMAT), outputFolder, validationMetrics, anomalyTreshold, algConvergence, printOutput));
 	}
 	
 	/**
@@ -305,3 +306,4 @@ public class EvaluatorManager extends ThreadScheduler {
 	
 
 }
+

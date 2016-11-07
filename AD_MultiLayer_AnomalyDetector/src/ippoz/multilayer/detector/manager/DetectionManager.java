@@ -1,6 +1,3 @@
-/**
- * 
- */
 package ippoz.multilayer.detector.manager;
 
 import ippoz.multilayer.commons.datacategory.DataCategory;
@@ -202,14 +199,14 @@ public class DetectionManager {
 		LinkedList<ExperimentData> expList = new LoaderManager(readRunIds(VALIDATION_RUN_PREFERENCE), "validation", pManager, prefManager.getPreference(DB_USERNAME), prefManager.getPreference(DB_PASSWORD)).fetch();
 		HashMap<String, HashMap<String, LinkedList<HashMap<Metric, Double>>>> evaluations = new HashMap<String, HashMap<String,LinkedList<HashMap<Metric,Double>>>>();
 		try {
-			pManager.setupExpTimings(new File(prefManager.getPreference(OUTPUT_FOLDER) + "/expTimings.csv"));
+			pManager.setupExpTimings(new File(prefManager.getPreference(OUTPUT_FOLDER) + "/evaluationTimings.csv"));
 			for(String voterTreshold : parseVoterTresholds()){
 				evaluations.put(voterTreshold.trim(), new HashMap<String, LinkedList<HashMap<Metric,Double>>>());
 				for(String anomalyTreshold : parseAnomalyTresholds()){
-					eManager = new EvaluatorManager(prefManager, pManager, expList, metList, anomalyTreshold.trim(), Double.parseDouble(detectionManager.getPreference(DM_CONVERGENCE_TIME)), voterTreshold.trim());
+					eManager = new EvaluatorManager(prefManager, pManager, expList, metList, anomalyTreshold.trim(), Double.parseDouble(detectionManager.getPreference(DM_CONVERGENCE_TIME)), voterTreshold.trim(), false);
 					if(eManager.detectAnomalies()) {
 						evaluations.get(voterTreshold.trim()).put(anomalyTreshold.trim(), eManager.getMetricsEvaluations());
-						eManager.printTimings(prefManager.getPreference(OUTPUT_FOLDER) + "/expTimings.csv");
+						eManager.printTimings(prefManager.getPreference(OUTPUT_FOLDER) + "/evaluationTimings.csv");
 					}
 					nVoters.put(voterTreshold.trim(), eManager.getCheckersNumber());
 					eManager.flush();
@@ -429,7 +426,7 @@ public class DetectionManager {
 								}
 							}
 						}
-						AppLogger.logInfo(getClass(), "Found " + confList.get(algType).size() + " configuration for " + algType + " algorithm");
+						//AppLogger.logInfo(getClass(), "Found " + confList.get(algType).size() + " configuration for " + algType + " algorithm");
 					}
 					reader.close();
 				} 

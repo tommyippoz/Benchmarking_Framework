@@ -18,6 +18,8 @@ import ippoz.multilayer.detector.commons.support.AppLogger;
  */
 public class HistoricalIndicatorChecker extends DataSeriesDetectionAlgorithm {
 	
+	public static final String HIST_INTERVAL = "interval_width";
+	
 	/**
 	 * Instantiates a new historical indicator checker.
 	 *
@@ -50,7 +52,7 @@ public class HistoricalIndicatorChecker extends DataSeriesDetectionAlgorithm {
 	 */
 	private double analyzeCall(Double value, ServiceCall sCall, StatPair stat) {
 		if(stat != null)
-			return evaluateAbsDiffRate(value, stat, Double.valueOf(conf.getItem(AlgorithmConfiguration.HIST_INTERVAL)));
+			return evaluateAbsDiffRate(value, stat, Double.valueOf(conf.getItem(HIST_INTERVAL)));
 		else AppLogger.logError(getClass(), "StatError", "Unable to find Stat for " + sCall.getServiceName() + ":" + dataSeries.getName());
 		return 0.0;
 	}

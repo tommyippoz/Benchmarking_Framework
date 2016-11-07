@@ -38,21 +38,12 @@ public class IndicatorDataSeries extends DataSeries {
 
 	@Override
 	protected Double getPlainSeriesValue(Observation obs) {
-		if(indicator.getName() != null){
-			return Double.valueOf(obs.getValue(indicator.getName(), DataCategory.PLAIN));
-		} else {
-			return 0.0;
-		}
+		return Double.valueOf(obs.getValue(indicator.getName(), DataCategory.PLAIN));
 	}
 
 	@Override
 	protected Double getDiffSeriesValue(Observation obs) {
-		if(indicator.getName() != null){
-			return Double.valueOf(obs.getValue(indicator.getName(), DataCategory.DIFFERENCE));
-		} else {
-			return 0.0;
-		}
-		
+		return Double.valueOf(obs.getValue(indicator.getName(), DataCategory.DIFFERENCE));
 	}
 
 }

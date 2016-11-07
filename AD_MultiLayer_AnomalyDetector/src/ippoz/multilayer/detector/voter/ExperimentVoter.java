@@ -159,13 +159,16 @@ public class ExperimentVoter extends Thread {
 	 * @param validationMetrics the metrics used for validation and printed in the file
 	 * @param anomalyTreshold the anomaly threshold
 	 * @param algConvergence the algorithm convergence time (for printing)
+	 * @param printOutput 
 	 * @return 
 	 */
-	public HashMap<Metric, Double> printVoting(String outFormat, String outFolderName, Metric[] validationMetrics, double anomalyTreshold, double algConvergence) {
-		for(AlgorithmVoter aVoter : algList){
-			//aVoter.printResults(outFormat, outFolderName, expName);
+	public HashMap<Metric, Double> printVoting(String outFormat, String outFolderName, Metric[] validationMetrics, double anomalyTreshold, double algConvergence, boolean printOutput) {
+		if(printOutput){
+			for(AlgorithmVoter aVoter : algList){
+				aVoter.printResults(outFormat, outFolderName, expName);
+			}
 		}
-		return printExperimentVoting(outFolderName, validationMetrics, anomalyTreshold, algConvergence);
+		return printExperimentVoting(outFolderName, validationMetrics, anomalyTreshold, algConvergence, printOutput);
 	}
 
 	/**
@@ -175,11 +178,14 @@ public class ExperimentVoter extends Thread {
 	 * @param validationMetrics the metrics used for validation and printed in the file
 	 * @param anomalyTreshold the anomaly threshold
 	 * @param algConvergence the algorithm convergence time (for printing)
+	 * @param printOutput 
 	 */
-	private HashMap<Metric, Double> printExperimentVoting(String outFolderName, Metric[] validationMetrics, double anomalyTreshold, double algConvergence) {
-		printGraphics(outFolderName, anomalyTreshold, algConvergence);
-		printText(outFolderName);
-		return printMetrics(outFolderName, validationMetrics, anomalyTreshold);
+	private HashMap<Metric, Double> printExperimentVoting(String outFolderName, Metric[] validationMetrics, double anomalyTreshold, double algConvergence, boolean printOutput) {
+		if(printOutput){
+			printGraphics(outFolderName, anomalyTreshold, algConvergence);
+			printText(outFolderName);
+		}
+		return printMetrics(outFolderName, validationMetrics, anomalyTreshold, printOutput);
 	}
 	
 	/**
@@ -190,18 +196,22 @@ public class ExperimentVoter extends Thread {
 	 * @param anomalyTreshold the anomaly threshold
 	 * @return 
 	 */
-	private synchronized HashMap<Metric, Double> printMetrics(String outFolderName, Metric[] validationMetrics, double anomalyTreshold) {
+	private synchronized HashMap<Metric, Double> printMetrics(String outFolderName, Metric[] validationMetrics, double anomalyTreshold, boolean printOutput) {
 		PrintWriter pw;
 		HashMap<Metric, Double> metResults = new HashMap<Metric, Double>();
 		try {
-			pw = new PrintWriter(new FileOutputStream(new File(outFolderName + "/voter/results.csv"), true));
-			pw.append(expName + "," + expSnapMap.size() + ",");
 			for(Metric met : validationMetrics){
 				metResults.put(met, met.evaluateAnomalyResults(getSimpleSnapshotList(), voting, anomalyTreshold));
-				pw.append(String.valueOf(metResults.get(met)) + ",");
 			}
-			pw.append("\n");
-			pw.close();
+			if(printOutput){
+				pw = new PrintWriter(new FileOutputStream(new File(outFolderName + "/voter/results.csv"), true));
+				pw.append(expName + "," + expSnapMap.size() + ",");
+				for(Metric met : validationMetrics){
+					pw.append(String.valueOf(metResults.get(met)) + ",");
+				}
+				pw.append("\n");
+				pw.close();
+			}
 		} catch (FileNotFoundException ex) {
 			AppLogger.logException(getClass(), ex, "Unable to find results file");
 		} 

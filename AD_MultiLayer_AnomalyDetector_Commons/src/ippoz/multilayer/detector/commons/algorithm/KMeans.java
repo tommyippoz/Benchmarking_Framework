@@ -40,7 +40,7 @@ public class KMeans {
 	private static double MAX_COORDINATE_Y = 10;
 	private static double MIN_COORDINATE_X = 0;
 	private static double MAX_COORDINATE_X = 10;
-	
+
 	private double goodThreshould;
 
 	private List<Point> points;
@@ -59,7 +59,6 @@ public class KMeans {
 		this.data = new ArrayList<KMeansData>();
 		txt = "";
 		goodThreshould = 1.3;
-		
 
 	}
 
@@ -70,6 +69,9 @@ public class KMeans {
 		// Create Points
 		if (data.size() > 1) {
 			MIN_COORDINATE_Y = Double.valueOf(data.get(0).getValue());
+			if(Double.isNaN(MIN_COORDINATE_Y)){
+				MIN_COORDINATE_Y = 0.0;
+			}
 			indicatorName = data.get(0).getIndicatorName();
 		}
 
@@ -82,7 +84,14 @@ public class KMeans {
 			/*
 			 * Se for data series
 			 */
-			Point p = new Point((double) i + 10, Double.valueOf(data.get(i).getValue()));
+
+			Point p = null;
+
+			if (!Double.isNaN(Double.valueOf(data.get(i).getValue()))) {
+				p = new Point((double) i + 10, Double.valueOf(data.get(i).getValue()));
+			} else {
+				p = new Point((double) i + 10, MAX_COORDINATE_Y);
+			}
 			// txt += (i + 10) + "," + Double.valueOf(data.get(i).getValue()) +
 			// "\n";
 
@@ -104,34 +113,43 @@ public class KMeans {
 
 		}
 
+		System.out.println(MIN_COORDINATE_X);
+		System.out.println(MAX_COORDINATE_X);
+		System.out.println(MIN_COORDINATE_Y);
+		System.out.println(MAX_COORDINATE_Y);
 		// Create Clusters
 		// Set Random Centroids
-		for (int i = 0; i < NUM_CLUSTERS; i++) {
-			Cluster cluster = new Cluster(i);
-			Point centroid = Point.createRandomPoint(MIN_COORDINATE_X, MAX_COORDINATE_X, MIN_COORDINATE_Y,
-					MAX_COORDINATE_Y);
-			cluster.setCentroid(centroid);
-			clusters.add(cluster);
+		for (Cluster cluster : clusters) {
+			if (!Double.isNaN(MIN_COORDINATE_X) && !Double.isNaN(MAX_COORDINATE_X)) {
+				if (!Double.isNaN(MIN_COORDINATE_Y) && !Double.isNaN(MAX_COORDINATE_Y)) {
+					Point centroid = Point.createRandomPoint(MIN_COORDINATE_X, MAX_COORDINATE_X, MIN_COORDINATE_Y,
+							MAX_COORDINATE_Y);
+
+					cluster.setCentroid(centroid);
+					clusters.add(cluster);
+					System.out.println("add");
+				} 
+
+			}
 		}
 
 		// Print Initial state
-		//System.out.println("Initial state:");
-		//plotClusters();
+		// System.out.println("Initial state:");
+		// plotClusters();
 	}
 
 	/**
 	 * Print all the clusters.
 	 */
 	public void plotClusters() {
-		for (int i = 0; i < NUM_CLUSTERS; i++) {
-			Cluster c = clusters.get(i);
-			//c.plotCluster();
+		for (Cluster c : clusters) {
+			// c.plotCluster();
 			/*
 			 * Coletando dados para salvar em arquivo;
 			 */
 			// txt += c.collectClusterData();
 
-			//System.out.println("");
+			// System.out.println("");
 		}
 	}
 
@@ -166,10 +184,10 @@ public class KMeans {
 			}
 
 			// System.out.println("");
-			//System.out.println("Iteration: " + iteration);
-			//txt += "Iteration: " + iteration + "\n";
-			//System.out.println("\tCentroid distances: " + distance);
-			//plotClusters();
+			// System.out.println("Iteration: " + iteration);
+			// txt += "Iteration: " + iteration + "\n";
+			// System.out.println("\tCentroid distances: " + distance);
+			// plotClusters();
 
 			/*
 			 * 
@@ -219,22 +237,26 @@ public class KMeans {
 		double min;
 		int cluster = 0;
 		double distance;
+		Cluster aux = null;
 
 		for (Point point : points) {
 			min = max;
 
-			for (int i = 0; i < NUM_CLUSTERS; i++) {
-				Cluster c = clusters.get(i);
+			for (Cluster c : clusters) {
 				distance = Point.distance(point, c.getCentroid());
 
 				if (distance < min) {
 					min = distance;
-					cluster = i;
+					// cluster = i;
 				}
 			}
 
 			point.setCluster(cluster);
-			clusters.get(cluster).addPoint(point);
+			cluster = clusters.indexOf(aux);
+			if (cluster != -1) {
+				clusters.get(cluster).addPoint(point);
+			}
+
 		}
 	}
 
@@ -277,7 +299,6 @@ public class KMeans {
 
 				if (c.getPoints().size() < 1) {
 					points.remove(c.getCentroid());
-					// clusters.remove(c);
 					aux.add(c);
 					NUM_CLUSTERS--;
 				}
@@ -285,7 +306,6 @@ public class KMeans {
 			}
 
 			for (Cluster c : aux) {
-				// System.out.println("Clusters: " + c.getId() + " removed.");
 				clusters.remove(c);
 			}
 
@@ -301,7 +321,7 @@ public class KMeans {
 
 			String sCurrentLine;
 
-			//br = new BufferedReader(new FileReader(readPath));
+			// br = new BufferedReader(new FileReader(readPath));
 
 			while ((sCurrentLine = br.readLine()) != null) {
 				if (sCurrentLine.contains(indicatorName)) {
@@ -311,9 +331,6 @@ public class KMeans {
 					Date dt = null;
 
 					dt = f.parse(line[3]);
-
-					//Data d = new Data(line[0], line[1], line[2], dt, line[4], line[5]);
-					//data.add(d);
 				}
 
 			}
@@ -339,10 +356,9 @@ public class KMeans {
 
 		String txt = "";
 		count = 0;
-
+		
 		for (Cluster c : clusters) {
 			if (c.getPoints().size() > 1) {
-				//txt += "Cluster," + c.getId() + "\n";
 				txt += "centroid," + c.getCentroid().getX() + "," + c.getCentroid().getY() + ",";
 				txt += c.getThreshold() + ",";
 				count++;
@@ -351,23 +367,8 @@ public class KMeans {
 		
 		//System.out.println(txt);
 		return txt;
-/*
-		try {
-			//writer = new BufferedWriter(new FileWriter(savePath));
-			//writer.write(txt);
-
-		} finally {
-			try {
-				if (writer != null)
-					writer.close();
-			} catch (IOException e) {
-			}
-		}
-		
-		*/
 	}
 
-	
 	public int getCount() {
 		return count;
 	}
@@ -376,24 +377,23 @@ public class KMeans {
 		this.data = data;
 	}
 
-	public void setThreshould(){
+	public void setThreshould() {
 
 		
 		
-		for(Cluster c : clusters){
+		for (Cluster c : clusters) {
 			double maxDistance = 0;
 			Point centroid = c.getCentroid();
-			
-			for(Point p : c.getPoints()){
-				if(p.distance(centroid, p) > maxDistance){
+
+			for (Point p : c.getPoints()) {
+				if (p.distance(centroid, p) > maxDistance) {
 					maxDistance = p.distance(centroid, p);
 				}
 			}
-			
-			c.setThreshold(maxDistance*goodThreshould);
+
+			c.setThreshold(maxDistance * goodThreshould);
 		}
-		
-		
+
 	}
-	
+
 }

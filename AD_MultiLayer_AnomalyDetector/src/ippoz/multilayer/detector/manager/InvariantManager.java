@@ -10,6 +10,7 @@ import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.invariants.DataSeriesMember;
 import ippoz.multilayer.detector.commons.invariants.Invariant;
 import ippoz.multilayer.detector.metric.Metric;
+import ippoz.multilayer.detector.performance.TrainingTiming;
 import ippoz.multilayer.detector.reputation.Reputation;
 import ippoz.multilayer.detector.trainer.AlgorithmTrainer;
 import ippoz.multilayer.detector.trainer.FixedConfigurationTrainer;
@@ -26,13 +27,15 @@ public class InvariantManager {
 	private final String[] invariantOperandList = {">"};
 	
 	private LinkedList<DataSeries> seriesList;
+	private TrainingTiming tTiming;
 	private HashMap<String, String> invCombinations;
 	private LinkedList<ExperimentData> expList;
 	private Metric metric;
 	private Reputation reputation;
 	
-	public InvariantManager(LinkedList<DataSeries> seriesList, LinkedList<ExperimentData> expList, Metric metric, Reputation reputation, HashMap<String, String> invCombinations) {
+	public InvariantManager(LinkedList<DataSeries> seriesList, TrainingTiming tTiming, LinkedList<ExperimentData> expList, Metric metric, Reputation reputation, HashMap<String, String> invCombinations) {
 		this.seriesList = seriesList;
+		this.tTiming = tTiming;
 		this.invCombinations = invCombinations;
 		this.expList = expList;
 		this.metric = metric;
@@ -74,7 +77,7 @@ public class InvariantManager {
 				for(String operand : invariantOperandList){
 					conf = new AlgorithmConfiguration(AlgorithmType.INV);
 					conf.addRawItem(AlgorithmConfiguration.INVARIANT, new Invariant(new DataSeriesMember(firstDS), new DataSeriesMember(secondDS), operand));
-					allInv.add(new FixedConfigurationTrainer(AlgorithmType.INV, null, metric, reputation, expList, conf));
+					allInv.add(new FixedConfigurationTrainer(AlgorithmType.INV, null, metric, reputation, tTiming, expList, conf));
 				}
 			}			
 		}
@@ -91,7 +94,7 @@ public class InvariantManager {
 			for(String operand : invariantOperandList){
 				conf = new AlgorithmConfiguration(AlgorithmType.INV);
 				conf.addRawItem(AlgorithmConfiguration.INVARIANT, new Invariant(new DataSeriesMember(firstDS), new DataSeriesMember(secondDS), operand));
-				allInv.add(new FixedConfigurationTrainer(AlgorithmType.INV, null, metric, reputation, expList, conf));
+				allInv.add(new FixedConfigurationTrainer(AlgorithmType.INV, null, metric, reputation, tTiming, expList, conf));
 			}
 		}
 		return allInv;

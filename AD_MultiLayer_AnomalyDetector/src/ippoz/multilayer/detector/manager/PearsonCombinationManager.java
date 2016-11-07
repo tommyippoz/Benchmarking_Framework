@@ -11,6 +11,7 @@ import ippoz.multilayer.detector.commons.dataseries.IndicatorDataSeries;
 import ippoz.multilayer.detector.commons.service.StatPair;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.metric.Metric;
+import ippoz.multilayer.detector.performance.TrainingTiming;
 import ippoz.multilayer.detector.reputation.Reputation;
 import ippoz.multilayer.detector.trainer.AlgorithmTrainer;
 import ippoz.multilayer.detector.trainer.ConfigurationSelectorTrainer;
@@ -34,13 +35,15 @@ public class PearsonCombinationManager {
 	
 	private File indexesFile;
 	private LinkedList<DataSeries> seriesList;
+	private TrainingTiming tTiming;
 	private LinkedList<ExperimentData> expList;
 	private HashMap<DataSeries, HashMap<String, double[]>> seriesExpData;
 	private LinkedList<PearsonResult> pResults;
 	
-	public PearsonCombinationManager(File indexesFile, LinkedList<DataSeries> seriesList, LinkedList<ExperimentData> expList){
+	public PearsonCombinationManager(File indexesFile, LinkedList<DataSeries> seriesList, TrainingTiming tTiming, LinkedList<ExperimentData> expList){
 		this.indexesFile = indexesFile;
 		this.seriesList = seriesList;
+		this.tTiming = tTiming;
 		this.expList = expList;
 		initExpData();
 	}
@@ -121,7 +124,7 @@ public class PearsonCombinationManager {
 	public LinkedList<AlgorithmTrainer> getTrainers(Metric metric, Reputation reputation, HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> confList) {
 		LinkedList<AlgorithmTrainer> trainerList = new LinkedList<AlgorithmTrainer>();
 		for(PearsonResult pr : pResults){
-			trainerList.add(new ConfigurationSelectorTrainer(AlgorithmType.PEA, null, metric, reputation, expList, adaptConf(confList, pr).get(AlgorithmType.PEA)));
+			trainerList.add(new ConfigurationSelectorTrainer(AlgorithmType.PEA, null, metric, reputation, tTiming, expList, adaptConf(confList, pr).get(AlgorithmType.PEA)));
 		}
 		return trainerList;
 	}
