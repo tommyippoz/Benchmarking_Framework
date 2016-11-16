@@ -25,6 +25,7 @@ public class Point {
 	private double x = 0;
 	private double y = 0;
 	private int cluster_number = 0;
+	private List<Point> links = new ArrayList<Point>();
 
 	public Point(double x, double y) {
 		this.setX(x);
@@ -53,6 +54,14 @@ public class Point {
 
 	public int getCluster() {
 		return this.cluster_number;
+	}
+	
+	public List<Point> getLinks() {
+		return links;
+	}
+
+	public void setLinks(List<Point> links) {
+		this.links = links;
 	}
 
 	/**
