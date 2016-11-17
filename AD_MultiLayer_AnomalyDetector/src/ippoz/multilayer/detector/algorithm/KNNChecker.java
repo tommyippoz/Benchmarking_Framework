@@ -21,13 +21,21 @@ import ippoz.multilayer.detector.commons.dataseries.DataSeries;
  * 
  * @author filipefalcao
  */
-public class KNNDetectionChecker extends DataSeriesDetectionAlgorithm implements AutomaticTrainingAlgorithm {
+public class KNNChecker extends DataSeriesDetectionAlgorithm implements AutomaticTrainingAlgorithm {
 	
 	private List<Point> points;
 
-	public KNNDetectionChecker(DataSeries dataSeries, AlgorithmConfiguration conf) {
+	public KNNChecker(DataSeries dataSeries, AlgorithmConfiguration conf) {
 		super(dataSeries, conf);
 		this.points = new ArrayList<Point>();
+	}
+
+	public List<Point> getPoints() {
+		return points;
+	}
+
+	public void setPoints(List<Point> points) {
+		this.points = points;
 	}
 
 	/**
@@ -40,9 +48,15 @@ public class KNNDetectionChecker extends DataSeriesDetectionAlgorithm implements
 	 * @author filipefalcao
 	 */
 	public void createLinks() {
-		double distanceToThePrevious = 0, distanceToTheNext = 0;
+		double distanceToThePrevious = Integer.MAX_VALUE, distanceToTheNext = Integer.MAX_VALUE;
 		Point currentPoint, previousPoint = null, nextPoint = null;
 		List<Point> links = new ArrayList<Point>();
+		
+		/*
+		 * Sort the points based on the Y axis. The algorithm used in
+		 * the sort is Quick Sort.
+		 */
+		this.points = quicksort(this.points);
 		
 		for (int i = 0; i < this.points.size(); i++) {
 			currentPoint = this.points.get(i);
@@ -65,7 +79,7 @@ public class KNNDetectionChecker extends DataSeriesDetectionAlgorithm implements
 				distanceToThePrevious = Point.distance(currentPoint, previousPoint);
 				distanceToTheNext = Point.distance(currentPoint, nextPoint);
 			}
-			
+						
 			/*
 			 * If the distance to the previous point is the smallest, 
 			 * add a link to the previous point. If the distance to 
@@ -82,7 +96,16 @@ public class KNNDetectionChecker extends DataSeriesDetectionAlgorithm implements
 				links.add(nextPoint);
 			}
 			
+			System.out.println("Point: " + currentPoint.toString());
+			System.out.println("Links: ");
+			
+			for (Point link : links) {
+				System.out.println("\t" + link);
+			}
+			System.out.println();
+			
 			points.get(i).setLinks(links);
+			links.clear();
 		}
 	}
 	
@@ -145,6 +168,7 @@ public class KNNDetectionChecker extends DataSeriesDetectionAlgorithm implements
 	/**
 	 * Finds all the outliers present in the given points.
 	 * 
+	 * @author filipefalcao
 	 * @return A List with all the found ouliers
 	 */
 	public List<Point> findOutliers() {
@@ -162,8 +186,66 @@ public class KNNDetectionChecker extends DataSeriesDetectionAlgorithm implements
 		return outliers;
 	}
 	
+	/**
+	 * Sorts a list of points based on the Y axis.
+	 * 
+	 * @author filipefalcao
+	 * @param points
+	 * @return A sorted list of points.
+	 */
+	private List<Point> quicksort(List<Point> points) {
+		if (points.size() <= 1) {
+			return points;
+		}
+		
+		int middle = (int) Math.ceil((double)points.size() / 2);
+		Point pivot = points.get(middle);
+
+		List<Point> less = new ArrayList<Point>();
+		List<Point> greater = new ArrayList<Point>();
+		
+		for (int i = 0; i < points.size(); i++) {
+			if (points.get(i).getY() <= pivot.getY()) {
+				if (i == middle) {
+					continue;
+				}
+				
+				less.add(points.get(i));
+			} else {
+				greater.add(points.get(i));
+			}
+		}
+		
+		return concatenate(quicksort(less), quicksort(greater), pivot);
+	}
+	
+	/**
+	 * Concatenates two lists and a pivot into a single list.
+	 * 
+	 * @author filipefalcao
+	 * @param list1
+	 * @param list2
+	 * @param pivot
+	 * @return A concatenated list of points.
+	 */
+	private List<Point> concatenate(List<Point> list1, List<Point> list2, Point pivot) {
+		List<Point> list = new ArrayList<Point>();
+		
+		for (int i = 0; i < list1.size(); i++) {
+			list.add(list1.get(i));
+		}
+		
+		list.add(pivot);
+		
+		for (int i = 0; i < list2.size(); i++) {
+			list.add(list2.get(i));
+		}
+		
+		return list;
+	}
+	
 	@Override
-	public AlgorithmConfiguration automaticTraining(HashMap<String, LinkedList<Snapshot>> algExpSnapshots) {
+	public AlgorithmConfiguration automaticTraining(HashMap<String, LinkedList<Snapshot>> algExpSnapshots) {		
 		return null;
 	}
 
