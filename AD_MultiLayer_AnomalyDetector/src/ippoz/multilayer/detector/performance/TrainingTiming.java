@@ -42,7 +42,7 @@ public class TrainingTiming {
 			resList.add(new TrainingResult(trainer.getAlgType(), trainer.getMetricScore()));
 		}
 		Collections.sort(resList);
-		computeStats(((AlgorithmTrainer)list.getFirst()).getExpList().size());
+		computeStats(((AlgorithmTrainer)list.getFirst()).getExpNumber());
 	}
 	
 	public String getHeader() {

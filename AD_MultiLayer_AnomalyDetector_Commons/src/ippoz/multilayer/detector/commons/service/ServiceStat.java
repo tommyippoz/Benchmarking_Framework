@@ -4,6 +4,7 @@
 package ippoz.multilayer.detector.commons.service;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * The Class ServiceStat.
@@ -82,6 +83,15 @@ public class ServiceStat {
 	 */
 	public IndicatorStat getIndStat(String indName) {
 		return indStat.get(indName);
+	}
+
+	public LinkedList<String> getIndicators() {
+		LinkedList<String> indList = new LinkedList<String>();
+		for(IndicatorStat is : indStat.values()){
+			indList.add(is.getName());
+		}
+		return indList;
+		
 	}	
 
 }

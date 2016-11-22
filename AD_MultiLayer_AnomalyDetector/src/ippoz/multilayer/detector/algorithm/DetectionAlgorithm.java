@@ -65,6 +65,8 @@ public abstract class DetectionAlgorithm {
 				return new InvariantChecker(conf);
 			case PEA:
 				return new PearsonIndexChecker(conf);
+			case KMEANS:
+				return new KMeansClusteringChecker(dataSeries, conf);
 			default:
 				return null;
 		}

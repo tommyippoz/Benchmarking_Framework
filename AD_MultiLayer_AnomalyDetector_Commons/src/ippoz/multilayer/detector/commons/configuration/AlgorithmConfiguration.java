@@ -162,6 +162,26 @@ public class AlgorithmConfiguration implements Cloneable {
 		String tag, value;
 		AlgorithmConfiguration conf = new AlgorithmConfiguration(algType);
 		if(descRow != null){
+			switch(algType){
+				case INV:
+					for(String splitted : descRow.split("&")){
+						if(splitted.contains("=")){
+							tag = splitted.split("=")[0].trim();
+							value = splitted.split("=")[1].trim();
+							conf.addRawItem(tag, new Invariant(value));
+						}
+					}
+					break;
+				default:
+					for(String splitted : descRow.split("&")){
+						if(splitted.contains("=")){
+							tag = splitted.split("=")[0].trim();
+							value = splitted.split("=")[1].trim();
+							conf.addItem(tag, value);
+						}
+					}
+					break;
+			}
 			for(String splitted : descRow.split("&")){
 				if(splitted.contains("=")){
 					tag = splitted.split("=")[0].trim();

@@ -58,6 +58,8 @@ public abstract class AlgorithmTrainer extends Thread implements Comparable<Algo
 	/** Flag that indicates if the trained algorithm retrieves different values (e.g., not always true / false). */
 	private boolean sameResultFlag;
 	
+	private int expNumber;
+	
 	/**
 	 * Instantiates a new algorithm trainer.
 	 *
@@ -75,6 +77,7 @@ public abstract class AlgorithmTrainer extends Thread implements Comparable<Algo
 		this.reputation = reputation;
 		this.tTiming = tTiming;
 		expList = deepClone(trainData);
+		expNumber = expList.size();
 	}
 	
 	/**
@@ -208,8 +211,12 @@ public abstract class AlgorithmTrainer extends Thread implements Comparable<Algo
 	 *
 	 * @return the exp list
 	 */
-	public LinkedList<ExperimentData> getExpList() {
+	protected LinkedList<ExperimentData> getExpList() {
 		return expList;
+	}
+	
+	public int getExpNumber(){
+		return expNumber;
 	}
 
 	/**
@@ -298,6 +305,10 @@ public abstract class AlgorithmTrainer extends Thread implements Comparable<Algo
 		if(dataSeries != null)
 			return dataSeries.toString();
 		else return "Default";
+	}
+	
+	public void flush(){
+		expList = null;
 	}
 	
 }

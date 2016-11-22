@@ -78,7 +78,7 @@ public class TrainerManager extends ThreadScheduler {
 	 * @param algTypes the algorithm types
 	 */
 	public TrainerManager(PreferencesManager prefManager, TimingsManager pManager, LinkedList<ExperimentData> expList, HashMap<AlgorithmType, LinkedList<AlgorithmConfiguration>> confList, Metric metric, Reputation reputation, DataCategory[] dataTypes, AlgorithmType[] algTypes) {
-		super();
+		super(1);
 		this.prefManager = prefManager;
 		this.pManager = pManager;
 		this.expList = expList;
@@ -224,7 +224,8 @@ public class TrainerManager extends ThreadScheduler {
 	 */
 	@Override
 	protected void threadComplete(Thread t, int tIndex) {
-		AppLogger.logInfo(getClass(), "[" + tIndex + "/" + threadNumber() + "] Found: " + ((AlgorithmTrainer)t).getBestConfiguration().toString());						
+		AppLogger.logInfo(getClass(), "[" + tIndex + "/" + threadNumber() + "] Found: " + ((AlgorithmTrainer)t).getBestConfiguration().toString());		
+		((AlgorithmTrainer)t).flush();
 	}
 	
 	private void saveTrainingTimes(LinkedList<? extends Thread> list) {
@@ -256,10 +257,10 @@ public class TrainerManager extends ThreadScheduler {
 			for(Thread tThread : list){
 				trainer = (AlgorithmTrainer)tThread;
 				if(trainer.isValidTrain()) {
-					writer.write(trainer.getSeriesDescription() + "," + 
-							trainer.getAlgType() + "," +
-							trainer.getReputationScore() + "," + 
-							trainer.getMetricScore() + "," +  
+					writer.write(trainer.getSeriesDescription() + "§" + 
+							trainer.getAlgType() + "§" +
+							trainer.getReputationScore() + "§" + 
+							trainer.getMetricScore() + "§" +  
 							trainer.getBestConfiguration().toFileRow(false) + "\n");
 				}
 			}

@@ -103,4 +103,8 @@ public class Snapshot {
 		return ssList;
 	}
 	
+	public LinkedList<String> getIndicators(){
+		return ssList.get(ssList.keySet().iterator().next()).getIndicators();
+	}
+	
 }

@@ -8,6 +8,6 @@ package ippoz.multilayer.detector.commons.algorithm;
  *
  */
 public enum AlgorithmType {
-	SPS, RCC, HIST, CONF, WER, INV, PEA, TEST
+	SPS, RCC, HIST, CONF, WER, INV, PEA, TEST, KMEANS,
 
 }

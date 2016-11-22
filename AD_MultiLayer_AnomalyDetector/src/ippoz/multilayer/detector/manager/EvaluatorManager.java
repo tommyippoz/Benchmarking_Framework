@@ -205,8 +205,8 @@ public class EvaluatorManager extends ThreadScheduler {
 					readed = reader.readLine();
 					if(readed != null){
 						readed = readed.trim();
-						if(readed.length() > 0 && readed.indexOf(",") != -1){
-							splitted = readed.split(",");
+						if(readed.length() > 0 && readed.indexOf("§") != -1){
+							splitted = readed.split("§");
 							if(splitted.length > 3 && checkAnomalyTreshold(Double.valueOf(splitted[3]), voterList)){
 								conf = AlgorithmConfiguration.buildConfiguration(AlgorithmType.valueOf(splitted[1]), (splitted.length > 4 ? splitted[4] : null));
 								switch(AlgorithmType.valueOf(splitted[1])){
