@@ -84,7 +84,7 @@ public abstract class ThreadScheduler extends Thread {
 	 */
 	@Override
 	public void run() {
-		int tWindow = 1; //nProc*loadFactor;
+		int tWindow = nProc*loadFactor;
 		try {
 			initRun();
 			for(int i=0;i<tList.size();i=i+tWindow){

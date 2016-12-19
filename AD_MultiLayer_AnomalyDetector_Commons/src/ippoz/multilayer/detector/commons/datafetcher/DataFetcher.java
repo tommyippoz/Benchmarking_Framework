@@ -87,5 +87,9 @@ public abstract class DataFetcher extends Thread {
 	 * Flushes the fetcher.
 	 */
 	public abstract void flush();
-	
+
+	/**
+	 * Opens the connection to the data source.
+	 */
+	public abstract void openConnection();
 }

@@ -99,7 +99,7 @@ public class LoaderManager extends ThreadScheduler {
 	 */
 	@Override
 	protected void threadStart(Thread t, int tIndex) {
-		// TODO Auto-generated method stub
+		((DataFetcher)t).openConnection();
 	}
 
 	/* (non-Javadoc)
@@ -110,6 +110,7 @@ public class LoaderManager extends ThreadScheduler {
 		ExperimentData data = ((DataFetcher)t).getFetchedData();
 		if(data.getSnapshotNumber() > 5)
 			readData.add(data);
+		((DataFetcher)t).flush();
 	}
 
 }

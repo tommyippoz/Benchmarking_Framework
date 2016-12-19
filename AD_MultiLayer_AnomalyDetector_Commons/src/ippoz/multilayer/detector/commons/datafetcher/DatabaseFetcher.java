@@ -26,6 +26,12 @@ public class DatabaseFetcher extends DataFetcher {
 	/** The database manager. */
 	private DatabaseManager dbManager;
 	
+	private String runId;
+	
+	private String username;
+	
+	private String password;
+	
 	/**
 	 * Instantiates a new database fetcher.
 	 *
@@ -34,7 +40,13 @@ public class DatabaseFetcher extends DataFetcher {
 	 * @param password the database password
 	 */
 	public DatabaseFetcher(String runId, String username, String password){
-		dbManager = new DatabaseManager("experiment", username, password, runId);
+		this.runId = runId;
+		this.username = username;
+		this.password = password;
+	}
+	
+	public void openConnection() {
+		dbManager = new DatabaseManager("experiment", username, password, runId);	
 	}
 
 	/* (non-Javadoc)
