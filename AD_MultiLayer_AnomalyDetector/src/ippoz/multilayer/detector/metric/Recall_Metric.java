@@ -17,13 +17,17 @@ import java.util.LinkedList;
  */
 public class Recall_Metric extends BetterMaxMetric {
 
+	public Recall_Metric(boolean validAfter) {
+		super(validAfter);
+	}
+
 	/* (non-Javadoc)
 	 * @see ippoz.multilayer.detector.metric.Metric#evaluateAnomalyResults(ippoz.multilayer.detector.data.ExperimentData, java.util.HashMap)
 	 */
 	@Override
 	public double evaluateAnomalyResults(LinkedList<Snapshot> snapList, HashMap<Date, Double> anomalyEvaluations) {
-		double tp = new TP_Metric(true).evaluateAnomalyResults(snapList, anomalyEvaluations);
-		double fn = new FN_Metric(true).evaluateAnomalyResults(snapList, anomalyEvaluations);
+		double tp = new TP_Metric(true, isValidAfter()).evaluateAnomalyResults(snapList, anomalyEvaluations);
+		double fn = new FN_Metric(true, isValidAfter()).evaluateAnomalyResults(snapList, anomalyEvaluations);
 		if(tp + fn > 0)
 			return 1.0*tp/(tp+fn);
 		else return 0.0;

@@ -9,8 +9,12 @@ package ippoz.multilayer.detector.metric;
  *
  * @author Tommy
  */
-public abstract class BetterMinMetric extends Metric {
+public abstract class BetterMinMetric extends ScoringMetric {
 	
+	public BetterMinMetric(boolean validAfter) {
+		super(validAfter);
+	}
+
 	/* (non-Javadoc)
 	 * @see ippoz.multilayer.detector.metric.Metric#compareResults(double, double)
 	 */

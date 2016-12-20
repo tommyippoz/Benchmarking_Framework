@@ -17,14 +17,17 @@ import java.util.LinkedList;
  * @author Tommy
  */
 public class BetaReputation extends Reputation {
+	
+	private boolean validAfter;
 
 	/**
 	 * Instantiates a new Beta reputation.
 	 *
 	 * @param reputationTag the reputation tag
 	 */
-	public BetaReputation(String reputationTag) {
+	public BetaReputation(String reputationTag, boolean validAfter) {
 		super(reputationTag);
+		this.validAfter = validAfter;
 	}
 
 	/* (non-Javadoc)
@@ -32,7 +35,7 @@ public class BetaReputation extends Reputation {
 	 */
 	@Override
 	public double evaluateExperimentReputation(LinkedList<Snapshot> snapList, HashMap<Date, Double> anomalyEvaluations) {
-		double tp = new TP_Metric(true).evaluateAnomalyResults(snapList, anomalyEvaluations);
+		double tp = new TP_Metric(true, validAfter).evaluateAnomalyResults(snapList, anomalyEvaluations);
 		double nInj = countInjections(snapList);
 		double alpha = tp + 1;
 		double beta = nInj + 1;

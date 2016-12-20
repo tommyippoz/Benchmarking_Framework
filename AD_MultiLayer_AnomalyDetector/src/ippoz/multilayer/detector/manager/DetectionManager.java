@@ -70,6 +70,8 @@ public class DetectionManager {
 	/** The Constant REPUTATION_TYPE. */
 	private static final String REPUTATION_TYPE = "REPUTATION";
 	
+	private static final String VALID_AFTER_INJECTION = "VALID_AFTER_INJECTION";
+	
 	/** The Constant CONF_FILE_FOLDER. */
 	public static final String CONF_FILE_FOLDER = "CONF_FILE_FOLDER";
 	
@@ -197,6 +199,7 @@ public class DetectionManager {
 	 */
 	public void evaluate(){
 		EvaluatorManager eManager;
+		boolean printOutput = detectionManager.getPreference(OUTPUT_FORMAT) != null && !detectionManager.getPreference(OUTPUT_FORMAT).equals("null");
 		Metric[] metList = loadValidationMetrics();
 		HashMap<String, Integer> nVoters = new HashMap<String, Integer>();
 		LinkedList<ExperimentData> expList = new LoaderManager(readRunIds(VALIDATION_RUN_PREFERENCE), "validation", pManager, prefManager.getPreference(DB_USERNAME), prefManager.getPreference(DB_PASSWORD)).fetch();
@@ -206,7 +209,7 @@ public class DetectionManager {
 			for(String voterTreshold : parseVoterTresholds()){
 				evaluations.put(voterTreshold.trim(), new HashMap<String, LinkedList<HashMap<Metric,Double>>>());
 				for(String anomalyTreshold : parseAnomalyTresholds()){
-					eManager = new EvaluatorManager(prefManager, pManager, expList, metList, anomalyTreshold.trim(), Double.parseDouble(detectionManager.getPreference(DM_CONVERGENCE_TIME)), voterTreshold.trim(), false);
+					eManager = new EvaluatorManager(prefManager, pManager, expList, metList, anomalyTreshold.trim(), Double.parseDouble(detectionManager.getPreference(DM_CONVERGENCE_TIME)), voterTreshold.trim(), printOutput);
 					if(eManager.detectAnomalies()) {
 						evaluations.get(voterTreshold.trim()).put(anomalyTreshold.trim(), eManager.getMetricsEvaluations());
 						eManager.printTimings(prefManager.getPreference(OUTPUT_FOLDER) + "/evaluationTimings.csv");
@@ -474,9 +477,10 @@ public class DetectionManager {
 	 */
 	private Reputation getReputation(Metric metric) {
 		String reputationType = prefManager.getPreference(REPUTATION_TYPE);
+		boolean validAfter = Boolean.getBoolean(prefManager.getPreference(VALID_AFTER_INJECTION));
 		switch(reputationType.toUpperCase()){
 			case "BETA":
-				return new BetaReputation(reputationType);
+				return new BetaReputation(reputationType, validAfter);
 			case "METRIC":
 				return new MetricReputation(reputationType, metric);
 			default:
@@ -494,6 +498,7 @@ public class DetectionManager {
 	 */
 	private Metric getMetric(String metricType){
 		String param = null;
+		boolean validAfter = Boolean.getBoolean(prefManager.getPreference(VALID_AFTER_INJECTION));
 		if(metricType.contains("(")){
 			param = metricType.substring(metricType.indexOf("(")+1, metricType.indexOf(")"));
 			metricType = metricType.substring(0, metricType.indexOf("("));
@@ -501,28 +506,28 @@ public class DetectionManager {
 		switch(metricType.toUpperCase()){
 			case "TP":
 			case "TRUEPOSITIVE":
-				return new TP_Metric(false);
+				return new TP_Metric(false, validAfter);
 			case "TN":
 			case "TRUENEGATIVE":
-				return new TN_Metric(false);
+				return new TN_Metric(false, validAfter);
 			case "FN":
 			case "FALSENEGATIVE":
-				return new FN_Metric(false);
+				return new FN_Metric(false, validAfter);
 			case "FP":
 			case "FALSEPOSITIVE":
-				return new FP_Metric(false);
+				return new FP_Metric(false, validAfter);
 			case "PRECISION":
-				return new Precision_Metric();
+				return new Precision_Metric(validAfter);
 			case "RECALL":
-				return new Recall_Metric();
+				return new Recall_Metric(validAfter);
 			case "F-MEASURE":
 			case "FMEASURE":
-				return new FMeasure_Metric();
+				return new FMeasure_Metric(validAfter);
 			case "F-SCORE":
 			case "FSCORE":
-				return new FScore_Metric(Double.valueOf(param));
+				return new FScore_Metric(Double.valueOf(param), validAfter);
 			case "CUSTOM":
-				return new Custom_Metric();
+				return new Custom_Metric(validAfter);
 			default:
 				return null;
 		}

@@ -17,13 +17,17 @@ import java.util.LinkedList;
  */
 public class FalsePositiveRate_Metric extends BetterMinMetric {
 
+	public FalsePositiveRate_Metric(boolean validAfter) {
+		super(validAfter);
+	}
+
 	/* (non-Javadoc)
 	 * @see ippoz.multilayer.detector.metric.Metric#evaluateAnomalyResults(ippoz.multilayer.detector.data.ExperimentData, java.util.HashMap)
 	 */
 	@Override
 	public double evaluateAnomalyResults(LinkedList<Snapshot> snapList, HashMap<Date, Double> anomalyEvaluations) {
-		double tn = new TN_Metric(true).evaluateAnomalyResults(snapList, anomalyEvaluations);
-		double fp = new FP_Metric(true).evaluateAnomalyResults(snapList, anomalyEvaluations);
+		double tn = new TN_Metric(true, isValidAfter()).evaluateAnomalyResults(snapList, anomalyEvaluations);
+		double fp = new FP_Metric(true, isValidAfter()).evaluateAnomalyResults(snapList, anomalyEvaluations);
 		if(tn + fp > 0)
 			return 1.0*fp/(fp+tn);
 		else return 0.0;
