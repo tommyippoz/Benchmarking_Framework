@@ -1,43 +1,69 @@
-/**
- * 
- */
 package ippoz.multilayer.detector.commons.support;
 
-import ippoz.multilayer.commons.support.AppLogger;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author Tommy
  *
  */
 public class AppUtility {
+
+	public static boolean isWindows() {
+		return System.getProperty("os.name").toUpperCase().contains("WIN");
+	}
+
+	public static boolean isUNIX() {
+		return System.getProperty("os.name").toUpperCase().contains("UNIX");
+	}
+
+    public static Process runScript(String path, String args, boolean setOnFolder, boolean viewOutput) throws
+            IOException{
+        Process p;
+        BufferedReader reader;
+        String script = buildScript(path);
+        if(setOnFolder) {
+            p = Runtime.getRuntime().exec(script + " " + args, null, new File((new File(path))
+                    .getAbsolutePath().replaceAll((new File(path)).getName(), "")));
+        } else {
+            p = Runtime.getRuntime().exec(script + " " + args);
+        }
+        if(viewOutput){
+            reader = new BufferedReader(new InputStreamReader(
+                    p.getInputStream()));
+            while (reader.ready()) {
+                System.out.println(reader.readLine());
+            }
+            reader.close();
+        }
+        //AppLogger.logInfo(Probe.class, "Executed \"" + script + "\"");
+        return p;
+    }
+
+    private static String buildScript(String path){
+        String script = path;
+        if(path.endsWith(".jar")) {
+            script = "java -jar " + path;
+        }
+        return script;
+    }
 	
 	public static HashMap<String, String> loadPreferences(File prefFile, String[] tags) throws IOException {
-		String readed, tag, value;
+		String read, tag, value;
 		BufferedReader reader;
-		HashMap<String, String> map = new HashMap<String, String>();
+		HashMap<String, String> map = new HashMap<>();
 		if(prefFile.exists()){
 			reader = new BufferedReader(new FileReader(prefFile));
 			while(reader.ready()){
-				readed = reader.readLine();
-				if(readed.length() > 0) {
-					if(readed.contains("=") && readed.split("=").length == 2){
-						tag = readed.split("=")[0];
-						value = readed.split("=")[1];
+				read = reader.readLine();
+				if(read.length() > 0) {
+					if(read.contains("=") && read.split("=").length == 2){
+						tag = read.split("=")[0];
+						value = read.split("=")[1];
 						if(tags != null && tags.length > 0){
 							for(String current : tags){
 								if(current.toUpperCase().equals(tag.toUpperCase())){
@@ -75,6 +101,17 @@ public class AppUtility {
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return formatter.format(new Date(dateMillis));
 	}
+
+	public static Date getDateFromString(String dateString) throws ParseException {
+	    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	    try {
+            return formatter.parse(dateString);
+        } catch (ParseException e) {
+            AppLogger.logException(AppUtility.class, e,
+                    "Unable to parse date '" + dateString + "'");
+	        throw new ParseException("Unable to parse date", e.getErrorOffset());
+        }
+    }
 	
 	public static Date convertStringToDate(String dateString){
 		DateFormat formatter;
@@ -123,7 +160,7 @@ public class AppUtility {
 		}
 		return mean / count;
 	}
-	
+
 	public static Double calcStd(Double[] values, Double mean){
 		int count = 0;
 		double std = 0;
@@ -157,7 +194,7 @@ public class AppUtility {
 	}
 	
 	public static TreeMap<Double, Double> convertMapTimestamps(Date firstTimestamp, TreeMap<Date, Double> toConvert){
-		TreeMap<Double, Double> convertedMap = new TreeMap<Double, Double>();
+		TreeMap<Double, Double> convertedMap = new TreeMap<>();
 		if(toConvert.size() > 0) {
 			for(Date key : toConvert.keySet()){
 				convertedMap.put(AppUtility.getSecondsBetween(key, firstTimestamp), toConvert.get(key));
@@ -170,11 +207,30 @@ public class AppUtility {
 		return convertMapTimestamps(resultMap.firstKey(), resultMap);
 	}
 
-	public static Double calcMedian(Double[] timeSingle) {
-		Arrays.sort(timeSingle);
-		return timeSingle[(int)(timeSingle.length/2)];
+	public static Double calcMedian(Double[] values) {
+        Arrays.sort(values);
+        return values[values.length/2];
 	}
 
-	
-	
+	public static Double calcMode(Double[] values) {
+	    int freq = 0, modeFreq = 0;
+	    double mode = 0;
+        Arrays.sort(values);
+        for(int i=0;i<values.length;i++){
+            if(i > 0){
+                if(Objects.equals(values[i], values[i - 1]))
+                    freq++;
+                else {
+                    if(freq >= modeFreq){
+                        mode = values[i-1];
+                        modeFreq = freq;
+                        freq = 1;
+                    }
+                }
+            } else {
+                freq++;
+            }
+        }
+        return mode;
+    }
 }

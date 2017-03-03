@@ -1,14 +1,11 @@
-/**
- * 
- */
 package ippoz.multilayer.detector.commons.dataseries;
 
 import java.util.Date;
 
-import ippoz.multilayer.commons.datacategory.DataCategory;
-import ippoz.multilayer.commons.indicator.Indicator;
-import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.commons.data.Observation;
+import ippoz.multilayer.detector.commons.datacategory.DataCategory;
+import ippoz.multilayer.detector.commons.indicator.Indicator;
+import ippoz.multilayer.detector.commons.layer.LayerType;
 import ippoz.multilayer.detector.commons.service.ServiceCall;
 import ippoz.multilayer.detector.commons.service.ServiceStat;
 import ippoz.multilayer.detector.commons.service.StatPair;
@@ -45,5 +42,4 @@ public class IndicatorDataSeries extends DataSeries {
 	protected Double getDiffSeriesValue(Observation obs) {
 		return Double.valueOf(obs.getValue(indicator.getName(), DataCategory.DIFFERENCE));
 	}
-
 }

@@ -1,12 +1,9 @@
-/**
- * 
- */
 package ippoz.multilayer.detector.commons.dataseries;
 
-import ippoz.multilayer.commons.datacategory.DataCategory;
-import ippoz.multilayer.commons.indicator.Indicator;
-import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.commons.data.Observation;
+import ippoz.multilayer.detector.commons.datacategory.DataCategory;
+import ippoz.multilayer.detector.commons.indicator.Indicator;
+import ippoz.multilayer.detector.commons.layer.LayerType;
 import ippoz.multilayer.detector.commons.service.IndicatorStat;
 import ippoz.multilayer.detector.commons.service.ServiceCall;
 import ippoz.multilayer.detector.commons.service.ServiceStat;
@@ -45,7 +42,7 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 	}
 	
 	public LinkedList<DataSeries> listSubSeries(){
-		LinkedList<DataSeries> outList = new LinkedList<DataSeries>();
+		LinkedList<DataSeries> outList = new LinkedList<>();
 		if(this instanceof ComplexDataSeries){
 			outList.addAll(((ComplexDataSeries)this).getFirstOperand().listSubSeries());
 			outList.addAll(((ComplexDataSeries)this).getSecondOperand().listSubSeries());
@@ -54,9 +51,12 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 	}
 	
 	public boolean contains(DataSeries other){
-		if(this instanceof ComplexDataSeries)
-			return ((ComplexDataSeries)this).getFirstOperand().contains(other) || ((ComplexDataSeries)this).getSecondOperand().contains(other);
-		else return compareTo(other) == 0;
+		if(this instanceof ComplexDataSeries) {
+            return ((ComplexDataSeries) this).getFirstOperand().contains(other)
+                    || ((ComplexDataSeries) this).getSecondOperand().contains(other);
+        } else {
+            return compareTo(other) == 0;
+        }
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 	
 	protected abstract Double getDiffSeriesValue(Observation obs);
 	
-	// Sincronizza anche se è all'inizio, nel corpo o alla fine.
+	// Sincronizza anche se ï¿½ all'inizio, nel corpo o alla fine.
 	public abstract StatPair getSeriesServiceStat(Date timestamp, ServiceCall sCall, ServiceStat sStat);
 
 	protected static StatPair getPairByTime(Date timestamp, ServiceCall sCall, IndicatorStat iStat){
@@ -128,9 +128,9 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 	
 	public static LinkedList<DataSeries> selectedCombinations(Indicator[] indicators, DataCategory[] dataTypes, HashMap<String, String> possibleCouples) {
 		DataSeries firstDS, secondDS;
-		LinkedList<DataSeries> outList = new LinkedList<DataSeries>();
-		LinkedList<DataSeries> simpleInd = new LinkedList<DataSeries>();
-		LinkedList<DataSeries> complexInd = new LinkedList<DataSeries>();
+		LinkedList<DataSeries> outList = new LinkedList<>();
+		LinkedList<DataSeries> simpleInd = new LinkedList<>();
+		LinkedList<DataSeries> complexInd = new LinkedList<>();
 		for(Indicator ind : indicators){
 			for(DataCategory dCat : dataTypes){
 				simpleInd.add(new IndicatorDataSeries(ind, dCat));
@@ -151,9 +151,9 @@ public abstract class DataSeries implements Comparable<DataSeries> {
 	}
 	
 	public static LinkedList<DataSeries> allCombinations(Indicator[] indicators, DataCategory[] dataTypes) {
-		LinkedList<DataSeries> outList = new LinkedList<DataSeries>();
-		LinkedList<DataSeries> simpleInd = new LinkedList<DataSeries>();
-		LinkedList<DataSeries> complexInd = new LinkedList<DataSeries>();
+		LinkedList<DataSeries> outList = new LinkedList<>();
+		LinkedList<DataSeries> simpleInd = new LinkedList<>();
+		LinkedList<DataSeries> complexInd = new LinkedList<>();
 		for(Indicator ind : indicators){
 			for(DataCategory dCat : dataTypes){
 				simpleInd.add(new IndicatorDataSeries(ind, dCat));

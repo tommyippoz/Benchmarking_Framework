@@ -1,12 +1,9 @@
-/**
- * 
- */
 package ippoz.multilayer.detector.commons.datafetcher;
 
-import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.commons.data.Observation;
 import ippoz.multilayer.detector.commons.datafetcher.database.DatabaseManager;
 import ippoz.multilayer.detector.commons.failure.InjectedElement;
+import ippoz.multilayer.detector.commons.layer.LayerType;
 import ippoz.multilayer.detector.commons.service.ServiceCall;
 import ippoz.multilayer.detector.commons.service.ServiceStat;
 import ippoz.multilayer.detector.commons.support.AppLogger;

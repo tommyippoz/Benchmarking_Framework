@@ -1,16 +1,13 @@
-/**
- * 
- */
 package ippoz.multilayer.detector.commons.data;
 
-import ippoz.multilayer.commons.indicator.Indicator;
-import ippoz.multilayer.commons.layers.LayerType;
 import ippoz.multilayer.detector.commons.algorithm.AlgorithmType;
 import ippoz.multilayer.detector.commons.configuration.AlgorithmConfiguration;
 import ippoz.multilayer.detector.commons.dataseries.DataSeries;
 import ippoz.multilayer.detector.commons.failure.InjectedElement;
+import ippoz.multilayer.detector.commons.indicator.Indicator;
 import ippoz.multilayer.detector.commons.invariants.DataSeriesMember;
 import ippoz.multilayer.detector.commons.invariants.Invariant;
+import ippoz.multilayer.detector.commons.layer.LayerType;
 import ippoz.multilayer.detector.commons.service.ServiceCall;
 import ippoz.multilayer.detector.commons.service.ServiceStat;
 
@@ -172,11 +169,10 @@ public class ExperimentData implements Cloneable {
 	}
 
 	public HashMap<LayerType, Integer> getLayerIndicators(){
-		HashMap<LayerType, Integer> layerInd = new HashMap<LayerType, Integer>();
+		HashMap<LayerType, Integer> layerInd = new HashMap<>();
 		if(snapList.size() > 0){
 			for(Indicator ind : obsList.get(0).getIndicators()){
-				if(layerInd.get(ind.getLayer()) == null)
-					layerInd.put(ind.getLayer(), 0);
+				layerInd.putIfAbsent(ind.getLayer(), 0);
 				layerInd.replace(ind.getLayer(), layerInd.get(ind.getLayer())+1);
 			}
 		}
@@ -239,8 +235,6 @@ public class ExperimentData implements Cloneable {
 		}
 	}
 	
-	
-
 	public double[] getDataSeriesValue(DataSeries ds){
 		double[] outList = new double[obsList.size()];
 		for(int i=0;i<obsList.size();i++){

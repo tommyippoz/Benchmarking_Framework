@@ -1,10 +1,7 @@
-/**
- * 
- */
 package ippoz.multilayer.detector.commons.dataseries;
 
-import ippoz.multilayer.commons.datacategory.DataCategory;
 import ippoz.multilayer.detector.commons.data.Observation;
+import ippoz.multilayer.detector.commons.datacategory.DataCategory;
 import ippoz.multilayer.detector.commons.service.StatPair;
 
 /**

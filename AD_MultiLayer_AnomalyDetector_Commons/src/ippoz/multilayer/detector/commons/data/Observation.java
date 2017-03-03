@@ -1,10 +1,7 @@
-/**
- * 
- */
 package ippoz.multilayer.detector.commons.data;
 
-import ippoz.multilayer.commons.datacategory.DataCategory;
-import ippoz.multilayer.commons.indicator.Indicator;
+import ippoz.multilayer.detector.commons.datacategory.DataCategory;
+import ippoz.multilayer.detector.commons.indicator.Indicator;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 import ippoz.multilayer.detector.commons.support.AppUtility;
 
@@ -13,7 +10,7 @@ import java.util.HashMap;
 
 /**
  * The Class Observation.
- * STores data related to observations of all the indicator at a given time timestamp.
+ * Stores data related to observations of all the indicator at a given time timestamp.
  *
  * @author Tommy
  */
@@ -32,7 +29,7 @@ public class Observation {
 	 */
 	public Observation(String timestamp){
 		this.timestamp = AppUtility.convertStringToDate(timestamp);
-		observedIndicators = new HashMap<Indicator, IndicatorData>();
+		observedIndicators = new HashMap<>();
 	}
 	
 	/**
@@ -77,7 +74,7 @@ public class Observation {
 	/**
 	 * Gets the value of an indicator for this specific observation.
 	 *
-	 * @param indicator the indicator
+	 * @param indicatorName the indicator
 	 * @param categoryTag the data category (plain, diff)
 	 * @return the indicator value
 	 */
@@ -95,7 +92,7 @@ public class Observation {
 	 *
 	 * @return the number of indicators
 	 */
-	public int getIndicatorNumber(){
+	public int getNumberOfObservedIndicators(){
 		return observedIndicators.size();
 	}
 

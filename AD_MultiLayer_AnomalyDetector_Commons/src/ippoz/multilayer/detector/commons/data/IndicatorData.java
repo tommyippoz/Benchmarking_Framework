@@ -1,12 +1,10 @@
-/*
- * 
- */
 package ippoz.multilayer.detector.commons.data;
 
-import ippoz.multilayer.commons.datacategory.DataCategory;
+import ippoz.multilayer.detector.commons.datacategory.DataCategory;
 import ippoz.multilayer.detector.commons.support.AppLogger;
 
 import java.util.HashMap;
+
 
 /**
  * The Class IndicatorData.
@@ -38,7 +36,8 @@ public class IndicatorData {
 		if(dataMap.containsKey(categoryTag))
 			return dataMap.get(categoryTag);
 		else {
-			AppLogger.logError(getClass(), "NoSuchCategoryData", "Category '" + categoryTag + "' not found");
+			AppLogger.logError(getClass(), "NoSuchCategoryData", "Category '" + categoryTag
+					+ "' not found");
 			return null;
 		}
 	}
