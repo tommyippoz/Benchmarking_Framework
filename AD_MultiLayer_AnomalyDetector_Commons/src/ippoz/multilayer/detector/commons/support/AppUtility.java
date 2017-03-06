@@ -27,7 +27,7 @@ import java.util.TreeMap;
 public class AppUtility {
 	
 	public static HashMap<String, String> loadPreferences(File prefFile, String[] tags) throws IOException {
-		String readed, tag, value;
+		String readed, tag, value; 
 		BufferedReader reader;
 		HashMap<String, String> map = new HashMap<String, String>();
 		if(prefFile.exists()){
