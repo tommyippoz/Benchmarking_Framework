@@ -199,7 +199,7 @@ public class DetectionManager {
 	 */
 	public void evaluate(){
 		EvaluatorManager eManager;
-		boolean printOutput = detectionManager.getPreference(OUTPUT_FORMAT) != null && !detectionManager.getPreference(OUTPUT_FORMAT).equals("null");
+		boolean printOutput = prefManager.getPreference(OUTPUT_FORMAT) != null && !prefManager.getPreference(OUTPUT_FORMAT).equals("null");
 		Metric[] metList = loadValidationMetrics();
 		HashMap<String, Integer> nVoters = new HashMap<String, Integer>();
 		LinkedList<ExperimentData> expList = new LoaderManager(readRunIds(VALIDATION_RUN_PREFERENCE), "validation", pManager, prefManager.getPreference(DB_USERNAME), prefManager.getPreference(DB_PASSWORD)).fetch();
@@ -454,16 +454,14 @@ public class DetectionManager {
 		String idPref = prefManager.getPreference(runTag).trim();
 		LinkedList<String> idList = new LinkedList<String>();
 		if(idPref != null && idPref.length() > 0){
-			if(idPref.contains("-")){
-				from = idPref.split("-")[0].trim();
-				to = idPref.split("-")[1].trim();
-				for(int i=Integer.parseInt(from);i<=Integer.parseInt(to);i++){
-					idList.add(String.valueOf(i));
-				}
-			} else {
-				for(String id : idPref.split(",")){
-					idList.add(id.trim());
-				}
+			for(String id : idPref.split(",")){
+				if(id.contains("-")){
+					from = id.split("-")[0].trim();
+					to = id.split("-")[1].trim();
+					for(int i=Integer.parseInt(from);i<=Integer.parseInt(to);i++){
+						idList.add(String.valueOf(i));
+					}
+				} else idList.add(id.trim());
 			}
 		}
 		return idList;
