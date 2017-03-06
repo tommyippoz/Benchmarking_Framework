@@ -30,7 +30,7 @@ public class AppUtility {
 		String readed, tag, value; 
 		BufferedReader reader;
 		HashMap<String, String> map = new HashMap<String, String>();
-		if(prefFile.exists()){
+		if(prefFile.exists()){ 
 			reader = new BufferedReader(new FileReader(prefFile));
 			while(reader.ready()){
 				readed = reader.readLine();
